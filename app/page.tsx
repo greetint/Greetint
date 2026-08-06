@@ -5,17 +5,17 @@ import Link from 'next/link';
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col justify-between selection:bg-[#e5cfc6]">
-      {/* 1. ПРЕМИУМ МЕНЮ (HEADER) */}
+      {/* 1. HEADER */}
       <header className="sticky top-0 z-50 glass-panel px-8 py-5 transition-all">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold tracking-[0.25em] text-[#2c2825] brand-font flex items-center gap-2.5">
+          <Link href="/" className="text-2xl font-bold tracking-[0.25em] text-[#2c2825] flex items-center gap-2.5">
             <span className="w-2.5 h-2.5 rounded-full bg-[#dbceb3] inline-block shadow-sm"></span>
             GREETINT
           </Link>
           
           <nav className="hidden md:flex space-x-10 text-xs uppercase tracking-widest font-medium text-[#635e57]">
             <a href="#about" className="hover:text-[#2c2825] transition-colors">За нас</a>
-            <a href="#how" class="hover:text-[#2c2825] transition-colors">Как работи</a>
+            <a href="#how" className="hover:text-[#2c2825] transition-colors">Как работи</a>
             <a href="#occasions" className="hover:text-[#2c2825] transition-colors">Поводи</a>
           </nav>
 
@@ -28,9 +28,8 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 2. ТЕМАТИЧНА HERO СЕКЦИЯ */}
+      {/* 2. HERO SECTION */}
       <section className="max-w-4xl mx-auto text-center px-6 pt-24 pb-20 relative">
-        {/* Нежен цветен акцент във фона */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#e5cfc6]/30 rounded-full blur-3xl -z-10"></div>
 
         <span className="inline-block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#958679] bg-[#e5cfc6]/40 px-4 py-2 rounded-full border border-[#e5cfc6]/60 backdrop-blur-sm">
@@ -50,18 +49,18 @@ export default function Home() {
             href="/create" 
             className="w-full sm:w-auto bg-[#2c2825] hover:bg-[#635e57] text-[#fefefd] px-9 py-4 rounded-full font-medium text-sm tracking-wide transition-all duration-300 transform hover:-translate-y-0.5 shadow-md"
           >
-            🎉 Създай за Рожден Ден — €4.99
+            Създай за Рожден Ден — €4.99
           </Link>
         </div>
       </section>
 
-      {/* 3. КРАТКА СЕКЦИЯ С ПРЕДИМСТВА */}
+      {/* 3. ADVANTAGES */}
       <section id="how" className="max-w-5xl mx-auto px-6 py-16 border-t border-[#d9d1cc]/60">
         <div className="grid md:grid-cols-3 gap-8">
           <div className="glass-panel p-8 rounded-3xl space-y-3">
-            <span class="text-2xl">✨</span>
+            <span className="text-2xl">✨</span>
             <h3 className="text-lg font-medium text-[#2c2825]">1. Персонализирай</h3>
-            <p className="text-xs text-[#635e57] font-light leading-relaxed">Задай тайни въпроси, качи общи снимки и добави специален ваучер/подарък.</p>
+            <p className="text-xs text-[#635e57] font-light leading-relaxed">Задай тайни въпроси, качи общи снимки и добави специален ваучер или подарък.</p>
           </div>
 
           <div className="glass-panel p-8 rounded-3xl space-y-3">
@@ -78,10 +77,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. ФУТЪР */}
+      {/* 4. FOOTER */}
       <footer className="border-t border-[#d9d1cc]/60 bg-[#fefefd] py-10 text-center text-xs text-[#958679]">
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="brand-font tracking-widest text-[#2c2825] font-bold">GREETINT</div>
+          <div className="tracking-widest text-[#2c2825] font-bold">GREETINT</div>
           <p>© 2026 Greetint. Всички права запазени.</p>
         </div>
       </footer>
