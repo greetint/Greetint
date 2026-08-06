@@ -1,204 +1,88 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
+import Link from 'next/link';
 
 export default function Home() {
-  const [occasion, setOccasion] = useState('Рожден ден');
-  const [recipient, setRecipient] = useState('Мария');
-  const [sender, setSender] = useState('Алекс');
-  const [message, setMessage] = useState('Пожелавам ти много здраве, щастие и сбъднати мечти! Нека всеки ден ти носи усмивки.');
-
-  const sampleMessages = [
-    'Пожелавам ти много здраве, щастие и сбъднати мечти! Нека всеки ден ти носи усмивки.',
-    'Честит празник! Бъди все така вдъхновяваща, слънчева и невероятна личност.',
-    'Нека животът ти бъде изпълнен с любов, приключения и прекрасни спомени!'
-  ];
-
-  const handleRandomizeMessage = () => {
-    const randomMsg = sampleMessages[Math.floor(Math.random() * sampleMessages.length)];
-    setMessage(randomMsg);
-  };
-
-  const scrollToGenerator = () => {
-    document.getElementById('generator')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-20">
-      {/* 1. ШАПКА / HEADER */}
-      <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold tracking-wider text-amber-400">
+    <main className="min-h-screen flex flex-col justify-between selection:bg-[#e5cfc6]">
+      {/* 1. ПРЕМИУМ МЕНЮ (HEADER) */}
+      <header className="sticky top-0 z-50 glass-panel px-8 py-5 transition-all">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <Link href="/" className="text-2xl font-bold tracking-[0.25em] text-[#2c2825] brand-font flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#dbceb3] inline-block shadow-sm"></span>
             GREETINT
-          </div>
-          <nav className="hidden md:flex space-x-8 text-sm text-slate-300">
-            <a href="#about" className="hover:text-amber-400 transition">За нас</a>
-            <a href="#how-it-works" className="hover:text-amber-400 transition">Как работи</a>
-            <a href="#generator" className="hover:text-amber-400 transition">Демо Генератор</a>
+          </Link>
+          
+          <nav className="hidden md:flex space-x-10 text-xs uppercase tracking-widest font-medium text-[#635e57]">
+            <a href="#about" className="hover:text-[#2c2825] transition-colors">За нас</a>
+            <a href="#how" class="hover:text-[#2c2825] transition-colors">Как работи</a>
+            <a href="#occasions" className="hover:text-[#2c2825] transition-colors">Поводи</a>
           </nav>
-          <button 
-            onClick={scrollToGenerator}
-            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-5 py-2 rounded-full transition text-sm cursor-pointer"
+
+          <Link 
+            href="/create" 
+            className="bg-[#2c2825] hover:bg-[#635e57] text-[#fefefd] px-6 py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 transform hover:-translate-y-0.5 shadow-sm"
           >
             Създай картичка
-          </button>
+          </Link>
         </div>
       </header>
 
-      {/* 2. ГЛАВНА СЕКЦИЯ / HERO */}
-      <section className="max-w-4xl mx-auto text-center px-6 py-16">
-        <span className="text-amber-400 font-medium text-sm tracking-widest uppercase bg-amber-400/10 px-4 py-1.5 rounded-full border border-amber-400/20">
-          Персонални дигитални & Printable картички
+      {/* 2. ТЕМАТИЧНА HERO СЕКЦИЯ */}
+      <section className="max-w-4xl mx-auto text-center px-6 pt-24 pb-20 relative">
+        {/* Нежен цветен акцент във фона */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#e5cfc6]/30 rounded-full blur-3xl -z-10"></div>
+
+        <span className="inline-block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#958679] bg-[#e5cfc6]/40 px-4 py-2 rounded-full border border-[#e5cfc6]/60 backdrop-blur-sm">
+          Warm Minimalist Digital & Printable Cards
         </span>
-        <h1 className="text-4xl md:text-6xl font-extrabold mt-6 leading-tight">
-          Подари емоция, която остава <span className="text-amber-400">завинаги</span>.
+
+        <h1 className="text-4xl md:text-6xl font-light text-[#2c2825] mt-8 leading-[1.15] tracking-tight">
+          Подари емоция, която остава <span className="font-normal italic text-[#958679]">завинаги</span>.
         </h1>
-        <p className="text-slate-400 text-lg md:text-xl mt-6 max-w-2xl mx-auto">
-          Greetint ти позволява да създаваш уникални интерактивни пожелания. Изпрати ги дигитално или разпечатай физическа картичка с генериран QR код!
+
+        <p className="text-[#635e57] text-base md:text-lg mt-8 max-w-2xl mx-auto font-light leading-relaxed">
+          Издигни стандартните пожелания до луксозно интерактивно преживяване. Персонални куестове, спомени и елегантен QR код за печат.
         </p>
-        <div className="mt-8 flex justify-center">
-          <button 
-            onClick={scrollToGenerator}
-            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-8 py-4 rounded-xl shadow-lg transition text-lg cursor-pointer"
+
+        <div className="mt-12 flex flex-col sm:flex-row justify-center items-center gap-5">
+          <Link 
+            href="/create" 
+            className="w-full sm:w-auto bg-[#2c2825] hover:bg-[#635e57] text-[#fefefd] px-9 py-4 rounded-full font-medium text-sm tracking-wide transition-all duration-300 transform hover:-translate-y-0.5 shadow-md"
           >
-            🎉 Изпробвай Генератора
-          </button>
+            🎉 Създай за Рожден Ден — €4.99
+          </Link>
         </div>
       </section>
 
-      {/* 3. ИНТЕРАКТИВЕН ГЕНЕРАТОР (ДЕМО ИНТЕРФЕЙС) */}
-      <section id="generator" className="max-w-6xl mx-auto px-6 py-12 border-t border-slate-800">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold">Създай своята картичка</h2>
-          <p className="text-slate-400 mt-2">Попълни данните вляво и виж как картичката се променя в реално време вдясно!</p>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-10 items-start">
-          {/* ФОРМА ЗА ВЪВЕЖДАНЕ */}
-          <div className="bg-slate-900/80 p-6 rounded-2xl border border-slate-800 space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">1. Избери повод</label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {['Рожден ден', 'Сватба', 'Любов', 'Юбилей'].map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setOccasion(item)}
-                    className={`py-2 px-3 text-xs rounded-lg border transition ${
-                      occasion === item 
-                        ? 'bg-amber-500 text-slate-950 font-bold border-amber-500' 
-                        : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-500'
-                    }`}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">За кого е? (Име)</label>
-                <input
-                  type="text"
-                  value={recipient}
-                  onChange={(e) => setRecipient(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">От кого е? (Име)</label>
-                <input
-                  type="text"
-                  value={sender}
-                  onChange={(e) => setSender(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <label className="text-sm font-medium text-slate-300">Твоето пожелание</label>
-                <button
-                  type="button"
-                  onClick={handleRandomizeMessage}
-                  className="text-xs text-amber-400 hover:underline"
-                >
-                  🎲 Друго пожелание
-                </button>
-              </div>
-              <textarea
-                rows={4}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
-              />
-            </div>
-
-            <div className="pt-2 border-t border-slate-800 flex gap-3">
-              <button 
-                onClick={() => alert('В бъдеще тук ще се генерира уникален линк за пращане!')}
-                className="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 rounded-xl transition text-sm text-center"
-              >
-                🔗 Вземи Дигитален Линк
-              </button>
-              <button 
-                onClick={() => alert('В бъдеще тук ще се сваля готово PDF за печат!')}
-                className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-3 rounded-xl border border-slate-700 transition text-sm text-center"
-              >
-                🟨 Свали за Печат (QR)
-              </button>
-            </div>
+      {/* 3. КРАТКА СЕКЦИЯ С ПРЕДИМСТВА */}
+      <section id="how" className="max-w-5xl mx-auto px-6 py-16 border-t border-[#d9d1cc]/60">
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="glass-panel p-8 rounded-3xl space-y-3">
+            <span class="text-2xl">✨</span>
+            <h3 className="text-lg font-medium text-[#2c2825]">1. Персонализирай</h3>
+            <p className="text-xs text-[#635e57] font-light leading-relaxed">Задай тайни въпроси, качи общи снимки и добави специален ваучер/подарък.</p>
           </div>
 
-          {/* ПРЕГЛЕД НА КАРТИЧКАТА (LIVE PREVIEW) */}
-          <div className="bg-gradient-to-br from-amber-100 to-amber-50 text-slate-900 p-8 rounded-2xl shadow-2xl border-4 border-amber-300/40 relative min-h-[380px] flex flex-col justify-between">
-            <div>
-              <div className="flex justify-between items-start">
-                <span className="text-xs font-bold uppercase tracking-widest text-amber-800 bg-amber-200/60 px-3 py-1 rounded-full">
-                  {occasion}
-                </span>
-                <span className="text-xs font-serif italic text-slate-500">Greetint Special</span>
-              </div>
+          <div className="glass-panel p-8 rounded-3xl space-y-3">
+            <span className="text-2xl">📱</span>
+            <h3 className="text-lg font-medium text-[#2c2825]">2. Интерактивен Куест</h3>
+            <p className="text-xs text-[#635e57] font-light leading-relaxed">Получателят отваря виртуален плик, решава загадката и духва свещичката.</p>
+          </div>
 
-              <div className="mt-8 text-center">
-                <h3 className="text-2xl font-serif font-bold text-slate-800">
-                  За {recipient || '...'}!
-                </h3>
-                <p className="mt-4 text-slate-700 font-sans italic leading-relaxed px-4">
-                  "{message || 'Напиши своето пожелание...'}"
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-amber-200 flex justify-between items-end">
-              <div>
-                <p className="text-xs text-slate-500">С много обич,</p>
-                <p className="font-bold text-slate-800">{sender || '...'}</p>
-              </div>
-
-              {/* Симулация на QR код */}
-              <div className="text-center">
-                <div className="w-14 h-14 bg-slate-900 rounded-lg p-1.5 flex flex-col justify-between items-center shadow-inner">
-                  <div className="w-full h-full border border-dashed border-amber-400 flex items-center justify-center text-[8px] text-amber-400 font-mono">
-                    QR CODE
-                  </div>
-                </div>
-                <span className="text-[9px] text-slate-500 mt-1 block">Сканирай ме</span>
-              </div>
-            </div>
+          <div className="glass-panel p-8 rounded-3xl space-y-3">
+            <span className="text-2xl">📄</span>
+            <h3 className="text-lg font-medium text-[#2c2825]">3. Готов за Печат</h3>
+            <p className="text-xs text-[#635e57] font-light leading-relaxed">Вземи както дигитален линк, така и стилен PDF с QR код за физическа картичка.</p>
           </div>
         </div>
       </section>
 
-      {/* 4. ФУТЪР / FOOTER */}
-      <footer className="border-t border-slate-800 bg-slate-950 py-8 mt-12">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-slate-500 text-sm">
-          <div>© {new Date().getFullYear()} Greetint. Всички права запазени.</div>
-          <div className="flex space-x-6">
-            <a href="#" className="hover:text-slate-300">Общи условия</a>
-            <a href="#" className="hover:text-slate-300">Политика за поверителност</a>
-          </div>
+      {/* 4. ФУТЪР */}
+      <footer className="border-t border-[#d9d1cc]/60 bg-[#fefefd] py-10 text-center text-xs text-[#958679]">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="brand-font tracking-widest text-[#2c2825] font-bold">GREETINT</div>
+          <p>© 2026 Greetint. Всички права запазени.</p>
         </div>
       </footer>
     </main>
