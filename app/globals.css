@@ -4,29 +4,27 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg-silk: #fefefd;
-  --text-truffle: #2c2825;
-  --accent-gold: #dbceb3;
-  --accent-peach: #e5cfc6;
-  --border-oat: #d9d1cc;
+@layer base {
+  :root {
+    --bg-silk: #fefefd;
+    --text-truffle: #2c2825;
+    --accent-gold: #dbceb3;
+    --accent-peach: #e5cfc6;
+    --border-oat: #d9d1cc;
+  }
+
+  body {
+    background-color: #fefefd;
+    color: #2c2825;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    overflow-x: hidden;
+  }
 }
 
-body {
-  background-color: var(--bg-silk);
-  color: var(--text-truffle);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  overflow-x: hidden;
-}
-
-h1, h2, h3, h4, .brand-font {
-  font-family: 'Outfit', sans-serif;
-}
-
-/* Glassmorphism Ефект за карти и меню */
+/* Glassmorphism Ефект за панели и карти */
 .glass-panel {
-  background: rgba(247, 244, 240, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(247, 244, 240, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(217, 209, 204, 0.8);
 }
