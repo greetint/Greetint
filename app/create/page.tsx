@@ -3,40 +3,35 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
-export default function CreateCard(): React.JSX.Element {
-  // Данни от формата
+export default function CreateCard() {
   const [recipientName, setRecipientName] = useState('Виктория');
   const [ageCategory, setAgeCategory] = useState('13-35');
   const [questQuestion, setQuestQuestion] = useState('Кое е любимото ни място за кафе?');
   const [questAnswer, setQuestAnswer] = useState('София');
-  const [couponText, setCouponText] = useState('🎫 Ваучер за 1 любима вечеря!');
-  const [cardMessage, setCardMessage] = useState('Пожелавам ти година, изпълнена с незабравими приключения и сбъднати мечти!');
-  
-  // Масив със качени снимки (Base64)
+  const [couponText, setCouponText] = useState('Ваучер за 1 любима вечеря!');
+  const [cardMessage, setCardMessage] = useState('Пожелавам ти много усмивки и сбъднати мечти!');
   const [images, setImages] = useState<string[]>([]);
 
-  // Функция за качване на снимки (до 5 броя)
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    const files = Array.from(e.target.files);
+  const handleImageUpload = (e: any) => {
+    const files = e.target.files;
+    if (!files) return;
 
     if (images.length + files.length > 5) {
       alert('Можеш да качиш максимум 5 снимки!');
       return;
     }
 
-    files.forEach((file) => {
+    Array.from(files).forEach((file: any) => {
       const reader = new FileReader();
-      reader.onload = (uploadEvent) => {
-        if (uploadEvent.target?.result) {
-          setImages((prev) => [...prev, uploadEvent.target!.result as string]);
+      reader.onload = () => {
+        if (reader.result) {
+          setImages((prev) => [...prev, reader.result as string]);
         }
       };
       reader.readAsDataURL(file);
     });
   };
 
-  // Функция за премахване на снимка
   const removeImage = (indexToRemove: number) => {
     setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
@@ -210,7 +205,7 @@ export default function CreateCard(): React.JSX.Element {
               <div className="relative z-10 space-y-2">
                 <h3 className="text-2xl font-light">За {recipientName || '...'}</h3>
                 <p className="text-xs text-[#958679] italic">
-                  Загадка: &quot;{questQuestion || '...'}&quot;
+                  Загадка: {questQuestion || '...'}
                 </p>
               </div>
 
@@ -221,7 +216,7 @@ export default function CreateCard(): React.JSX.Element {
 
               <div className="relative z-10 pt-2">
                 <p className="text-xs text-[#635e57] italic leading-relaxed">
-                  &quot;{cardMessage || '...'}&quot;
+                  {cardMessage || '...'}
                 </p>
               </div>
 
@@ -254,7 +249,7 @@ export default function CreateCard(): React.JSX.Element {
             </div>
 
             <button
-              onClick={() => alert('Формата е готова! Утре ще я свържем с интерактивния куест.')}
+              onClick={() => alert('Формата е готова!')}
               className="w-full bg-[#2c2825] hover:bg-[#635e57] text-[#fefefd] py-4 rounded-2xl text-xs font-semibold uppercase tracking-wider transition shadow-md"
             >
               Продължи към прегледа на куеста →
