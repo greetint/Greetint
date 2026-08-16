@@ -1,25 +1,20 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --bg-silk: #fefefd;
-  --text-truffle: #2c2825;
-  --accent-gold: #dbceb3;
-  --accent-peach: #e5cfc6;
-  --border-oat: #d9d1cc;
+  --bg-sand: #fdfbf7;
+  --bg-[#F7F4EF]: #f7f4ef;
+  --bg-[#EFECE6]: #efece6;
+  --text-[#1F1A17]: #1f1a17;
+  --taupe-[#958679]: #958679;
+  --gold-[#DBCEB3]: #dbceb3;
 }
 
 body {
-  background-color: #fefefd;
-  color: #2c2825;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  overflow-x: hidden;
-}
-
-/* Glassmorphism Ефект за панели и карти */
-.glass-panel {
-  background: rgba(247, 244, 240, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(217, 209, 204, 0.8);
+  background-color: #F7F4EF;
+  color: #1F1A17;
 }
