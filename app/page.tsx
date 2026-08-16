@@ -119,33 +119,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 4. СТЪПКИТЕ */}
-      <section id="process" className="bg-[#EFECE6]/60 py-20 border-y border-[#958679]/20">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-[#958679] font-bold">Процесът</span>
-            <h2 className="text-2xl md:text-3xl font-serif uppercase text-[#1F1A17] mt-2">
-              4 стъпки до незабравим подарък
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              { num: '01', title: 'Персонализиране', desc: 'Попълваш забавни шаблони или пишеш вашите лични вътрешни шеги.' },
-              { num: '02', title: 'Генериране', desc: 'Получаваш уникален онлайн линк + готов А5 дигитален печат за връчване.' },
-              { num: '03', title: 'Куест', desc: 'Рожденикът сканира кода, трие фолиото, отключва снимките и духва свещта.' },
-              { num: '04', title: 'Хартиен Архив', desc: 'Автоматично се генерира финалният 2-страничен Printable PDF с отговорите.' },
-            ].map((step, idx) => (
-              <div key={idx} className="border-t border-[#1F1A17]/20 pt-6">
-                <span className="text-3xl font-serif text-[#958679] font-light">{step.num}</span>
-                <h4 className="text-xs uppercase tracking-widest font-bold mt-2 mb-2 text-[#1F1A17]">{step.title}</h4>
-                <p className="text-xs text-[#1F1A17]/70 leading-relaxed">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* FOOTER */}
       <footer className="border-t border-[#958679]/20 py-10 px-6 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-[#958679] text-[11px]">
         <Logo variant="horizontal" height={26} />
