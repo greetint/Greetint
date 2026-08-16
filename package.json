@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:legacy": "NEXT_PRIVATE_TURBOPACK=0 next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -16,7 +17,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "autoprefixer": "^10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
