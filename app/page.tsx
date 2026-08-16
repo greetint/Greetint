@@ -4,11 +4,9 @@ import React, { useState } from 'react';
 import Logo from '@/components/Logo';
 import Link from 'next/link';
 
-export default function LandingPage() {
+export default function LandingPage(): JSX.Element {
   const [activeTab, setActiveTab] = useState<'giver' | 'receiver'>('receiver');
   const [isScratched, setIsScratched] = useState<boolean>(false);
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
-
   return (
     <div className="min-h-screen bg-[#F7F4EF] text-[#1F1A17] font-sans selection:bg-[#DBCEB3] selection:text-[#1F1A17] overflow-x-hidden">
       
@@ -47,9 +45,9 @@ export default function LandingPage() {
           </nav>
 
           {/* БУТОН КЪМ ФОРМАТА */}
-          <Link 
+           <Link 
             href="/create" 
-            className="text-[11px] uppercase tracking-[0.2em] bg-[#1F1A17] text-[#F7F4EF] px-7 py-3.5 font-semibold hover:bg-[#958679] transition duration-300 shadow-md transform hover:-translate-y-0.5"
+            className="text-[11px] uppercase tracking-[0.2em] bg-[#1F1A17] text-[#F7F4EF] px-7 py-3 font-semibold hover:bg-[#958679] transition duration-300 shadow-md transform hover:-translate-y-1"
           >
             Създай Капсула
           </Link>
@@ -76,18 +74,18 @@ export default function LandingPage() {
 
         <p className="max-w-2xl text-[#1F1A17]/80 text-sm md:text-base leading-relaxed mb-12 font-light">
           GREETINT превръща рождения ден в премиум дигитално преживяване — персонален куест със скрити тайни, отключване на спомени, духване на свещ и финална капсула за бъдещето.
-        </p>
+        </p> 
 
         <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
           <Link 
-            href="/create" 
-            className="bg-[#1F1A17] text-[#F7F4EF] hover:bg-[#958679] px-11 py-4.5 text-xs uppercase tracking-[0.25em] font-bold transition duration-300 shadow-xl text-center"
+            href="/create"  
+            className="bg-[#1F1A17] text-[#F7F4EF] hover:bg-[#958679] px-11 py-4 text-xs uppercase tracking-[0.25em] font-bold transition duration-300 shadow-xl text-center"
           >
             Създай Интерактивна Картичка
           </Link>
           <a 
             href="#experience" 
-            className="border border-[#1F1A17]/30 text-[#1F1A17] hover:border-[#1F1A17] hover:bg-[#EFECE6] px-9 py-4.5 text-xs uppercase tracking-[0.25em] font-medium transition duration-300 text-center"
+            className="border border-[#1F1A17]/30 text-[#1F1A17] hover:border-[#1F1A17] hover:bg-[#EFECE6] px-9 py-4 text-xs uppercase tracking-[0.25em] font-medium transition duration-300 text-center"
           >
             Виж Преживяването ↓
           </a>
@@ -108,7 +106,16 @@ export default function LandingPage() {
           </p>
 
           <div 
+            role="button"
+            tabIndex={0}
+            aria-pressed={isScratched}
             onClick={() => setIsScratched(true)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsScratched(true);
+              }
+            }}
             className="max-w-md mx-auto h-28 bg-[#DBCEB3] border border-[#958679]/40 flex items-center justify-center p-6 cursor-pointer transition duration-500 hover:scale-[1.01] shadow-inner"
           >
             {!isScratched ? (
@@ -177,7 +184,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 5. СТҮПКИТЕ (КАК РАБОТИ) */}
+      {/* 5. СТЪПКИТЕ (КАК РАБОТИ) */}
       <section id="process" className="bg-[#EFECE6]/60 py-20 border-y border-[#958679]/20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -217,7 +224,7 @@ export default function LandingPage() {
 
       {/* 6. ФИНАЛЕН CTA */}
       <section className="max-w-4xl mx-auto px-6 py-24 text-center">
-        <Logo variant="icon-only" height={56} className="mb-6 opacity-90" />
+        <Logo variant="icon-only" height={56} />
         <h2 className="text-3xl md:text-5xl font-serif uppercase text-[#1F1A17] mb-6 tracking-tight">
           Готови ли сте да запечатате първия си спомен?
         </h2>
@@ -232,7 +239,7 @@ export default function LandingPage() {
       {/* FOOTER */}
       <footer className="border-t border-[#958679]/20 py-10 px-6 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-[#958679] text-[11px]">
         <Logo variant="horizontal" height={26} />
-        <p>© 2026 GREETINT. All rights reserved. Editorial Time Capsules.</p>
+        <p>© {new Date().getFullYear()} GREETINT. All rights reserved. Editorial Time Capsules.</p>
       </footer>
 
     </div>
