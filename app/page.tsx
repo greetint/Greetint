@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState<'giver' | 'receiver'>('receiver');
-  const [isScratched, setIsScratched] = useState<boolean>(false);
 
   return (
     <div className="min-h-screen bg-[#F7F4EF] text-[#1F1A17] font-sans selection:bg-[#DBCEB3] selection:text-[#1F1A17] overflow-x-hidden">
@@ -21,12 +20,11 @@ export default function LandingPage() {
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="hover:opacity-80 transition">
-            <Logo variant="horizontal" height={60} />
+            <Logo variant="horizontal" height={52} />
           </Link>
 
           <nav className="hidden md:flex gap-10 text-[11px] tracking-[0.25em] uppercase text-[#958679] font-medium">
             <a href="#concept" className="hover:text-[#1F1A17] transition duration-200">Идеята</a>
-            <a href="#experience" className="hover:text-[#1F1A17] transition duration-200">Преживяването</a>
             <a href="#process" className="hover:text-[#1F1A17] transition duration-200">Как работи</a>
           </nav>
 
@@ -39,10 +37,10 @@ export default function LandingPage() {
         </div>
       </motion.header>
 
-      {/* 2. HERO SECTION (ГЛАВНА АНИМИРАНА ПРЕЗЕНТАЦИЯ) */}
-      <section className="relative max-w-5xl mx-auto px-6 pt-20 pb-24 text-center flex flex-col items-center">
+      {/* 2. HERO SECTION */}
+      <section className="relative max-w-5xl mx-auto px-6 pt-16 pb-24 text-center flex flex-col items-center">
         
-        {/* Анимиран монограм с въртящ се пръстен */}
+        {/* Анимиран монограм с въртящ се пръстен (Увеличен) */}
         <motion.div 
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -52,9 +50,9 @@ export default function LandingPage() {
           <motion.div 
             animate={{ rotate: 360 }}
             transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-            className="absolute -inset-4 rounded-full border border-dashed border-[#958679]/40"
+            className="absolute -inset-5 rounded-full border border-dashed border-[#958679]/40"
           />
-          <Logo variant="icon-only" height={120} />
+          <Logo variant="icon-only" height={150} />
         </motion.div>
 
         {/* Етикет */}
@@ -63,15 +61,16 @@ export default function LandingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           className="inline-block text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-[#958679] mb-6 font-semibold px-6 py-2 border border-[#958679]/30 rounded-full bg-[#EFECE6]/80 shadow-inner"
-        > Греетинт
+        >
+          Editorial Digital Capsules & Print Archives
         </motion.span>
 
-        {/* Главно Заглавие */}
+        {/* Главно Заглавие (Намален размер на шрифта) */}
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3 }}
-          className="text-2xl sm:text-4xl md:text-5xl font-serif text-[#1F1A17] mb-8 uppercase leading-[1.08] tracking-tight max-w-4xl"
+          className="text-3xl sm:text-5xl md:text-6xl font-serif text-[#1F1A17] mb-8 uppercase leading-[1.12] tracking-tight max-w-4xl"
         >
           Подари повече от картичка. <br />
           <span className="italic font-normal text-[#958679]">Запечатай интерактивен спомен.</span>
@@ -82,7 +81,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.4 }}
-          className="max-w-2xl text-[#1F1A17]/80 text-sm md:text-base leading-relaxed mb-12 font-light"
+          className="max-w-2xl text-[#1F1A17]/80 text-base md:text-lg leading-relaxed mb-12 font-light"
         >
           GREETINT превръща рождения ден в премиум дигитално преживяване — персонален куест със скрити тайни, отключване на спомени, духване на свещ и финална капсула за бъдещето.
         </motion.p>
@@ -96,15 +95,20 @@ export default function LandingPage() {
         >
           <Link 
             href="/create" 
-            className="bg-[#1F1A17] text-[#F7F4EF] hover:bg-[#958679] px-11 py-4.5 text-xs uppercase tracking-[0.25em] font-bold transition duration-300 shadow-xl text-center transform hover:-translate-y-1"
+            className="bg-[#1F1A17] text-[#F7F4EF] hover:bg-[#958679] px-11 py-4.5 text-sm uppercase tracking-[0.25em] font-bold transition duration-300 shadow-xl text-center transform hover:-translate-y-1"
           >
             Създай Интерактивна Картичка
           </Link>
-          
+          <a 
+            href="#concept" 
+            className="border border-[#1F1A17]/30 text-[#1F1A17] hover:border-[#1F1A17] hover:bg-[#EFECE6] px-9 py-4.5 text-sm uppercase tracking-[0.25em] font-medium transition duration-300 text-center"
+          >
+            Виж Преживяването ↓
+          </a>
         </motion.div>
-      </section> 
+      </section>
 
-      {/* 4. ТАБОВЕ ЗА ПРЕГЛЕД (ДВЕТЕ СТРАНИ НА ПРЕЖИВЯВАНЕТО) */}
+      {/* 3. ТАБОВЕ ЗА ПРЕГЛЕД (ДВЕТЕ СТРАНИ НА ПРЕЖИВЯВАНЕТО) */}
       <section id="concept" className="max-w-5xl mx-auto px-6 py-20 border-t border-[#958679]/20">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-[10px] uppercase tracking-[0.3em] text-[#958679] font-bold">Идеята зад GREETINT</span>
@@ -163,7 +167,7 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* 5. СТЪПКИТЕ (КАК РАБОТИ) */}
+      {/* 4. СТЪПКИТЕ (КАК РАБОТИ) */}
       <section id="process" className="bg-[#EFECE6]/60 py-20 border-y border-[#958679]/20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -197,7 +201,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 6. ФИНАЛЕН CTA */}
+      {/* 5. ФИНАЛЕН CTA */}
       <section className="max-w-4xl mx-auto px-6 py-24 text-center">
         <Logo variant="icon-only" height={56} className="mb-6 opacity-90" />
         <h2 className="text-3xl md:text-5xl font-serif uppercase text-[#1F1A17] mb-6 tracking-tight">
