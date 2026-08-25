@@ -1,197 +1,184 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Logo from '@/components/Logo';
+import React, { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 
-export default function BirthdayCardPage() {
-  const [unlocked, setUnlocked] = useState(false);
-  const [answerInput, setAnswerInput] = useState('');
-  const [isBlownOut, setIsBlownOut] = useState(false);
-  const [futureAnswers, setFutureAnswers] = useState<string[]>(Array(7).fill(''));
-  const [savedAnswers, setSavedAnswers] = useState(false);
+import { SealStage } from '@/components/quest/SealStage';
+import { ScratchStage } from '@/components/quest/ScratchStage';
+import { QuizStage, QuizItem } from '@/components/quest/QuizStage';
+import { MemoryWallStage, MemoryPhotoItem } from '@/components/quest/MemoryWallStage';
+import { CakeStage } from '@/components/quest/CakeStage';
+import { CapsuleStage } from '@/components/quest/CapsuleStage';
+import { TimeCapsulePdf } from '@/components/TimeCapsulePdf';
 
-  const defaultQuestions = [
-    '1. Коя е следващата дестинация, която искаш да посетиш?',
-    '2. Кое е най-лудото нещо, което ще направиш тази година?',
-    '3. Коя песен ще бъде химнът на новата ти година?',
-    '4. Коя мечта си обещаваш да сбъднеш до следващия рожден ден?',
-    '5. Кой навик искаш да започнеш от днес?',
-    '6. Какво ще си купиш, за да се възнаградиш?',
-    '7. Опиши новата си година само с една дума:'
-  ];
+export default function CinematicQuestPage() {
+  const [scene, setScene] = useState<number>(1);
 
-  const [cardData, setCardData] = useState({
-    recipientName: 'Рожденик',
-    senderName: 'Твоят приятел',
-    secretJoke: 'Тайната шега тук...',
-    unlockQuestion: 'Въпрос за отключване...',
-    unlockAnswer: 'отговор',
-    mainWish: 'Пожеланието тук...',
-    images: [] as string[],
-  });
+  // Данни за рожденика
+  const recipient = "Виктория";
+  const sender = "Алекс";
+  const statusText = "Човекът, който пие 3 кафета на ден и пак намира енергия за щури идеи.";
+  const secretJoke = "Спомняш ли си, когато си изпусна телефона в басейна и викаше, че е водоустойчив?";
+  const mainWish = "Скъпа Виктория, честит рожден ден! Пожелавам ти никога да не губиш тази луда енергия и винаги да превръщаш всеки ден в ново приключение...";
 
-  useEffect(() => {
-    const savedData = localStorage.getItem('greetint_card_data');
-    if (savedData) {
-      try { setCardData(JSON.parse(savedData)); } catch (e) {}
-    }
-  }, []);
+  // Данни за въпросите и снимките
+  const [quizList] = useState<QuizItem[]>([
+    {
+      question: 'Ако закъснеем за полета, рожденикът първо...',
+      optionA: 'Ще се кара с персонала',
+      optionB: 'Ще си купи кафе и спокойно ще чака',
+      optionC: 'Изпада в тотална паника',
+      correct: 'B',
+    },
+    {
+      question: 'Кое е любимото му/ѝ среднощно изкушение?',
+      optionA: 'Пица с много кашкавал',
+      optionB: 'Нещо сладичко',
+      optionC: 'Чаша студена вода',
+      correct: 'A',
+    },
+  ]);
 
-  const handleUnlock = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (answerInput.trim().toLowerCase() === (cardData.unlockAnswer || '').trim().toLowerCase()) {
-      setUnlocked(true);
-    } else {
-      alert(`Грешен отговор! (За тест: верният отговор е "${cardData.unlockAnswer}")`);
-    }
-  };
+  const [photos] = useState<MemoryPhotoItem[]>([
+    { url: '/images/cards/card-1.png', question: 'Коя дата беше партито?', answer: '15', unlocked: false },
+    { url: '/images/cards/card-2.png', question: 'Кой е любимият ни град?', answer: 'ПЛОВДИВ', unlocked: false },
+  ]);
 
-  const handleAnswerChange = (index: number, val: string) => {
-    const updated = [...futureAnswers];
-    updated[index] = val;
-    setFutureAnswers(updated);
-  };
+  // Запазени отговори от рожденика
+  const [personalWish, setPersonalWish] = useState('');
+  const [capsuleAnswers, setCapsuleAnswers] = useState<string[]>(Array(7).fill(''));
+  const [showPdfModal, setShowPdfModal] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F7F4EF] text-[#1F1A17] font-sans pb-20 px-6">
-      <header className="py-8 text-center border-b border-[#958679]/20 max-w-2xl mx-auto">
-        <Logo variant="horizontal" height={40} />
-      </header>
+    <div
+      className="relative w-screen h-screen overflow-hidden select-none font-serif text-[#1F1A17] flex items-center justify-center bg-[#F7F4EF]"
+      style={{ backgroundImage: `url('/images/assets/bg-light-paper.jpeg')`, backgroundSize: 'cover' }}
+    >
+      <main className="relative z-10 w-full h-full flex flex-col items-center justify-center p-6 text-center">
+        <AnimatePresence mode="wait">
 
-      <main className="max-w-xl mx-auto pt-10 text-center">
-        
-        <span className="text-[10px] uppercase tracking-[0.4em] text-[#958679] font-bold block mb-3">
-          Персонална Дигитална Капсула
-        </span>
-        <h1 className="text-3xl md:text-5xl font-serif uppercase mb-2">
-          Честит Рожден Ден, {cardData.recipientName}!
-        </h1>
-        <p className="text-xs uppercase tracking-[0.2em] text-[#958679] mb-10">
-          Специална изненада от: <span className="text-[#1F1A17] font-semibold">{cardData.senderName}</span>
-        </p>
+          {/* СЦЕНА 1: UNBOXING С ЗЛАТЕН ПЕЧАТ */}
+          {scene === 1 && (
+            <SealStage 
+              key="s1"
+              recipient={recipient} 
+              onComplete={() => setScene(2)} 
+            />
+          )}
 
-        {/* 1. СКРИТА ТАЙНОСТ */}
-        <div className="bg-[#EFECE6] p-8 border border-[#958679]/20 shadow-sm mb-8 text-center">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-[#958679] font-bold block mb-2">
-            🔒 Скрита Тайна Шега
-          </span>
-          <p className="text-sm font-serif italic text-[#1F1A17] my-4">
-            "{cardData.secretJoke}"
-          </p>
-        </div>
-
-        {/* 2. КУЕСТ ЗА ОТКЛЮЧВАНЕ НА СНИМКИТЕ */}
-        {!unlocked ? (
-          <div className="bg-[#1F1A17] text-[#F7F4EF] p-8 shadow-xl mb-8">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-[#958679] font-bold block mb-2">
-              Заключен Спомен
-            </span>
-            <h3 className="text-lg font-serif mb-4">
-              Отговори на въпроса, за да отключиш снимките:
-            </h3>
-            <p className="text-xs text-[#F7F4EF]/70 mb-6 italic">
-              "{cardData.unlockQuestion}"
-            </p>
-
-            <form onSubmit={handleUnlock} className="flex flex-col gap-3">
-              <input
-                type="text"
-                value={answerInput}
-                onChange={(e) => setAnswerInput(e.target.value)}
-                placeholder="Въведи отговора тук..."
-                className="bg-[#F7F4EF] text-[#1F1A17] p-3 text-sm text-center border-none focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="bg-[#958679] text-[#F7F4EF] py-3 text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#EFECE6] hover:text-[#1F1A17] transition"
-              >
-                Отключи Спомените ✨
-              </button>
-            </form>
-          </div>
-        ) : (
-          <div className="bg-[#EFECE6] p-8 border border-[#958679]/30 mb-8 space-y-4">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-[#958679] font-bold block text-emerald-800">
-              🔓 Спомените са отключени!
-            </span>
-            {cardData.images && cardData.images.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                {cardData.images.map((img, i) => (
-                  <img key={i} src={img} alt="memory" className="w-full h-36 object-cover border border-[#958679]/30 shadow-sm" />
-                ))}
+          {/* СЦЕНА 2: СТАТУТ 2026 */}
+          {scene === 2 && (
+            <div key="s2" className="max-w-md w-full space-y-6 bg-[#FEFEFD] p-8 rounded-2xl border border-[#958679]/30 shadow-2xl mx-auto">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-[#958679] font-sans font-bold block">
+                Профил за новата година
+              </span>
+              <h1 className="text-3xl font-serif uppercase text-[#1F1A17]">{recipient} // 2026</h1>
+              <div className="border-y border-[#958679]/20 py-6">
+                <p className="text-base text-[#635E57] italic leading-relaxed font-serif">
+                  "{statusText}"
+                </p>
               </div>
-            ) : (
-              <p className="text-xs italic text-[#958679]">Подаряващият не е качил снимки, но споменът остава!</p>
-            )}
+              <button
+                onClick={() => setScene(3)}
+                className="w-full bg-[#1F1A17] text-[#FEFEFD] py-4 text-xs uppercase tracking-[0.2em] font-bold rounded-xl shadow-xl hover:bg-[#958679] transition"
+              >
+                Към Златното Скрач Фолио →
+              </button>
+            </div>
+          )}
+
+          {/* СЦЕНА 3: ЗЛАТНО СКРАЧ ФОЛИО */}
+          {scene === 3 && (
+            <ScratchStage 
+              key="s3"
+              secretJoke={secretJoke} 
+              onComplete={() => setScene(4)} 
+            />
+          )}
+
+          {/* СЦЕНА 4: ШОУ-ВИКТОРИНА */}
+          {scene === 4 && (
+            <QuizStage 
+              key="s4"
+              quizList={quizList} 
+              onComplete={() => setScene(5)} 
+            />
+          )}
+
+          {/* СЦЕНА 5: POLAROID МЕМОРИ СТЕНА */}
+          {scene === 5 && (
+            <MemoryWallStage 
+              key="s5"
+              photos={photos} 
+              onComplete={() => setScene(6)} 
+            />
+          )}
+
+          {/* СЦЕНА 6: ТОРТА & ЛИЧНО ПИСМО */}
+          {scene === 6 && (
+            <CakeStage 
+              key="s6"
+              sender={sender}
+              mainWish={mainWish}
+              onWishSaved={(wish) => setPersonalWish(wish)}
+              onNext={() => setScene(7)}
+            />
+          )}
+
+          {/* СЦЕНА 7: КАПСУЛА ЗА БЪДЕЩЕТО */}
+          {scene === 7 && (
+            <CapsuleStage 
+              key="s7"
+              onGeneratePdf={(answers) => {
+                setCapsuleAnswers(answers);
+                setShowPdfModal(true);
+              }}
+            />
+          )}
+
+        </AnimatePresence>
+
+        {/* МОДАЛ ЗА СВАЛЯНЕ НА PDF АРХИВА */}
+        {showPdfModal && (
+          <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="bg-[#F7F4EF] w-full max-w-md p-6 rounded-2xl shadow-2xl border border-[#958679] text-center space-y-6">
+              <h3 className="font-serif text-lg text-[#1F1A17] uppercase tracking-wide">
+                Твоята Капсула е Запечатана! ✨
+              </h3>
+              <p className="text-xs text-[#635E57] font-sans">
+                Официалният двустранен A4 документ с всички отключени спомени и отговори е готов.
+              </p>
+
+              <PDFDownloadLink
+                document={
+                  <TimeCapsulePdf
+                    recipient={recipient}
+                    sender={sender}
+                    statusText={statusText}
+                    secretJoke={secretJoke}
+                    mainWish={mainWish}
+                    wishFromCandle={personalWish}
+                    capsuleAnswers={capsuleAnswers}
+                    photos={photos.map((p) => p.url)}
+                  />
+                }
+                fileName={`TimeCapsule_${recipient}_2026.pdf`}
+                className="inline-block w-full bg-[#1F1A17] text-[#FEFEFD] py-4 text-xs uppercase tracking-[0.2em] font-bold rounded-xl shadow-xl hover:bg-[#958679] transition"
+              >
+                {/* @ts-ignore */}
+                {({ loading }) => (loading ? 'Генериране на PDF...' : 'Свали Официалния PDF Архив 🖨️')}
+              </PDFDownloadLink>
+
+              <button
+                onClick={() => setShowPdfModal(false)}
+                className="text-xs uppercase font-bold text-[#958679] block mx-auto"
+              >
+                Затвори [X]
+              </button>
+            </div>
           </div>
         )}
-
-        {/* 3. ДУХВАНЕ НА СВЕЩ */}
-        <div className="border border-[#958679]/20 p-8 bg-[#F7F4EF] mb-8">
-          <div className="text-5xl mb-4">{isBlownOut ? '💨' : '🕯️'}</div>
-          {!isBlownOut ? (
-            <button
-              onClick={() => setIsBlownOut(true)}
-              className="border border-[#1F1A17] text-[#1F1A17] px-6 py-3 text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#1F1A17] hover:text-[#F7F4EF] transition"
-            >
-              Духни свещта 🎂
-            </button>
-          ) : (
-            <p className="text-xs uppercase tracking-widest text-[#958679] font-bold">
-              Пожеланието е изпратено към вселената! ✨
-            </p>
-          )}
-        </div>
-
-        {/* 4. ОСНОВНО ПОЖЕЛАНИЕ */}
-        <div className="pt-6 border-t border-[#958679]/20 mb-10">
-          <p className="text-base font-serif leading-relaxed text-[#1F1A17]/90 italic">
-            "{cardData.mainWish}"
-          </p>
-        </div>
-
-        {/* 5. КАПСУЛА НА БЪДЕЩЕТО (7-ТЕ ВЪПРОСА) */}
-        <div className="bg-[#1F1A17] text-[#F7F4EF] p-8 text-left space-y-6 shadow-2xl">
-          <div>
-            <span className="text-[9px] uppercase tracking-[0.3em] text-[#958679] font-bold block mb-1">
-              Твоята Капсула за Бъдещето
-            </span>
-            <h3 className="text-xl font-serif uppercase">7-те обещания за новата ти година</h3>
-            <p className="text-xs text-[#F7F4EF]/60 italic mt-1">Попълни отговорите си, за да ги запечатаме в печатния архив!</p>
-          </div>
-
-          {!savedAnswers ? (
-            <div className="space-y-4 pt-2">
-              {defaultQuestions.map((q, idx) => (
-                <div key={idx} className="space-y-1">
-                  <label className="block text-xs font-serif text-[#F7F4EF]/80">{q}</label>
-                  <input
-                    type="text"
-                    value={futureAnswers[idx]}
-                    onChange={(e) => handleAnswerChange(idx, e.target.value)}
-                    placeholder="Твоят отговор..."
-                    className="w-full bg-[#F7F4EF] text-[#1F1A17] p-2.5 text-xs focus:outline-none"
-                  />
-                </div>
-              ))}
-              <button
-                onClick={() => {
-                  setSavedAnswers(true);
-                  alert('Твоята капсула на бъдещето е запечатана успешно! 🎉');
-                }}
-                className="w-full bg-[#958679] text-[#F7F4EF] py-4 text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#EFECE6] hover:text-[#1F1A17] transition mt-4"
-              >
-                Запечатай 7-те Отговора ✨
-              </button>
-            </div>
-          ) : (
-            <div className="bg-[#F7F4EF]/10 p-4 text-center border border-[#958679]/30 space-y-2">
-              <span className="text-xs text-[#dbceb3] font-bold block">🔒 Капсулата ти е запечатана!</span>
-              <p className="text-[11px] text-[#F7F4EF]/70 italic">Всички 7 отговора са запазени за твоя финална архив.</p>
-            </div>
-          )}
-        </div>
-
       </main>
     </div>
   );
