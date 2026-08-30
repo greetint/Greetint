@@ -90,16 +90,19 @@ export default function CardPage() {
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-[#ECE8E0] select-none">
       
+      {/* ФОНОВ АУДИО ПЛЕЙЪР */}
       <audio ref={audioRef} src="/audio/background-music.mp3" preload="auto" />
 
+      {/* МИНИ ИКОНКА ЗА МУЗИКА (ГОРЕ В ДЯСНО) */}
       <button
         onClick={toggleMute}
-        className="absolute top-5 right-5 z-50 bg-white/30 backdrop-blur-md border border-white/50 text-[#1F1A17] px-3.5 py-2 rounded-full text-xs uppercase tracking-widest shadow-md hover:bg-white/60 transition flex items-center gap-2"
-        title="Включи/Изключи музиката"
+        className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/40 backdrop-blur-md border border-white/60 text-[#1F1A17] rounded-full shadow-md hover:bg-white/70 transition flex items-center justify-center text-base"
+        title={isMuted ? 'Включи музиката' : 'Спри музиката'}
       >
-        <span>{isMuted ? '🔇 Музика: Спряна' : '🎵 Музика: Пусната'}</span>
+        <span>{isMuted ? '🔇' : '🔊'}</span>
       </button>
 
+      {/* 1. ЕТАП: ВОСЪЧЕН ПЕЧАТ */}
       {currentStage === 'seal' && (
         <SealStage
           recipient={formattedName}
@@ -107,6 +110,7 @@ export default function CardPage() {
         />
       )}
 
+      {/* 2. ЕТАП: ЗЛАТНО СКРЕЧ ФОЛИО */}
       {currentStage === 'scratch' && (
         <ScratchStage
           recipient={uppercaseName}
@@ -114,6 +118,7 @@ export default function CardPage() {
         />
       )}
 
+      {/* 3. ЕТАП: ПЕРСОНАЛЕН ВЪПРОС */}
       {currentStage === 'quiz' && (
         <QuizStage
           recipient={uppercaseName}
@@ -121,6 +126,7 @@ export default function CardPage() {
         />
       )}
 
+      {/* 4. ЕТАП: ГАЛЕРИЯ СЪС СПОМЕНИ */}
       {currentStage === 'memories' && (
         <MemoryWallStage
           recipient={uppercaseName}
@@ -128,6 +134,7 @@ export default function CardPage() {
         />
       )}
 
+      {/* 5. ЕТАП: ДУХВАНЕ НА СВЕЩ */}
       {currentStage === 'cake' && (
         <CakeStage
           recipient={uppercaseName}
@@ -138,7 +145,7 @@ export default function CardPage() {
         />
       )}
 
-      {/* Тук викаме CapsuleStage без допълнителни пропове */}
+      {/* 6. ФИНАЛЕН ЕТАП: КАПСУЛА НА БЪДЕЩЕТО */}
       {currentStage === 'capsule' && (
         <CapsuleStage
           onGeneratePdf={handleGeneratePdf}
