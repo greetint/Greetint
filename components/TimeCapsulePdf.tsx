@@ -3,24 +3,24 @@
 import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
 
-// РЕГИСТРИРАНЕ НА РЪКОПИСЕН ШРИФТ (С КИРИЛИЦА)
-// Препоръчително: Свали Caveat.ttf локално в папка /public/fonts/ за най-голяма стабилност
+// Връщаме стабилния шрифт, за да избегнем CORS грешките. 
+// ЗА РЪКОПИСЕН ШРИФТ: Изтегли Caveat.ttf, сложи го в папка /public/fonts/ и промени src на '/fonts/Caveat.ttf'
 Font.register({
-  family: 'Handwriting',
+  family: 'Roboto',
   fonts: [
-    { src: 'https://fonts.gstatic.com/s/caveat/v18/Wnz6HAc5bAfYB2Q7Yj82ciM_lZQ.ttf', fontWeight: 'normal' },
-    { src: 'https://fonts.gstatic.com/s/caveat/v18/Wnz5HAc5bAfYB2Q7ZjRWXyO8.ttf', fontWeight: 'bold' }
+    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf', fontWeight: 'normal' },
+    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf', fontWeight: 'bold' },
+    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-italic-webfont.ttf', fontStyle: 'italic' }
   ]
 });
 
 const styles = StyleSheet.create({
   page: {
-    // Падингът е голям, за да "избута" текста в рамките на белия лист от фона (писмото)
-    // Нагласи тези стойности спрямо конкретното ти background изображение
-    paddingTop: 130, 
+    paddingTop: 120, 
     paddingBottom: 80,
-    paddingHorizontal: 65,
-    fontFamily: 'Handwriting',
+    paddingHorizontal: 60,
+    fontFamily: 'Roboto', // Промени на 'Caveat', ако го заредиш локално
+    backgroundColor: '#FDFBF7', // Застраховка, ако снимката-фон не се зареди
     color: '#1F1A17',
   },
   background: {
@@ -36,20 +36,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   recipientTitle: {
-    fontSize: 32,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#635E57',
   },
   senderText: {
-    fontSize: 16,
+    fontSize: 12,
     color: '#958679',
     marginTop: 4,
   },
   section: {
-    marginBottom: 16,
+    marginBottom: 14,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 10,
     color: '#958679',
     borderBottomWidth: 1,
     borderBottomColor: '#DBCEB3',
@@ -59,21 +59,20 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   text: {
-    fontSize: 20,
+    fontSize: 14,
     color: '#3A322D',
-    lineHeight: 1.3,
+    lineHeight: 1.4,
+    fontStyle: 'italic',
   },
   highlightText: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#1F1A17',
     lineHeight: 1.3,
   },
-  // КИНЕМАТОГРАФСКИ СТИЛ ЗА СНИМКИТЕ
   photoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 15,
     justifyContent: 'center',
     marginTop: 10,
   },
@@ -82,6 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#141210',
     padding: 6,
     borderRadius: 2,
+    margin: 5,
   },
   filmHolesRow: {
     flexDirection: 'row',
@@ -106,17 +106,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#3A322D',
   },
-  // ДНЕВНИК
   journalRow: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   journalQ: {
-    fontSize: 16,
+    fontSize: 12,
     color: '#7A6C5E',
+    fontWeight: 'bold',
   },
   journalA: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontStyle: 'italic',
     color: '#1F1A17',
     marginTop: 2,
   },
@@ -126,30 +126,29 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     textAlign: 'center',
-    fontSize: 12,
+    fontSize: 8,
     color: '#958679',
     letterSpacing: 2,
   },
 });
 
 interface PdfProps {
-  recipient: string;
-  sender: string;
+  recipient?: string;
+  sender?: string;
   statusText?: string;
   secretJoke?: string;
-  mainWish: string;
-  wishFromCandle: string;
-  capsuleAnswers: { question: string; answer: string }[];
-  photos: string[];
+  mainWish?: string;
+  wishFromCandle?: string;
+  capsuleAnswers?: { question: string; answer: string }[];
+  photos?: string[];
 }
 
-// Компонент за генериране на кино-кадър (Лента)
 const FilmStrip = ({ src }: { src: string }) => (
   <View style={styles.filmFrame}>
     <View style={styles.filmHolesRow}>
       {[...Array(7)].map((_, i) => <View key={`top-${i}`} style={styles.hole} />)}
     </View>
-    <Image src={src} style={styles.filmImage} />
+    <Image src={src || ''} style={styles.filmImage} />
     <View style={styles.filmHolesRowBottom}>
       {[...Array(7)].map((_, i) => <View key={`bot-${i}`} style={styles.hole} />)}
     </View>
@@ -157,59 +156,57 @@ const FilmStrip = ({ src }: { src: string }) => (
 );
 
 export const TimeCapsulePdf = ({
-  recipient,
-  sender,
-  statusText,
-  secretJoke,
-  mainWish,
-  wishFromCandle,
-  capsuleAnswers,
-  photos
+  recipient = 'Получател',
+  sender = 'Подател',
+  statusText = '',
+  secretJoke = '',
+  mainWish = '',
+  wishFromCandle = '',
+  capsuleAnswers = [],
+  photos = []
 }: PdfProps) => (
   <Document>
-    {/* wrap={true} позволява автоматично пренасяне на втора/трета страница, ако съдържанието е дълго */}
     <Page size="A4" style={styles.page} wrap={true}>
       
-      {/* ФОН - ПЛИКЪТ. Слага се fixed, за да се рендира на всяка нова страница автоматично */}
+      {/* ФОН. Ако файлът pdf-background.jpg липсва, този ред може да даде грешка. */}
+      {/* Увери се, че снимката е точно в папка public/images/pdf-background.jpg */}
       <Image src="/images/pdf-background.jpg" style={styles.background} fixed />
 
-      {/* ЗАГЛАВИЕ */}
       <View style={styles.header}>
         <Text style={styles.recipientTitle}>За {recipient}</Text>
         <Text style={styles.senderText}>от {sender}</Text>
       </View>
 
-      {/* ТАЙНИ И ПОСЛАНИЯ */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Скрито послание</Text>
-        <Text style={styles.text}>{mainWish}</Text>
+        <Text style={styles.text}>{mainWish || 'Няма оставено послание.'}</Text>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Намисленото желание (Свещта)</Text>
-        <Text style={styles.highlightText}>"{wishFromCandle}"</Text>
+        <Text style={styles.highlightText}>"{wishFromCandle || 'Запазено в тайна...'}"</Text>
       </View>
 
-      {secretJoke && (
+      {secretJoke ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Скреч тайната</Text>
           <Text style={styles.text}>{secretJoke}</Text>
         </View>
-      )}
+      ) : null}
 
-      {/* КАПСУЛА НА ВРЕМЕТО (ВЪПРОСИ И ОТГОВОРИ) */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Личен Дневник</Text>
-        {capsuleAnswers.map((item, i) => (
-          <View key={i} style={styles.journalRow} wrap={false}>
-            <Text style={styles.journalQ}>{item.question}</Text>
-            <Text style={styles.journalA}>{item.answer}</Text>
-          </View>
-        ))}
-      </View>
+      {capsuleAnswers && capsuleAnswers.length > 0 ? (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Личен Дневник</Text>
+          {capsuleAnswers.map((item, i) => (
+            <View key={i} style={styles.journalRow} wrap={false}>
+              <Text style={styles.journalQ}>{item.question || 'Въпрос'}</Text>
+              <Text style={styles.journalA}>{item.answer || 'Без отговор'}</Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
 
-      {/* КИНЕМАТОГРАФСКИ СПОМЕНИ (СНИМКИ) */}
-      {photos && photos.length > 0 && (
+      {photos && photos.length > 0 ? (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Запечатани кадри</Text>
           <View style={styles.photoGrid}>
@@ -218,9 +215,8 @@ export const TimeCapsulePdf = ({
             ))}
           </View>
         </View>
-      )}
+      ) : null}
 
-      {/* ДОЛЕН КОПИРАЙТ, КОЙТО СТОИ НА ВСЯКА СТРАНИЦА */}
       <Text style={styles.footerText} fixed>
         GREETING ARCHIVE © 2026
       </Text>
