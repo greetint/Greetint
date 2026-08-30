@@ -68,7 +68,7 @@ export default function CardPage() {
     }
 
     // 2. Намира и спира АБСОЛЮТНО ВСИЧКИ други аудио и видео елементи на страницата (гласови модули, видеа и др.)
-    const allMediaElements = document.querySelectorAll('audio, video');
+    const allMediaElements = document.querySelectorAll('audio');
     allMediaElements.forEach((el) => {
       const media = el as HTMLMediaElement;
       if (media !== audioRef.current) {
