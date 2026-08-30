@@ -41,20 +41,45 @@ export default function CardPage() {
       audio.loop = true;
       
       const playAudio = () => {
-        audio.play().catch(() => {});
+        if (!isMuted) {
+          audio.play().catch(() => {});
+        }
       };
 
       playAudio();
       window.addEventListener('click', playAudio, { once: true });
       return () => window.removeEventListener('click', playAudio);
     }
-  }, []);
+  }, [isMuted]);
 
+  // ГЕНЕРАЛЕН БУТОН ЗА СПИРАНЕ И ЗАГЛУШАВАНЕ НА ВСИЧКИ ЗВУЦИ И ВИДЕА
   const toggleMute = () => {
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+
+    // 1. Заглушава/спира основната фонова музика
     if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      audioRef.current.muted = newMutedState;
+      if (newMutedState) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(() => {});
+      }
     }
+
+    // 2. Намира и спира АБСОЛЮТНО ВСИЧКИ други аудио и видео елементи на страницата (гласови модули, видеа и др.)
+    const allMediaElements = document.querySelectorAll('audio, video');
+    allMediaElements.forEach((el) => {
+      const media = el as HTMLMediaElement;
+      if (media !== audioRef.current) {
+        if (newMutedState) {
+          media.muted = true;
+          media.pause();
+        } else {
+          media.muted = false;
+        }
+      }
+    });
   };
 
   const handleGeneratePdf = async (capsuleAnswers: { question: string; answer: string }[]) => {
@@ -93,11 +118,11 @@ export default function CardPage() {
       {/* ФОНОВ АУДИО ПЛЕЙЪР */}
       <audio ref={audioRef} src="/audio/background-music.mp3" preload="auto" />
 
-      {/* МИНИ ИКОНКА ЗА МУЗИКА (ГОРЕ В ДЯСНО) */}
+      {/* УНИВЕРСАЛНА КРЪГЛА ИКОНКА ЗА ГЛОБАЛЕН МЮТ (ГОРЕ В ДЯСНО) */}
       <button
         onClick={toggleMute}
         className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/40 backdrop-blur-md border border-white/60 text-[#1F1A17] rounded-full shadow-md hover:bg-white/70 transition flex items-center justify-center text-base"
-        title={isMuted ? 'Включи музиката' : 'Спри музиката'}
+        title={isMuted ? 'Включи звука' : 'Спри всички звуци'}
       >
         <span>{isMuted ? '🔇' : '🔊'}</span>
       </button>
