@@ -59,7 +59,6 @@ export default function CardPage() {
 
   const handleGeneratePdf = async (capsuleAnswers: { question: string; answer: string }[]) => {
     try {
-      // Тук викаме TimeCapsulePdf, а не CapsuleStage
       const doc = (
         <TimeCapsulePdf
           recipient={formattedName}
