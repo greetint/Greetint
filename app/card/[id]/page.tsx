@@ -9,7 +9,7 @@ import { MemoryWallStage } from '@/components/quest/MemoryWallStage';
 import { QuizStage } from '@/components/quest/QuizStage';
 import { CakeStage } from '@/components/quest/CakeStage';
 import { CapsuleStage } from '@/components/quest/CapsuleStage';
-import { TimeCapsulePdf } from '@/components/TimeCapsulePdf';
+import TimeCapsulePdf from '@/components/TimeCapsulePdf';
 
 type QuestStage = 'seal' | 'scratch' | 'quiz' | 'memories' | 'cake' | 'capsule';
 
@@ -59,8 +59,9 @@ export default function CardPage() {
 
   const handleGeneratePdf = async (capsuleAnswers: { question: string; answer: string }[]) => {
     try {
+      // Тук викаме TimeCapsulePdf, а не CapsuleStage
       const doc = (
-        <CapsuleStage
+        <TimeCapsulePdf
           recipient={formattedName}
           sender={cardData.sender}
           statusText={cardData.statusText}
@@ -90,10 +91,8 @@ export default function CardPage() {
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-[#ECE8E0] select-none">
       
-      {/* ФОНОВ АУДИО ПЛЕЙЪР */}
       <audio ref={audioRef} src="/audio/background-music.mp3" preload="auto" />
 
-      {/* ПЛАВАЩ БУТОН ЗА МУЗИКА */}
       <button
         onClick={toggleMute}
         className="absolute top-5 right-5 z-50 bg-white/30 backdrop-blur-md border border-white/50 text-[#1F1A17] px-3.5 py-2 rounded-full text-xs uppercase tracking-widest shadow-md hover:bg-white/60 transition flex items-center gap-2"
@@ -102,7 +101,6 @@ export default function CardPage() {
         <span>{isMuted ? '🔇 Музика: Спряна' : '🎵 Музика: Пусната'}</span>
       </button>
 
-      {/* 1. ЕТАП: ВОСЪЧЕН ПЕЧАТ */}
       {currentStage === 'seal' && (
         <SealStage
           recipient={formattedName}
@@ -110,7 +108,6 @@ export default function CardPage() {
         />
       )}
 
-      {/* 2. ЕТАП: ЗЛАТНО СКРЕЧ ФОЛИО */}
       {currentStage === 'scratch' && (
         <ScratchStage
           recipient={uppercaseName}
@@ -118,7 +115,6 @@ export default function CardPage() {
         />
       )}
 
-      {/* 3. ЕТАП: ПЕРСОНАЛЕН ВЪПРОС */}
       {currentStage === 'quiz' && (
         <QuizStage
           recipient={uppercaseName}
@@ -126,7 +122,6 @@ export default function CardPage() {
         />
       )}
 
-      {/* 4. ЕТАП: ГАЛЕРИЯ СЪС СПОМЕНИ */}
       {currentStage === 'memories' && (
         <MemoryWallStage
           recipient={uppercaseName}
@@ -134,7 +129,6 @@ export default function CardPage() {
         />
       )}
 
-      {/* 5. ЕТАП: ДУХВАНЕ НА СВЕЩ */}
       {currentStage === 'cake' && (
         <CakeStage
           recipient={uppercaseName}
@@ -145,7 +139,7 @@ export default function CardPage() {
         />
       )}
 
-      {/* 6. ФИНАЛЕН ЕТАП: КАПСУЛА НА БЪДЕЩЕТО (ЛИЧЕН ДНЕВНИК И PDF) */}
+      {/* Тук викаме CapsuleStage без допълнителни пропове */}
       {currentStage === 'capsule' && (
         <CapsuleStage
           onGeneratePdf={handleGeneratePdf}
