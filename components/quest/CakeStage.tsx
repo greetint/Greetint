@@ -1,101 +1,488 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface CakeStageProps {
-  sender: string;
-  mainWish: string;
-  onWishSaved: (wish: string) => void;
-  onNext: () => void;
+  recipient?: string;
+  senderWish?: string;
+  onComplete?: (userWish: string) => void;
 }
 
-export const CakeStage: React.FC<CakeStageProps> = ({ sender, mainWish, onWishSaved, onNext }) => {
-  const [candleBlown, setCandleBlown] = useState(false);
-  const [personalWish, setPersonalWish] = useState('');
+/* ============================================================================
+   АУДИО ЕФЕКТИ
+   ============================================================================ */
+function useCinematicAudio() {
+  const ctxRef = useRef<AudioContext | null>(null);
 
-  const handleBlowCandle = () => {
-    if (!candleBlown) {
-      setCandleBlown(true);
+  const getCtx = useCallback(() => {
+    if (!ctxRef.current) {
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      ctxRef.current = new AudioContextClass();
     }
+    if (ctxRef.current.state === 'suspended') ctxRef.current.resume();
+    return ctxRef.current;
+  }, []);
+
+  const playImpact = useCallback(() => {
+    try {
+      const ctx = getCtx();
+      const now = ctx.currentTime;
+      const sub = ctx.createOscillator();
+      const subGain = ctx.createGain();
+      sub.type = 'sine';
+      sub.frequency.setValueAtTime(100, now);
+      sub.frequency.exponentialRampToValueAtTime(30, now + 0.8);
+      subGain.gain.setValueAtTime(0.5, now);
+      subGain.gain.exponentialRampToValueAtTime(0.001, now + 1);
+      sub.connect(subGain);
+      subGain.connect(ctx.destination);
+      sub.start(now);
+      sub.stop(now + 1);
+    } catch { /* noop */ }
+  }, [getCtx]);
+
+  const playSpark = useCallback(() => {
+    try {
+      const ctx = getCtx();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(650, now);
+      osc.frequency.exponentialRampToValueAtTime(1300, now + 0.3);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } catch { /* noop */ }
+  }, [getCtx]);
+
+  return { playImpact, playSpark };
+}
+
+/* ============================================================================
+   3D РЕАЛИСТИЧЕН ПЛАМЪК
+   ============================================================================ */
+const Flame3D: React.FC<{ isBlownOut: boolean }> = ({ isBlownOut }) => {
+  const outerFlame = useRef<THREE.Mesh>(null);
+  const innerFlame = useRef<THREE.Mesh>(null);
+  const lightRef = useRef<THREE.PointLight>(null);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    if (outerFlame.current && !isBlownOut) {
+      outerFlame.current.scale.x = 1 + Math.sin(t * 15) * 0.12;
+      outerFlame.current.scale.y = 1 + Math.cos(t * 18) * 0.18;
+      outerFlame.current.rotation.z = Math.sin(t * 10) * 0.1;
+    }
+    if (innerFlame.current && !isBlownOut) {
+      innerFlame.current.scale.x = 1 + Math.cos(t * 20) * 0.1;
+      innerFlame.current.scale.y = 1 + Math.sin(t * 22) * 0.12;
+    }
+    if (lightRef.current && !isBlownOut) {
+      lightRef.current.intensity = 2.2 + Math.sin(t * 25) * 0.5;
+    }
+  });
+
+  if (isBlownOut) return null;
+
+  return (
+    <group position={[0, 2.7, 0]}>
+      <mesh position={[0, -0.3, 0]}>
+        <sphereGeometry args={[0.08, 16, 16]} />
+        <meshBasicMaterial color="#3B82F6" transparent opacity={0.6} />
+      </mesh>
+      <mesh ref={outerFlame}>
+        <coneGeometry args={[0.22, 0.85, 32]} />
+        <meshBasicMaterial color="#F97316" transparent opacity={0.9} />
+      </mesh>
+      <mesh ref={innerFlame} scale={[0.5, 0.6, 0.5]} position={[0, -0.05, 0]}>
+        <coneGeometry args={[0.22, 0.85, 32]} />
+        <meshBasicMaterial color="#FEF08A" />
+      </mesh>
+      <pointLight ref={lightRef} color="#FBBF24" intensity={2.2} distance={6} decay={2} />
+    </group>
+  );
+};
+
+/* ============================================================================
+   3D ТОРТА (ИЗЧИСТЕНА, СЪС ЗЛАТНИ ПЕРЛИ И ПРЪСТЕНИ БЕЗ АРКИ)
+   ============================================================================ */
+const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean }> = ({ active, isBlownOut, isMobile }) => {
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame((_, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += 0.0025;
+      
+      let targetY = active ? -0.8 : -6;
+      if (isBlownOut && isMobile) targetY = 0.1; 
+      if (isBlownOut && !isMobile) targetY = -0.5; 
+
+      groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, delta * 3);
+    }
+  });
+
+  return (
+    <group ref={groupRef} position={[0, -6, 0]}>
+      {/* 1 Етаж (Връх) */}
+      <mesh position={[0, 1.4, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.85, 0.85, 0.75, 64]} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.1} />
+      </mesh>
+      
+      {/* Златни перли по ръба на 1 етаж */}
+      {[...Array(8)].map((_, i) => {
+        const angle = (i / 8) * Math.PI * 2;
+        const x = Math.cos(angle) * 0.82;
+        const z = Math.sin(angle) * 0.82;
+        return (
+          <mesh key={`p1-${i}`} position={[x, 1.78, z]}>
+            <sphereGeometry args={[0.04, 16, 16]} />
+            <meshStandardMaterial color="#D4AF37" metalness={0.95} roughness={0.1} />
+          </mesh>
+        );
+      })}
+
+      {/* 2 Етаж */}
+      <mesh position={[0, 0.55, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[1.25, 1.25, 0.8, 64]} />
+        <meshStandardMaterial color="#FDFBF7" roughness={0.15} />
+      </mesh>
+      <mesh position={[0, 0.96, 0]}>
+        <torusGeometry args={[1.26, 0.03, 16, 64]} />
+        <meshStandardMaterial color="#D4AF37" metalness={0.9} roughness={0.15} />
+      </mesh>
+      
+      {/* Златни мини топчета на 2 етаж */}
+      {[...Array(10)].map((_, i) => {
+        const angle = (i / 10) * Math.PI * 2;
+        const x = Math.cos(angle) * 1.22;
+        const z = Math.sin(angle) * 1.22;
+        return (
+          <mesh key={`p2-${i}`} position={[x, 0.93, z]}>
+            <sphereGeometry args={[0.05, 16, 16]} />
+            <meshStandardMaterial color="#D4AF37" metalness={0.95} roughness={0.1} />
+          </mesh>
+        );
+      })}
+
+      {/* 3 Етаж (Основа) */}
+      <mesh position={[0, -0.3, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[1.75, 1.75, 0.85, 64]} />
+        <meshStandardMaterial color="#F5EBE6" roughness={0.2} />
+      </mesh>
+      <mesh position={[0, 0.13, 0]}>
+        <torusGeometry args={[1.76, 0.04, 16, 64]} />
+        <meshStandardMaterial color="#D4AF37" metalness={0.9} roughness={0.15} />
+      </mesh>
+
+      {/* Луксозна Златна Подложка */}
+      <mesh position={[0, -0.78, 0]} receiveShadow>
+        <cylinderGeometry args={[2.05, 2.05, 0.12, 64]} />
+        <meshStandardMaterial color="#D4AF37" metalness={0.95} roughness={0.1} />
+      </mesh>
+      <mesh position={[0, -0.85, 0]} receiveShadow>
+        <cylinderGeometry args={[2.25, 2.25, 0.08, 64]} />
+        <meshStandardMaterial color="#C5A880" metalness={0.8} roughness={0.2} />
+      </mesh>
+
+      {/* Свещ */}
+      <mesh position={[0, 2.05, 0]} castShadow>
+        <cylinderGeometry args={[0.05, 0.05, 0.55, 32]} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.2} />
+      </mesh>
+      <mesh position={[0, 2.05, 0]}>
+        <cylinderGeometry args={[0.055, 0.055, 0.08, 32]} />
+        <meshStandardMaterial color="#D4AF37" metalness={1} roughness={0} />
+      </mesh>
+
+      <Flame3D isBlownOut={isBlownOut} />
+    </group>
+  );
+};
+
+/* ============================================================================
+   ПРАЗНИЧНИ ФОЙЕРВЕРКИ И БАЛОНИ
+   ============================================================================ */
+const PartyOverlay: React.FC = () => {
+  const elements = [...Array(35)].map((_, i) => i);
+  return (
+    <div className="absolute inset-0 pointer-events-none z-30 overflow-hidden">
+      {elements.map((i) => (
+        <motion.div
+          key={`fw-${i}`}
+          className="absolute"
+          initial={{ opacity: 0, scale: 0, x: '50vw', y: '60vh' }}
+          animate={{
+            opacity: [1, 1, 0],
+            scale: [0.2, Math.random() * 1.4 + 0.5, 0],
+            x: `${Math.random() * 100}vw`,
+            y: `${Math.random() * 100}vh`,
+            rotate: Math.random() * 360,
+          }}
+          transition={{ duration: 2 + Math.random() * 2, ease: "easeOut" }}
+        >
+          {i % 2 === 0 ? (
+            <span className="text-2xl sm:text-3xl text-[#FFD700] drop-shadow-[0_0_12px_#FFD700]">✨</span>
+          ) : (
+            <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#FFD700] to-[#FFFFFF] shadow-[0_0_15px_#FFD700]" />
+          )}
+        </motion.div>
+      ))}
+
+      {[...Array(5)].map((_, i) => (
+        <motion.div
+          key={`balloon-${i}`}
+          className="absolute w-14 h-18 sm:w-16 sm:h-20 rounded-[50%] bg-gradient-to-br from-[#FFFFFF] to-[#E6D5B8] shadow-2xl opacity-90 border border-white/50"
+          initial={{ y: '110vh', x: `${12 + i * 18}vw` }}
+          animate={{ y: '-20vh', x: `${12 + i * 18 + (Math.random() * 10 - 5)}vw` }}
+          transition={{ duration: 5 + Math.random() * 3, ease: 'easeOut' }}
+        >
+           <div className="absolute top-2 left-3 w-3.5 h-5 bg-white/40 rounded-full blur-[2px]" />
+           <div className="absolute bottom-[-14px] left-1/2 w-0.5 h-14 bg-white/50" />
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+/* ============================================================================
+   ОСНОВЕН КОМПОНЕНТ CAKESTAGE
+   ============================================================================ */
+export function CakeStage({
+  recipient = 'ВИКТОРИЯ',
+  senderWish = 'Нека тази година ти донесе здраве, вдъхновение, безкрайно щастие и много сбъднати мечти!',
+  onComplete,
+}: CakeStageProps) {
+  const [stage, setStage] = useState<'wish_entry' | 'cake_reveal' | 'blown_celebrate'>('wish_entry');
+  const [userWish, setUserWish] = useState('');
+  const [micStatus, setMicStatus] = useState<'idle' | 'active' | 'error'>('idle');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const uppercaseRecipient = recipient.toUpperCase();
+  const { playImpact, playSpark } = useCinematicAudio();
+
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const micStreamRef = useRef<MediaStream | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+
+  const handleBlowCandle = useCallback(() => {
+    setStage((prev) => {
+      if (prev === 'blown_celebrate') return prev;
+      playImpact();
+      return 'blown_celebrate';
+    });
+  }, [playImpact]);
+
+  // Микрофон с по-висок праг и задържане (предотвратява фалшиви срабатывания)
+  const startListening = useCallback(() => {
+    if (stage === 'cake_reveal' && micStatus !== 'active') {
+      navigator.mediaDevices
+        ?.getUserMedia({ audio: true, video: false })
+        .then((stream) => {
+          micStreamRef.current = stream;
+          const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+          const audioCtx = new AudioContextClass();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+          audioContextRef.current = audioCtx;
+
+          const analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 512;
+          analyserRef.current = analyser;
+
+          const microphone = audioCtx.createMediaStreamSource(stream);
+          microphone.connect(analyser);
+          setMicStatus('active');
+
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          let blowFrames = 0;
+
+          const detectBlow = () => {
+            if (!analyserRef.current) return;
+            analyserRef.current.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+            const average = sum / dataArray.length;
+
+            if (average > 85) {
+              blowFrames++;
+              if (blowFrames > 3) {
+                handleBlowCandle();
+                return;
+              }
+            } else {
+              if (blowFrames > 0) blowFrames--;
+            }
+            animationFrameRef.current = requestAnimationFrame(detectBlow);
+          };
+          detectBlow();
+        })
+        .catch(() => setMicStatus('error'));
+    }
+  }, [stage, micStatus, handleBlowCandle]);
+
+  const stopListening = useCallback(() => {
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    if (micStreamRef.current) micStreamRef.current.getTracks().forEach((track) => track.stop());
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      audioContextRef.current.close();
+    }
+    setMicStatus('idle');
+  }, []);
+
+  useEffect(() => {
+    if (stage === 'cake_reveal') {
+      const timer = setTimeout(startListening, 1000);
+      return () => clearTimeout(timer);
+    } else if (stage === 'blown_celebrate') {
+      stopListening();
+    }
+  }, [stage, startListening, stopListening]);
+
+  const handleSubmitWish = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userWish.trim()) return;
+    playSpark();
+    setStage('cake_reveal');
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -15 }}
-      transition={{ duration: 0.6 }}
-      className="max-w-md w-full mx-auto space-y-6 text-center"
-    >
-      <span className="text-[10px] uppercase tracking-[0.3em] text-[#958679] font-sans font-bold block">
-        Ритуал със Свещта 🎂
-      </span>
-
-      {/* АНИМИРАНА ТОРТА С ПЛАМЪК */}
+    <div className="relative w-screen h-screen overflow-hidden select-none font-sans flex flex-col items-center justify-between px-4 py-6">
+      
+      {/* СВЕТЪЛ И ПРАЗНИЧЕН ФОН */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#FEFEFD] via-[#FDFBF7] to-[#EAE2D6] z-0" />
+      
+      {/* 3D СЦЕНАТА (Three.js WebGL) */}
       <div 
-        onClick={handleBlowCandle}
-        className="cursor-pointer relative w-64 h-64 mx-auto flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
+        className="absolute inset-0 z-0 cursor-pointer" 
+        onClick={stage === 'cake_reveal' ? handleBlowCandle : undefined}
       >
-        <img
-          src={candleBlown ? "/images/assets/cake-unlit.png" : "/images/assets/cake-lit.png"}
-          alt="Birthday Cake"
-          className="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(31,26,23,0.25)]"
-        />
-
-        {!candleBlown && (
-          <motion.div 
-            animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.1, 1] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-            className="absolute top-12 left-1/2 -translate-x-1/2 w-8 h-8 bg-amber-300 rounded-full blur-md opacity-60 pointer-events-none"
+        <Canvas shadows camera={{ position: [0, 1.5, isMobile ? 7.5 : 6.5], fov: 45 }}>
+          <ambientLight intensity={1.2} color="#FFFFFF" />
+          <directionalLight
+            position={[5, 10, 5]}
+            intensity={1.8}
+            castShadow
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
+            color="#FFF8E1"
           />
-        )}
+          <pointLight position={[-4, 3, 2]} intensity={1.2} color="#FFFFFF" />
+          
+          <Cake3D active={stage !== 'wish_entry'} isBlownOut={stage === 'blown_celebrate'} isMobile={isMobile} />
+        </Canvas>
       </div>
 
-      {!candleBlown ? (
-        <p className="text-[11px] uppercase tracking-[0.2em] text-[#958679] font-sans font-bold animate-pulse">
-          [ Докосни пламъка, за да духнеш свещта и да замислиш желание ]
-        </p>
-      ) : (
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
-        >
-          <div>
-            <label className="block text-[10px] uppercase font-sans font-bold text-[#958679] mb-1">
-              Твоето тайно желание за новата година:
-            </label>
-            <input
-              type="text"
-              value={personalWish}
-              onChange={(e) => {
-                setPersonalWish(e.target.value);
-                onWishSaved(e.target.value);
-              }}
-              placeholder="Напиши желанието тук..."
-              className="w-full bg-[#FEFEFD] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-center shadow-inner"
-            />
-          </div>
+      {/* Фойерверки при духане */}
+      {stage === 'blown_celebrate' && <PartyOverlay />}
 
-          {/* ЛИЧНОТО ПИСМО ОТ ПОДАРЯВАЩИЯ */}
-          <div className="bg-[#FEFEFD] p-6 rounded-2xl border border-[#958679]/30 text-left space-y-2 shadow-2xl relative overflow-hidden">
-            <span className="text-[10px] uppercase tracking-widest text-[#958679] font-bold block">
-              Послание от {sender}
-            </span>
-            <p className="text-xs italic text-[#635E57] leading-relaxed font-serif border-t border-[#958679]/10 pt-2">
-              "{mainWish}"
-            </p>
-          </div>
+      <div className="relative z-40 pt-6" />
 
-          <button
-            onClick={onNext}
-            className="w-full bg-[#1F1A17] text-[#FEFEFD] py-4 text-xs uppercase tracking-[0.2em] font-bold rounded-xl shadow-xl hover:bg-[#958679] transition"
-          >
-            Към Капсулата за Бъдещето (7 Въпроса) →
-          </button>
-        </motion.div>
-      )}
-    </motion.div>
+      {/* ИНТЕРАКТИВЕН UI (Перфектно центриран и отделен, без застъпване на тортата) */}
+      <div className={`relative z-10 w-full max-w-xl mx-auto flex flex-col items-center justify-center pointer-events-none ${stage === 'blown_celebrate' ? (isMobile ? 'absolute bottom-6 left-4 right-4 max-w-none' : 'absolute bottom-10 left-1/2 -translate-x-1/2') : 'my-auto'}`}>
+        <AnimatePresence mode="wait">
+          
+          {/* ФАЗА 1: Форма за желание */}
+          {stage === 'wish_entry' && (
+            <motion.div
+              key="wish-form"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, filter: 'blur(20px)', y: -30 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full flex flex-col items-center text-center space-y-8 px-4 pointer-events-auto"
+            >
+              <h1 className="font-serif italic text-2xl sm:text-4xl text-[#1F1A17] leading-relaxed max-w-lg drop-shadow-sm">
+                "Преди да се разкрие празничната 3D магия, напиши своето съкровено желание..."
+              </h1>
+
+              <form onSubmit={handleSubmitWish} className="w-full max-w-md space-y-5">
+                <input
+                  type="text"
+                  required
+                  maxLength={80}
+                  value={userWish}
+                  onChange={(e) => setUserWish(e.target.value)}
+                  placeholder="Твоето желание тук..."
+                  className="w-full bg-white/20 backdrop-blur-md text-[#1F1A17] placeholder-[#7A6C5E] px-8 py-5 rounded-full text-base tracking-wide text-center border border-white/50 focus:outline-none focus:border-[#D4AF37] shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all"
+                />
+                <motion.button
+                  type="submit"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full bg-[#1F1A17] text-[#DBCEB3] py-5 rounded-full font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300 shadow-xl"
+                >
+                  Заключи Желанието ➔
+                </motion.button>
+              </form>
+            </motion.div>
+          )}
+
+          {/* ФАЗА 2: Инструкция над тортата */}
+          {stage === 'cake_reveal' && (
+            <motion.div
+              key="blow-instruction"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className={`text-center space-y-2 pointer-events-none ${isMobile ? 'absolute top-12' : 'absolute top-16'}`}
+            >
+              <span className="font-serif italic text-2xl sm:text-3xl text-[#1F1A17] block drop-shadow-sm">
+                {uppercaseRecipient}
+              </span>
+              <p className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#7A6C5E] font-medium bg-white/30 px-5 py-2 rounded-full backdrop-blur-md border border-white/40 shadow-sm animate-pulse">
+                {micStatus === 'active' ? '🎤 Духни силно в микрофона или кликни тортата' : 'Кликни върху тортата или духни...'}
+              </p>
+            </motion.div>
+          )}
+
+          {/* ФАЗА 3: Ултрамодерна изчистена картичка с пожелание (отдолу на сигурно разстояние) */}
+          {stage === 'blown_celebrate' && (
+            <motion.div
+              key="celebration-card"
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="w-full max-w-md bg-white/20 backdrop-blur-md p-6 sm:p-7 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.06)] border border-white/40 text-center space-y-4 pointer-events-auto"
+            >
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.4em] text-[#7A6C5E] font-semibold block">
+                ПОСЛАНИЕ ОТ ПОДАРЯВАЩИЯ
+              </span>
+              <p className="font-serif italic text-sm sm:text-base text-[#1F1A17] leading-relaxed">
+                "{senderWish}"
+              </p>
+
+              <button
+                onClick={() => onComplete && onComplete(userWish)}
+                className="w-full bg-[#1F1A17] text-[#DBCEB3] py-3.5 rounded-2xl font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300 shadow-lg"
+              >
+                Към Капсулата на Бъдещето ➔
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Копирайт */}
+      <div className="relative z-10 pb-1 text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-[#958679] text-center w-full pointer-events-none">
+        GREETING ARCHIVE © 2026
+      </div>
+    </div>
   );
-};
+}
+
+export default CakeStage;

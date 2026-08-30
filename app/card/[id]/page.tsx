@@ -1,185 +1,159 @@
 'use client';
 
-import React, { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-
+import React, { useState, useRef, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { pdf } from '@react-pdf/renderer';
 import { SealStage } from '@/components/quest/SealStage';
 import { ScratchStage } from '@/components/quest/ScratchStage';
-import { QuizStage, QuizItem } from '@/components/quest/QuizStage';
-import { MemoryWallStage, MemoryPhotoItem } from '@/components/quest/MemoryWallStage';
+import { MemoryWallStage } from '@/components/quest/MemoryWallStage';
+import { QuizStage } from '@/components/quest/QuizStage';
 import { CakeStage } from '@/components/quest/CakeStage';
 import { CapsuleStage } from '@/components/quest/CapsuleStage';
-import { TimeCapsulePdf } from '@/components/TimeCapsulePdf';
+import TimeCapsulePdf from '@/components/TimeCapsulePdf';
 
-export default function CinematicQuestPage() {
-  const [scene, setScene] = useState<number>(1);
+type QuestStage = 'seal' | 'scratch' | 'quiz' | 'memories' | 'cake' | 'capsule';
 
-  // Данни за рожденика
-  const recipient = "Виктория";
-  const sender = "Алекс";
-  const statusText = "Човекът, който пие 3 кафета на ден и пак намира енергия за щури идеи.";
-  const secretJoke = "Спомняш ли си, когато си изпусна телефона в басейна и викаше, че е водоустойчив?";
-  const mainWish = "Скъпа Виктория, честит рожден ден! Пожелавам ти никога да не губиш тази луда енергия и винаги да превръщаш всеки ден в ново приключение...";
+export default function CardPage() {
+  const params = useParams();
+  const [currentStage, setCurrentStage] = useState<QuestStage>('seal');
+  const [isMuted, setIsMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Данни за въпросите и снимките
-  const [quizList] = useState<QuizItem[]>([
-    {
-      question: 'Ако закъснеем за полета, рожденикът първо...',
-      optionA: 'Ще се кара с персонала',
-      optionB: 'Ще си купи кафе и спокойно ще чака',
-      optionC: 'Изпада в тотална паника',
-      correct: 'B',
-    },
-    {
-      question: 'Кое е любимото му/ѝ среднощно изкушение?',
-      optionA: 'Пица с много кашкавал',
-      optionB: 'Нещо сладичко',
-      optionC: 'Чаша студена вода',
-      correct: 'A',
-    },
-  ]);
+  const rawId = params?.id ? String(params.id) : 'виктория';
+  const decodedName = decodeURIComponent(rawId);
+  const formattedName = decodedName.charAt(0).toUpperCase() + decodedName.slice(1);
+  const uppercaseName = formattedName.toUpperCase();
 
-  const [photos] = useState<MemoryPhotoItem[]>([
-    { url: '/images/cards/card-1.png', question: 'Коя дата беше партито?', answer: '15', unlocked: false },
-    { url: '/images/cards/card-2.png', question: 'Кой е любимият ни град?', answer: 'ПЛОВДИВ', unlocked: false },
-  ]);
+  const [cardData, setCardData] = useState({
+    sender: 'Подаряващия',
+    statusText: 'Посрещаме 2026 с нови мечти!',
+    secretJoke: 'Човекът, който пие 3 кафета на ден...',
+    mainWish: 'Нека тази година ти донесе здраве и вдъхновение!',
+    wishFromCandle: '',
+    photos: [] as string[]
+  });
 
-  // Запазени отговори от рожденика
-  const [personalWish, setPersonalWish] = useState('');
-  const [capsuleAnswers, setCapsuleAnswers] = useState<string[]>(Array(7).fill(''));
-  const [showPdfModal, setShowPdfModal] = useState(false);
+  // Управление на фоновата музика
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = 0.35;
+      audio.loop = true;
+      
+      const playAudio = () => {
+        audio.play().catch(() => {});
+      };
+
+      playAudio();
+      window.addEventListener('click', playAudio, { once: true });
+      return () => window.removeEventListener('click', playAudio);
+    }
+  }, []);
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const handleGeneratePdf = async (capsuleAnswers: { question: string; answer: string }[]) => {
+    try {
+      const answersList = capsuleAnswers.map(item => `${item.question}: ${item.answer}`);
+
+      const doc = (
+        <TimeCapsulePdf
+          recipient={formattedName}
+          sender={cardData.sender}
+          statusText={cardData.statusText}
+          secretJoke={cardData.secretJoke}
+          mainWish={cardData.mainWish}
+          wishFromCandle={cardData.wishFromCandle}
+          capsuleAnswers={answersList}
+          photos={cardData.photos}
+        />
+      );
+
+      const blob = await pdf(doc).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Kapsula_na_vremeto_${formattedName}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Грешка при генериране на PDF:', error);
+      alert('Възникна грешка при генерирането на PDF файла.');
+    }
+  };
 
   return (
-    <div
-      className="relative w-screen h-screen overflow-hidden select-none font-serif text-[#1F1A17] flex items-center justify-center bg-[#F7F4EF]"
-      style={{ backgroundImage: `url('/images/assets/bg-light-paper.jpeg')`, backgroundSize: 'cover' }}
-    >
-      <main className="relative z-10 w-full h-full flex flex-col items-center justify-center p-6 text-center">
-        <AnimatePresence mode="wait">
+    <main className="relative w-screen h-screen overflow-hidden bg-[#ECE8E0] select-none">
+      
+      {/* ФОНОВ АУДИО ПЛЕЙЪР */}
+      <audio ref={audioRef} src="/audio/background-music.mp3" preload="auto" />
 
-          {/* СЦЕНА 1: UNBOXING С ЗЛАТЕН ПЕЧАТ */}
-          {scene === 1 && (
-            <SealStage 
-              key="s1"
-              recipient={recipient} 
-              onComplete={() => setScene(2)} 
-            />
-          )}
+      {/* ПЛАВАЩ БУТОН ЗА МУЗИКА */}
+      <button
+        onClick={toggleMute}
+        className="absolute top-5 right-5 z-50 bg-white/30 backdrop-blur-md border border-white/50 text-[#1F1A17] px-3.5 py-2 rounded-full text-xs uppercase tracking-widest shadow-md hover:bg-white/60 transition flex items-center gap-2"
+        title="Включи/Изключи музиката"
+      >
+        <span>{isMuted ? '🔇 Музика: Спряна' : '🎵 Музика: Пусната'}</span>
+      </button>
 
-          {/* СЦЕНА 2: СТАТУТ 2026 */}
-          {scene === 2 && (
-            <div key="s2" className="max-w-md w-full space-y-6 bg-[#FEFEFD] p-8 rounded-2xl border border-[#958679]/30 shadow-2xl mx-auto">
-              <span className="text-[10px] uppercase tracking-[0.3em] text-[#958679] font-sans font-bold block">
-                Профил за новата година
-              </span>
-              <h1 className="text-3xl font-serif uppercase text-[#1F1A17]">{recipient} // 2026</h1>
-              <div className="border-y border-[#958679]/20 py-6">
-                <p className="text-base text-[#635E57] italic leading-relaxed font-serif">
-                  "{statusText}"
-                </p>
-              </div>
-              <button
-                onClick={() => setScene(3)}
-                className="w-full bg-[#1F1A17] text-[#FEFEFD] py-4 text-xs uppercase tracking-[0.2em] font-bold rounded-xl shadow-xl hover:bg-[#958679] transition"
-              >
-                Към Златното Скрач Фолио →
-              </button>
-            </div>
-          )}
+      {/* 1. ЕТАП: ВОСЪЧЕН ПЕЧАТ */}
+      {currentStage === 'seal' && (
+        <SealStage
+          recipient={formattedName}
+          onComplete={() => setCurrentStage('scratch')}
+        />
+      )}
 
-          {/* СЦЕНА 3: ЗЛАТНО СКРАЧ ФОЛИО */}
-          {scene === 3 && (
-            <ScratchStage 
-              key="s3"
-              secretJoke={secretJoke} 
-              onComplete={() => setScene(4)} 
-            />
-          )}
+      {/* 2. ЕТАП: ЗЛАТНО СКРЕЧ ФОЛИО */}
+      {currentStage === 'scratch' && (
+        <ScratchStage
+          recipient={uppercaseName}
+          onComplete={() => setCurrentStage('quiz')}
+        />
+      )}
 
-          {/* СЦЕНА 4: ШОУ-ВИКТОРИНА */}
-          {scene === 4 && (
-            <QuizStage 
-              key="s4"
-              quizList={quizList} 
-              onComplete={() => setScene(5)} 
-            />
-          )}
+      {/* 3. ЕТАП: ПЕРСОНАЛЕН ВЪПРОС */}
+      {currentStage === 'quiz' && (
+        <QuizStage
+          recipient={uppercaseName}
+          onComplete={() => setCurrentStage('memories')}
+        />
+      )}
 
-          {/* СЦЕНА 5: POLAROID МЕМОРИ СТЕНА */}
-          {scene === 5 && (
-            <MemoryWallStage 
-              key="s5"
-              photos={photos} 
-              onComplete={() => setScene(6)} 
-            />
-          )}
+      {/* 4. ЕТАП: ГАЛЕРИЯ СЪС СПОМЕНИ */}
+      {currentStage === 'memories' && (
+        <MemoryWallStage
+          recipient={uppercaseName}
+          onComplete={() => setCurrentStage('cake')}
+        />
+      )}
 
-          {/* СЦЕНА 6: ТОРТА & ЛИЧНО ПИСМО */}
-          {scene === 6 && (
-            <CakeStage 
-              key="s6"
-              sender={sender}
-              mainWish={mainWish}
-              onWishSaved={(wish) => setPersonalWish(wish)}
-              onNext={() => setScene(7)}
-            />
-          )}
+      {/* 5. ЕТАП: ДУХВАНЕ НА СВЕЩ */}
+      {currentStage === 'cake' && (
+        <CakeStage
+          recipient={uppercaseName}
+          onComplete={(wish) => {
+            setCardData(prev => ({ ...prev, wishFromCandle: wish }));
+            setCurrentStage('capsule');
+          }}
+        />
+      )}
 
-          {/* СЦЕНА 7: КАПСУЛА ЗА БЪДЕЩЕТО */}
-          {scene === 7 && (
-            <CapsuleStage 
-              key="s7"
-              onGeneratePdf={(answers) => {
-                setCapsuleAnswers(answers);
-                setShowPdfModal(true);
-              }}
-            />
-          )}
+      {/* 6. ФИНАЛЕН ЕТАП: КАПСУЛА НА БЪДЕЩЕТО (ЛИЧЕН ДНЕВНИК И PDF) */}
+      {currentStage === 'capsule' && (
+        <CapsuleStage
+          onGeneratePdf={handleGeneratePdf}
+        />
+      )}
 
-        </AnimatePresence>
-
-        {/* МОДАЛ ЗА СВАЛЯНЕ НА PDF АРХИВА */}
-        {showPdfModal && (
-          <div className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-[#F7F4EF] w-full max-w-md p-6 rounded-2xl shadow-2xl border border-[#958679] text-center space-y-6">
-              <h3 className="font-serif text-lg text-[#1F1A17] uppercase tracking-wide">
-                Твоята Капсула е Запечатана! ✨
-              </h3>
-              <p className="text-xs text-[#635E57] font-sans">
-                Официалният двустранен A4 документ с всички отключени спомени и отговори е готов.
-              </p>
-
-              <PDFDownloadLink
-                document={
-                  <TimeCapsulePdf
-                    recipient={recipient}
-                    sender={sender}
-                    statusText={statusText}
-                    secretJoke={secretJoke}
-                    mainWish={mainWish}
-                    wishFromCandle={personalWish}
-                    capsuleAnswers={capsuleAnswers}
-                    photos={photos.map((p) => p.url)}
-                  />
-                }
-                fileName={`TimeCapsule_${recipient}_2026.pdf`}
-                className="inline-block w-full bg-[#1F1A17] text-[#FEFEFD] py-4 text-xs uppercase tracking-[0.2em] font-bold rounded-xl shadow-xl hover:bg-[#958679] transition"
-              >
-                {/* @ts-ignore */}
-                {({ loading }) => (loading ? 'Генериране на PDF...' : 'Свали Официалния PDF Архив 🖨️')}
-              </PDFDownloadLink>
-
-              <button
-                onClick={() => setShowPdfModal(false)}
-                className="text-xs uppercase font-bold text-[#958679] block mx-auto"
-              >
-                Затвори [X]
-              </button>
-            </div>
-          </div>
-        )}
-      </main>
-    </div>
+    </main>
   );
 }

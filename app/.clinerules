@@ -1,0 +1,39 @@
+# GREETINT - Master Specification & Architecture Guide
+
+## 1. Vision & Aesthetic Concept
+- **Brand Name**: GREETINT (Digital Greeting Cards & Time Capsules)
+- **Design Aesthetic**: Warm Minimalist Editorial Luxury / Cinematic Game Flow
+- **Color Palette**:
+  - Main Background (Canvas): `#F7F4EF` (Soft Silk / Silk)
+  - Card / Paper Background: `#FEFEFD`
+  - Text & Dark Elements: `#1F1A17` / `#2C2825` (Deep Truffle Charcoal)
+  - Muted Gold Accent: `#DBCEB3`
+  - Taupe / Secondary Accent: `#958679`
+  - Body Text: `#635E57`
+- **Typography**:
+  - Headings & Emotional Prompts: `Cormorant Garamond` (Google Fonts Serif)
+  - UI Labels, Buttons & Form Inputs: `Montserrat` or `Inter` (Sans-Serif)
+
+## 2. Multi-Scene Recipient Experience (Scene-Based Flow)
+1. **Scene 1 (Unboxing)**: Interactive 3D Gold Seal (`gold-seal.png`). Crack/Glow animation on touch.
+2. **Scene 2 (Profile Snapshot)**: "Statut 2026" editorial layout displaying recipient's profile text.
+3. **Scene 3 (Scratch Reveal)**: Metallic gold scratch card canvas layer (`gold-foil.jpeg`). Reveal secret memory upon 35%+ scratch progress.
+4. **Scene 4 (Interactive Quiz)**: A, B, C trivia game with instant feedback, button shakes on incorrect answers, and celebratory confetti on correct answers.
+5. **Scene 5 (Polaroid Memory Wall)**: Draggable, unlocked Polaroid memory cards (`polaroid-frame.png`). Requires password/code entry to unblur.
+6. **Scene 6 (Candle Ritual & Wish)**: Interactive 3D birthday cake with flame (`cake-lit.png` / `cake-unlit.png`). Blow/tap flame ritual with smoke effect, unrolling personal letter.
+7. **Scene 7 (Time Capsule Questionnaire)**: 7 future questions (3 for past, 4 for future). Generates downloadable PDF.
+
+## 3. Technical Architecture & File Map
+- `app/card/[id]/page.tsx`: Main scene orchestrator (Framer Motion scene manager)
+- `components/quest/SealStage.tsx`: Scene 1 component
+- `components/quest/ScratchStage.tsx`: Scene 3 component
+- `components/quest/QuizStage.tsx`: Scene 4 component
+- `components/quest/MemoryWallStage.tsx`: Scene 5 component
+- `components/quest/CakeStage.tsx`: Scene 6 component
+- `components/quest/CapsuleStage.tsx`: Scene 7 component
+- `components/TimeCapsulePdf.tsx`: 2-page A4 PDF archive with Cyrillic font (`Roboto`)
+- `components/CardSelectorModal.tsx`: Printable card selector modal with dynamic QR code overlay
+
+## 4. Coding Standards
+- Clean TypeScript, modular React components, Framer Motion for 60 FPS transitions, Tailwind CSS for styling.
+- Zero AI API costs: All dynamic variables are powered by smart templates and user inputs.

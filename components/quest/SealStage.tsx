@@ -1,77 +1,362 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SealStageProps {
-  recipient: string;
-  onComplete: () => void;
+  recipient?: string;
+  onComplete?: () => void;
+  onUnlock?: () => void;
 }
 
-export const SealStage: React.FC<SealStageProps> = ({ recipient, onComplete }) => {
-  const [isCracking, setIsCracking] = useState(false);
+export function SealStage({ recipient = "Виктория", onComplete, onUnlock }: SealStageProps) {
+  const [hasStarted, setHasStarted] = useState(false);
+  const [isHolding, setIsHolding] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isActionPlaying, setIsActionPlaying] = useState(false);
 
-  const handleCrack = () => {
-    setIsCracking(true);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const desktopIdleRef = useRef<HTMLVideoElement>(null);
+  const desktopActionRef = useRef<HTMLVideoElement>(null);
+  const mobileIdleRef = useRef<HTMLVideoElement>(null);
+  const mobileActionRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (desktopIdleRef.current) desktopIdleRef.current.load();
+    if (desktopActionRef.current) desktopActionRef.current.load();
+    if (mobileIdleRef.current) mobileIdleRef.current.load();
+    if (mobileActionRef.current) mobileActionRef.current.load();
+  }, []);
+
+  const handleStartInteraction = () => {
+    setHasStarted(true);
+
+    if (desktopIdleRef.current) {
+      desktopIdleRef.current.currentTime = 0;
+      desktopIdleRef.current.play().catch(() => {});
+    }
+    if (mobileIdleRef.current) {
+      mobileIdleRef.current.currentTime = 0;
+      mobileIdleRef.current.play().catch(() => {});
+    }
+
+    if (audioRef.current) {
+      audioRef.current.volume = 1.0;
+      audioRef.current.play().catch(() => {});
+    }
+  };
+
+  const startHolding = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    if (!hasStarted) return;
+    setIsHolding(true);
+    let currentProgress = 0;
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    const bgAudio = document.getElementById('bg-music-player') as HTMLAudioElement;
+    if (bgAudio && bgAudio.paused) {
+      bgAudio.volume = 0.35;
+      bgAudio.play().catch(() => {});
+    }
+
+    timerRef.current = setInterval(() => {
+      currentProgress += 1.4;
+      setProgress(currentProgress);
+
+      if (currentProgress >= 100) {
+        if (timerRef.current) clearInterval(timerRef.current);
+        triggerUnlock();
+      }
+    }, 25);
+  };
+
+  const stopHolding = () => {
+    if (!hasStarted) return;
+    setIsHolding(false);
+    setProgress(0);
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
+
+  const triggerUnlock = () => {
+    setIsActionPlaying(true);
+    
+    if (desktopIdleRef.current) desktopIdleRef.current.pause();
+    if (mobileIdleRef.current) mobileIdleRef.current.pause();
+    
+    if (desktopActionRef.current) {
+      desktopActionRef.current.currentTime = 0;
+      desktopActionRef.current.playbackRate = 0.85;
+      desktopActionRef.current.play().catch(() => {});
+    }
+
+    if (mobileActionRef.current) {
+      mobileActionRef.current.currentTime = 0;
+      mobileActionRef.current.playbackRate = 0.85;
+      mobileActionRef.current.play().catch(() => {});
+    }
+
     setTimeout(() => {
-      onComplete();
-    }, 1200); // Даваме време на златистия блясък и частиците да се разгърнат
+      setIsUnlocked(true);
+    }, 4200);
+  };
+
+  const handleProceedToQuest = () => {
+    if (onUnlock) onUnlock();
+    if (onComplete) onComplete();
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 1.15, filter: 'blur(10px)' }}
-      transition={{ duration: 0.8 }}
-      className="space-y-8 max-w-md mx-auto text-center relative z-10"
-    >
-      <span className="text-[11px] uppercase tracking-[0.35em] text-[#958679] font-sans font-bold block">
-        GREETINT ARCHIVE // 2026
-      </span>
+    <div className="relative w-screen h-screen bg-[#1F1A17] flex flex-col items-center justify-between overflow-hidden select-none">
+      <audio ref={audioRef} src="/audio/narrator-intro.mp3" preload="auto" />
 
-      {/* 3D ИНТЕРАКТИВЕН ЗЛАТЕН ПЕЧАТ */}
-      <div className="relative w-72 h-72 mx-auto flex items-center justify-center">
-        
-        {/* Анимиран златен ореол зад печата */}
-        <motion.div 
-          animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.6, 0.3] }}
-          transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
-          className="absolute inset-0 bg-gradient-to-r from-[#DBCEB3] via-[#958679] to-[#DBCEB3] rounded-full blur-2xl opacity-40 pointer-events-none"
-        />
-
-        {/* Ефект на пръскащи се златни частици при клик */}
-        {isCracking && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1.8 }}
-            transition={{ duration: 0.6 }}
-            className="absolute inset-0 border-4 border-[#DBCEB3] rounded-full animate-ping pointer-events-none"
-          />
+      {/* 1. НАЧАЛЕН OVERLAY */}
+      <AnimatePresence>
+        {!hasStarted && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
+            onClick={handleStartInteraction}
+            onTouchEnd={handleStartInteraction}
+            className="fixed inset-0 z-50 bg-[#1F1A17] flex flex-col items-center justify-center p-6 cursor-pointer touch-none"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(45,39,35,0.95)_0%,_rgba(31,26,23,0.98)_80%)] pointer-events-none" />
+            
+            <motion.div
+              animate={{ scale: [1, 1.015, 1], opacity: [0.95, 1, 0.95] }}
+              transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut" }}
+              className="text-center space-y-6 z-10 max-w-xl px-4"
+            >
+              <span className="text-xs uppercase tracking-[0.6em] text-[#958679] font-sans font-bold block leading-relaxed">
+                ГРИЙТИНТ КИНЕМАТОГРАФИЯ
+              </span>
+              <h2 className="font-serif italic text-4xl sm:text-6xl text-[#FEFEFD] tracking-wide leading-tight">
+                Имате неочаквано писмо...
+              </h2>
+              <div className="pt-4">
+                <button
+                  onClick={handleStartInteraction}
+                  className="bg-[#DBCEB3] text-[#1F1A17] px-10 py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.4)] font-sans hover:bg-[#FEFEFD] transition duration-300"
+                >
+                  Отвори Екрана 🎬
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
+      </AnimatePresence>
 
-        <motion.div
-          whileHover={{ scale: 1.06, rotate: 2 }}
-          whileTap={{ scale: 0.92, rotate: -2 }}
-          animate={isCracking ? { scale: [1, 1.2, 0], rotate: [0, 15, -15] } : { y: [0, -8, 0] }}
-          transition={isCracking ? { duration: 0.8 } : { repeat: Infinity, duration: 4, ease: "easeInOut" }}
-          onClick={handleCrack}
-          className="cursor-pointer relative z-10 w-full h-full flex items-center justify-center"
-        >
-          <img
-            src="/images/assets/gold-seal.png"
-            alt="GREETINT Gold Seal"
-            className="w-60 h-60 object-contain drop-shadow-[0_25px_60px_rgba(31,26,23,0.35)]"
+      <div className="absolute inset-0 bg-[#1F1A17] pointer-events-none z-0" />
+
+      {/* ================================================================= */}
+      {/* А. ДЕСКТОП ВАРИАНТ (КОМПЮТЪР / ЛАПТОП)                              */}
+      {/* ================================================================= */}
+      <motion.div 
+        animate={{ 
+          opacity: isUnlocked ? 0 : 1
+        }}
+        transition={{ duration: 1.0, ease: "easeInOut" }}
+        className="hidden md:flex absolute inset-0 w-full h-full items-center justify-center z-10 overflow-hidden"
+      >
+        <div className="relative w-full h-full flex items-center justify-center bg-[#1F1A17]">
+          <video
+            ref={desktopIdleRef}
+            src="/videos/envelope-idle-desktop.mp4"
+            muted
+            playsInline
+            autoPlay
+            preload="auto"
+            className={`absolute inset-0 w-full h-full object-contain z-0 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-0' : 'opacity-100'}`}
           />
-        </motion.div>
-      </div>
 
-      <div className="space-y-2">
-        <h2 className="text-3xl font-serif uppercase tracking-wide text-[#1F1A17]">За {recipient}</h2>
-        <p className="text-[11px] uppercase tracking-[0.25em] text-[#958679] font-sans font-bold animate-pulse">
-          [ Докосни златния печат, за да отвориш лентата ]
-        </p>
-      </div>
-    </motion.div>
+          <video
+            ref={desktopActionRef}
+            src="/videos/envelope-open-desktop.mp4"
+            muted
+            playsInline
+            preload="auto"
+            className={`absolute inset-0 w-full h-full object-contain z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-100' : 'opacity-0'}`}
+          />
+
+          {/* НАПЪЛНО СКРИТА ЗОНА ЗА НАТИСКАНЕ НА ДЕСКТОП */}
+          {!isActionPlaying && !isUnlocked && hasStarted && (
+            <div
+              className="absolute z-30 cursor-pointer touch-none -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full"
+              style={{
+                top: '66%',      
+                left: '50.5%',   
+                width: '120px',  
+                height: '120px', 
+              }}
+              onMouseDown={startHolding}
+              onMouseUp={stopHolding}
+              onMouseLeave={stopHolding}
+              onTouchStart={startHolding}
+              onTouchEnd={stopHolding}
+            >
+              <AnimatePresence>
+                {isHolding && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1.2 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="absolute inset-2 rounded-full bg-[radial-gradient(circle,_rgba(219,206,179,0.85)_0%,_rgba(219,206,179,0)_75%)] blur-2xl pointer-events-none"
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+
+      {/* ================================================================= */}
+      {/* Б. МОБИЛЕН ВАРИАНТ (ТЕЛЕФОН)                                      */}
+      {/* ================================================================= */}
+      <motion.div 
+        animate={{ 
+          opacity: isUnlocked ? 0 : 1
+        }}
+        transition={{ duration: 1.0, ease: "easeInOut" }}
+        className="flex md:hidden absolute inset-0 w-full h-full items-center justify-center z-10 overflow-hidden"
+      >
+        <div className="relative w-full h-full flex items-center justify-center">
+          <video
+            ref={mobileIdleRef}
+            src="/videos/envelope-idle-mobile.mp4"
+            muted
+            playsInline
+            autoPlay
+            preload="auto"
+            className={`absolute inset-0 w-full h-full object-cover z-0 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-0' : 'opacity-100'}`}
+          />
+
+          <video
+            ref={mobileActionRef}
+            src="/videos/envelope-open-mobile.mp4"
+            muted
+            playsInline
+            preload="auto"
+            className={`absolute inset-0 w-full h-full object-cover z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-100' : 'opacity-0'}`}
+          />
+
+          {/* НАПЪЛНО СКРИТА ЗОНА ЗА НАТИСКАНЕ ЗА ТЕЛЕФОН */}
+          {!isActionPlaying && !isUnlocked && hasStarted && (
+            <div
+              className="absolute z-30 cursor-pointer touch-none -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full"
+              style={{
+                top: '59%',      
+                left: '50%',     
+                width: '100px',  
+                height: '100px', 
+              }}
+              onMouseDown={startHolding}
+              onMouseUp={stopHolding}
+              onMouseLeave={stopHolding}
+              onTouchStart={startHolding}
+              onTouchEnd={stopHolding}
+            >
+              <AnimatePresence>
+                {isHolding && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1.2 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="absolute inset-2 rounded-full bg-[radial-gradient(circle,_rgba(219,206,179,0.85)_0%,_rgba(219,206,179,0)_75%)] blur-2xl pointer-events-none"
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* ИНСТРУКЦИЯ ОТДОЛУ */}
+      <AnimatePresence>
+        {!isUnlocked && !isActionPlaying && hasStarted && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.4 }}
+            className="relative z-20 text-center pb-6 pointer-events-none"
+          >
+            <p className="font-serif italic text-lg sm:text-2xl text-[#DBCEB3] tracking-wide drop-shadow-sm">
+              Натисни и задръж златния печат
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 3. ОТКЛЮЧЕН ЛИСТ НА ЦЯЛ ЕКРАН (С ПЛАВЕН ПОСТЕПЕНЕН FADE-IN ЕФЕКТ) */}
+      <AnimatePresence>
+        {isUnlocked && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center p-0"
+          >
+            <div 
+              className="absolute inset-0 z-0 transform rotate-90 scale-[2.5]"
+              style={{
+                backgroundImage: `url('/images/assets/envelope_paper.jpeg')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            />
+
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.0, delay: 0.3, ease: "easeOut" }}
+              className="w-full h-full max-w-2xl flex flex-col justify-between items-center z-10 py-10 px-6 sm:px-12 text-center"
+            >
+              <div className="space-y-3">
+                <span className="text-xs uppercase tracking-[0.5em] text-[#958679] font-sans font-bold block">
+                  СПЕЦИАЛНО ПРЕЖИВЯВАНЕ
+                </span>
+                <h2 className="font-serif italic text-2xl sm:text-4xl text-[#635E57] tracking-wide">
+                  Честит Рожден Ден,
+                </h2>
+              </div>
+
+              <div className="py-4">
+                <h1 className="font-serif text-5xl sm:text-8xl text-[#1F1A17] uppercase tracking-wider font-light drop-shadow-sm">
+                  {recipient}
+                </h1>
+                <div className="w-28 h-[1px] bg-[#958679]/40 mx-auto mt-4" />
+              </div>
+
+              <div className="space-y-6 w-full max-w-md">
+                <p className="font-serif italic text-base sm:text-xl text-[#635E57] leading-relaxed">
+                  "Подготвили сме ти неща, които да отключиш..."
+                </p>
+
+                <div>
+                  <button
+                    onClick={handleProceedToQuest}
+                    className="bg-[#1F1A17] text-[#FEFEFD] px-10 py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl shadow-[0_15px_30px_rgba(31,26,23,0.25)] font-sans hover:bg-[#958679] transition duration-300"
+                  >
+                    Започни Приключението ➔
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
-};
+}
+
+export default SealStage;
