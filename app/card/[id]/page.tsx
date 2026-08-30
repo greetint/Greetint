@@ -69,7 +69,7 @@ export default function CardPage() {
           secretJoke={cardData.secretJoke}
           mainWish={cardData.mainWish}
           wishFromCandle={cardData.wishFromCandle}
-          capsuleAnswers={answersList}
+          capsuleAnswers={capsuleAnswers}
           photos={cardData.photos}
         />
       );
