@@ -111,7 +111,7 @@ const Flame3D: React.FC<{ isBlownOut: boolean }> = ({ isBlownOut }) => {
 };
 
 /* ============================================================================
-   3D ТОРТА (ИЗЧИСТЕНА, СЪС ЗЛАТНИ ПЕРЛИ И ПРЪСТЕНИ БЕЗ АРКИ)
+   3D ТОРТА (ОПТИМИЗИРАНА ЗА ТЕЛЕФОН И ДЕСКТОП)
    ============================================================================ */
 const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean }> = ({ active, isBlownOut, isMobile }) => {
   const groupRef = useRef<THREE.Group>(null);
@@ -120,16 +120,15 @@ const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean
     if (groupRef.current) {
       groupRef.current.rotation.y += 0.0025;
       
-      let targetY = active ? -0.8 : -6;
-      if (isBlownOut && isMobile) targetY = 0.1; 
-      if (isBlownOut && !isMobile) targetY = -0.5; 
+      let targetY = active ? (isMobile ? -0.4 : -0.8) : -6;
+      if (isBlownOut) targetY = isMobile ? -0.2 : -0.5; 
 
       groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, delta * 3);
     }
   });
 
   return (
-    <group ref={groupRef} position={[0, -6, 0]}>
+    <group ref={groupRef} position={[0, -6, 0]} scale={isMobile ? 0.78 : 1}>
       {/* 1 Етаж (Връх) */}
       <mesh position={[0, 1.4, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.85, 0.85, 0.75, 64]} />
@@ -288,7 +287,7 @@ export function CakeStage({
     });
   }, [playImpact]);
 
-  // Микрофон с по-висок праг и задържане (предотвратява фалшиви срабатывания)
+  // СВРЪХЧУВСТВИТЕЛЕН МИКРОФОН (реагира дори при лек дъх или говор)
   const startListening = useCallback(() => {
     if (stage === 'cake_reveal' && micStatus !== 'active') {
       navigator.mediaDevices
@@ -301,7 +300,7 @@ export function CakeStage({
           audioContextRef.current = audioCtx;
 
           const analyser = audioCtx.createAnalyser();
-          analyser.fftSize = 512;
+          analyser.fftSize = 256;
           analyserRef.current = analyser;
 
           const microphone = audioCtx.createMediaStreamSource(stream);
@@ -318,9 +317,10 @@ export function CakeStage({
             for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
             const average = sum / dataArray.length;
 
-            if (average > 85) {
+            // Много нисък праг (18) за ултра лесно улавяне на полъх или духване
+            if (average > 18) {
               blowFrames++;
-              if (blowFrames > 3) {
+              if (blowFrames > 2) {
                 handleBlowCandle();
                 return;
               }
@@ -346,7 +346,7 @@ export function CakeStage({
 
   useEffect(() => {
     if (stage === 'cake_reveal') {
-      const timer = setTimeout(startListening, 1000);
+      const timer = setTimeout(startListening, 800);
       return () => clearTimeout(timer);
     } else if (stage === 'blown_celebrate') {
       stopListening();
@@ -361,7 +361,7 @@ export function CakeStage({
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden select-none font-sans flex flex-col items-center justify-between px-4 py-6">
+    <div className="relative w-screen h-[100dvh] overflow-hidden select-none font-sans flex flex-col items-center justify-between px-4 pt-12 pb-6">
       
       {/* СВЕТЪЛ И ПРАЗНИЧЕН ФОН */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FEFEFD] via-[#FDFBF7] to-[#EAE2D6] z-0" />
@@ -371,7 +371,7 @@ export function CakeStage({
         className="absolute inset-0 z-0 cursor-pointer" 
         onClick={stage === 'cake_reveal' ? handleBlowCandle : undefined}
       >
-        <Canvas shadows camera={{ position: [0, 1.5, isMobile ? 7.5 : 6.5], fov: 45 }}>
+        <Canvas shadows camera={{ position: [0, 1.5, isMobile ? 8.2 : 6.5], fov: 45 }}>
           <ambientLight intensity={1.2} color="#FFFFFF" />
           <directionalLight
             position={[5, 10, 5]}
@@ -390,10 +390,10 @@ export function CakeStage({
       {/* Фойерверки при духане */}
       {stage === 'blown_celebrate' && <PartyOverlay />}
 
-      <div className="relative z-40 pt-6" />
+      <div className="relative z-40" />
 
-      {/* ИНТЕРАКТИВЕН UI (Перфектно центриран и отделен, без застъпване на тортата) */}
-      <div className={`relative z-10 w-full max-w-xl mx-auto flex flex-col items-center justify-center pointer-events-none ${stage === 'blown_celebrate' ? (isMobile ? 'absolute bottom-6 left-4 right-4 max-w-none' : 'absolute bottom-10 left-1/2 -translate-x-1/2') : 'my-auto'}`}>
+      {/* ИНТЕРАКТИВЕН UI (ПЕРФЕКТНО ПОЗИЦИОНИРАН БЕЗ ДА ЗАКРИВА ТОРТАТА) */}
+      <div className={`relative z-10 w-full max-w-xl mx-auto flex flex-col items-center justify-center pointer-events-none ${stage === 'blown_celebrate' ? (isMobile ? 'absolute bottom-4 left-4 right-4 max-w-none' : 'absolute bottom-8 left-1/2 -translate-x-1/2') : 'my-auto'}`}>
         <AnimatePresence mode="wait">
           
           {/* ФАЗА 1: Форма за желание */}
@@ -404,13 +404,13 @@ export function CakeStage({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, filter: 'blur(20px)', y: -30 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full flex flex-col items-center text-center space-y-8 px-4 pointer-events-auto"
+              className="w-full flex flex-col items-center text-center space-y-6 px-2 pointer-events-auto"
             >
-              <h1 className="font-serif italic text-2xl sm:text-4xl text-[#1F1A17] leading-relaxed max-w-lg drop-shadow-sm">
+              <h1 className="font-serif italic text-xl sm:text-4xl text-[#1F1A17] leading-relaxed max-w-lg drop-shadow-sm px-2">
                 "Преди да се разкрие празничната 3D магия, напиши своето съкровено желание..."
               </h1>
 
-              <form onSubmit={handleSubmitWish} className="w-full max-w-md space-y-5">
+              <form onSubmit={handleSubmitWish} className="w-full max-w-md space-y-4">
                 <input
                   type="text"
                   required
@@ -418,13 +418,13 @@ export function CakeStage({
                   value={userWish}
                   onChange={(e) => setUserWish(e.target.value)}
                   placeholder="Твоето желание тук..."
-                  className="w-full bg-white/20 backdrop-blur-md text-[#1F1A17] placeholder-[#7A6C5E] px-8 py-5 rounded-full text-base tracking-wide text-center border border-white/50 focus:outline-none focus:border-[#D4AF37] shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all"
+                  className="w-full bg-white/30 backdrop-blur-md text-[#1F1A17] placeholder-[#7A6C5E] px-6 py-4 rounded-full text-sm sm:text-base tracking-wide text-center border border-white/50 focus:outline-none focus:border-[#D4AF37] shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all"
                 />
                 <motion.button
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="w-full bg-[#1F1A17] text-[#DBCEB3] py-5 rounded-full font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300 shadow-xl"
+                  className="w-full bg-[#1F1A17] text-[#DBCEB3] py-4 rounded-full font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300 shadow-xl"
                 >
                   Заключи Желанието ➔
                 </motion.button>
@@ -432,37 +432,37 @@ export function CakeStage({
             </motion.div>
           )}
 
-          {/* ФАЗА 2: Инструкция над тортата */}
+          {/* ФАЗА 2: Инструкция НАД тортата */}
           {stage === 'cake_reveal' && (
             <motion.div
               key="blow-instruction"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className={`text-center space-y-2 pointer-events-none ${isMobile ? 'absolute top-12' : 'absolute top-16'}`}
+              className="absolute top-2 left-0 right-0 text-center space-y-1 pointer-events-none px-4"
             >
-              <span className="font-serif italic text-2xl sm:text-3xl text-[#1F1A17] block drop-shadow-sm">
+              <span className="font-serif italic text-lg sm:text-3xl text-[#1F1A17] block drop-shadow-sm">
                 {uppercaseRecipient}
               </span>
-              <p className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#7A6C5E] font-medium bg-white/30 px-5 py-2 rounded-full backdrop-blur-md border border-white/40 shadow-sm animate-pulse">
-                {micStatus === 'active' ? '🎤 Духни силно в микрофона или кликни тортата' : 'Кликни върху тортата или духни...'}
+              <p className="text-[9px] sm:text-xs uppercase tracking-[0.3em] text-[#7A6C5E] font-medium bg-white/40 px-4 py-1.5 rounded-full backdrop-blur-md border border-white/50 shadow-sm inline-block animate-pulse">
+                🎤 Духни в микрофона или кликни тортата
               </p>
             </motion.div>
           )}
 
-          {/* ФАЗА 3: Ултрамодерна изчистена картичка с пожелание (отдолу на сигурно разстояние) */}
+          {/* ФАЗА 3: Ултрамодерна изчистена картичка с пожелание (ОТДОЛУ НА СИГУРНО РАЗСТОЯНИЕ) */}
           {stage === 'blown_celebrate' && (
             <motion.div
               key="celebration-card"
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="w-full max-w-md bg-white/20 backdrop-blur-md p-6 sm:p-7 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.06)] border border-white/40 text-center space-y-4 pointer-events-auto"
+              className="w-full max-w-md bg-white/30 backdrop-blur-md p-5 sm:p-7 rounded-[1.8rem] shadow-[0_15px_35px_rgba(0,0,0,0.06)] border border-white/50 text-center space-y-3.5 pointer-events-auto"
             >
-              <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.4em] text-[#7A6C5E] font-semibold block">
+              <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.4em] text-[#7A6C5E] font-semibold block">
                 ПОСЛАНИЕ ОТ ПОДАРЯВАЩИЯ
               </span>
-              <p className="font-serif italic text-sm sm:text-base text-[#1F1A17] leading-relaxed">
+              <p className="font-serif italic text-xs sm:text-base text-[#1F1A17] leading-relaxed">
                 "{senderWish}"
               </p>
 
