@@ -59,8 +59,6 @@ export default function CardPage() {
 
   const handleGeneratePdf = async (capsuleAnswers: { question: string; answer: string }[]) => {
     try {
-      const answersList = capsuleAnswers.map(item => `${item.question}: ${item.answer}`);
-
       const doc = (
         <TimeCapsulePdf
           recipient={formattedName}
@@ -147,7 +145,7 @@ export default function CardPage() {
         />
       )}
 
-      {/* 6. ФИНАЛЕН ЕТАП: КАПСУЛА НА БЪДЕЩЕТО */}
+      {/* 6. ФИНАЛЕН ЕТАП: КАПСУЛА НА БЪДЕЩЕТО (ЛИЧЕН ДНЕВНИК И PDF) */}
       {currentStage === 'capsule' && (
         <CapsuleStage
           onGeneratePdf={handleGeneratePdf}
