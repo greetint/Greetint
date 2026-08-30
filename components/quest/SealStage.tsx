@@ -112,7 +112,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
   };
 
   return (
-    <div className="relative w-screen h-screen bg-[#1F1A17] flex flex-col items-center justify-between overflow-hidden select-none">
+    <div className="relative w-screen h-[100dvh] bg-[#1F1A17] flex flex-col items-center justify-between overflow-hidden select-none">
       <audio ref={audioRef} src="/audio/narrator-intro.mp3" preload="auto" />
 
       {/* 1. НАЧАЛЕН OVERLAY */}
@@ -136,7 +136,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
               <span className="text-xs uppercase tracking-[0.6em] text-[#958679] font-sans font-bold block leading-relaxed">
                 ГРИЙТИНТ КИНЕМАТОГРАФИЯ
               </span>
-              <h2 className="font-serif italic text-4xl sm:text-6xl text-[#FEFEFD] tracking-wide leading-tight">
+              <h2 className="font-serif italic text-3xl sm:text-6xl text-[#FEFEFD] tracking-wide leading-tight">
                 Имате неочаквано писмо...
               </h2>
               <div className="pt-4">
@@ -185,7 +185,6 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
             className={`absolute inset-0 w-full h-full object-contain z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-100' : 'opacity-0'}`}
           />
 
-          {/* НАПЪЛНО СКРИТА ЗОНА ЗА НАТИСКАНЕ НА ДЕСКТОП */}
           {!isActionPlaying && !isUnlocked && hasStarted && (
             <div
               className="absolute z-30 cursor-pointer touch-none -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full"
@@ -219,7 +218,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
 
 
       {/* ================================================================= */}
-      {/* Б. МОБИЛЕН ВАРИАНТ (ТЕЛЕФОН)                                      */}
+      {/* Б. МОБИЛЕН ВАРИАНТ (ТЕЛЕФОН) — ПОДОБРЕН И ЦЕНТРИРАН                 */}
       {/* ================================================================= */}
       <motion.div 
         animate={{ 
@@ -237,7 +236,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
             playsInline
             autoPlay
             preload="auto"
-            className={`absolute inset-0 w-full h-full object-cover z-0 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-0' : 'opacity-100'}`}
+            className={`absolute inset-0 w-full h-full object-contain p-4 z-0 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-0' : 'opacity-100'}`}
           />
 
           <video
@@ -246,10 +245,9 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
             muted
             playsInline
             preload="auto"
-            className={`absolute inset-0 w-full h-full object-cover z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 w-full h-full object-contain p-4 z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-100' : 'opacity-0'}`}
           />
 
-          {/* НАПЪЛНО СКРИТА ЗОНА ЗА НАТИСКАНЕ ЗА ТЕЛЕФОН */}
           {!isActionPlaying && !isUnlocked && hasStarted && (
             <div
               className="absolute z-30 cursor-pointer touch-none -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full"
@@ -281,7 +279,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
         </div>
       </motion.div>
 
-      {/* ИНСТРУКЦИЯ ОТДОЛУ */}
+      {/* ИНСТРУКЦИЯ ОТДОЛУ (С ДОБРО ОТСТОЯНИЕ) */}
       <AnimatePresence>
         {!isUnlocked && !isActionPlaying && hasStarted && (
           <motion.div
@@ -289,9 +287,9 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.4 }}
-            className="relative z-20 text-center pb-6 pointer-events-none"
+            className="relative z-20 text-center pb-8 pt-4 pointer-events-none"
           >
-            <p className="font-serif italic text-lg sm:text-2xl text-[#DBCEB3] tracking-wide drop-shadow-sm">
+            <p className="font-serif italic text-base sm:text-2xl text-[#DBCEB3] tracking-wide drop-shadow-sm">
               Натисни и задръж златния печат
             </p>
           </motion.div>
@@ -311,7 +309,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-screen h-screen flex flex-col items-center justify-between p-8 sm:p-20 text-center overflow-hidden"
+              className="relative w-screen h-screen flex flex-col items-center justify-between p-6 sm:p-20 text-center overflow-hidden"
             >
               <div 
                 className="absolute inset-0 z-0 transform rotate-90 scale-[2.5]"
@@ -329,31 +327,31 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
                 transition={{ duration: 1.6, delay: 0.4 }}
                 className="w-full h-full max-w-2xl flex flex-col justify-between items-center z-10 py-10"
               >
-                <div className="space-y-3">
-                  <span className="text-xs uppercase tracking-[0.5em] text-[#958679] font-sans font-bold block">
+                <div className="space-y-2">
+                  <span className="text-[10px] sm:text-xs uppercase tracking-[0.5em] text-[#958679] font-sans font-bold block">
                     СПЕЦИАЛНО ПРЕЖИВЯВАНЕ
                   </span>
-                  <h2 className="font-serif italic text-2xl sm:text-4xl text-[#635E57] tracking-wide">
+                  <h2 className="font-serif italic text-xl sm:text-4xl text-[#635E57] tracking-wide">
                     Честит Рожден Ден,
                   </h2>
                 </div>
 
-                <div className="py-4">
-                  <h1 className="font-serif text-5xl sm:text-8xl text-[#1F1A17] uppercase tracking-wider font-light drop-shadow-sm">
+                <div className="py-2">
+                  <h1 className="font-serif text-4xl sm:text-8xl text-[#1F1A17] uppercase tracking-wider font-light drop-shadow-sm">
                     {recipient}
                   </h1>
-                  <div className="w-28 h-[1px] bg-[#958679]/40 mx-auto mt-4" />
+                  <div className="w-24 sm:w-28 h-[1px] bg-[#958679]/40 mx-auto mt-3" />
                 </div>
 
-                <div className="space-y-6 w-full max-w-md">
-                  <p className="font-serif italic text-base sm:text-xl text-[#635E57] leading-relaxed">
+                <div className="space-y-4 sm:space-y-6 w-full max-w-md">
+                  <p className="font-serif italic text-sm sm:text-xl text-[#635E57] leading-relaxed">
                     "Подготвили сме ти неща, които да отключиш..."
                   </p>
 
                   <div>
                     <button
                       onClick={handleProceedToQuest}
-                      className="bg-[#1F1A17] text-[#FEFEFD] px-10 py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl shadow-[0_15px_30px_rgba(31,26,23,0.25)] font-sans hover:bg-[#958679] transition duration-300"
+                      className="bg-[#1F1A17] text-[#FEFEFD] px-8 py-3.5 sm:px-10 sm:py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl shadow-[0_15px_30px_rgba(31,26,23,0.25)] font-sans hover:bg-[#958679] transition duration-300"
                     >
                       Започни Приключението ➔
                     </button>
