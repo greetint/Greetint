@@ -147,7 +147,7 @@ export default function CardPage() {
         />
       )}
 
-      {/* 6. ФИНАЛЕН ЕТАП: КАПСУЛА НА БЪДЕЩЕТО (ЛИЧЕН ДНЕВНИК И PDF) */}
+      {/* 6. ФИНАЛЕН ЕТАП: КАПСУЛА НА БЪДЕЩЕТО */}
       {currentStage === 'capsule' && (
         <CapsuleStage
           onGeneratePdf={handleGeneratePdf}
