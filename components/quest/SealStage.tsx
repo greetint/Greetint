@@ -159,9 +159,10 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
       {/* ================================================================= */}
       <motion.div 
         animate={{ 
+          scale: isUnlocked ? 1.05 : 1,
           opacity: isUnlocked ? 0 : 1
         }}
-        transition={{ duration: 1.0, ease: "easeInOut" }}
+        transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
         className="hidden md:flex absolute inset-0 w-full h-full items-center justify-center z-10 overflow-hidden"
       >
         <div className="relative w-full h-full flex items-center justify-center bg-[#1F1A17]">
@@ -222,9 +223,10 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
       {/* ================================================================= */}
       <motion.div 
         animate={{ 
+          scale: isUnlocked ? 1.05 : 1,
           opacity: isUnlocked ? 0 : 1
         }}
-        transition={{ duration: 1.0, ease: "easeInOut" }}
+        transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
         className="flex md:hidden absolute inset-0 w-full h-full items-center justify-center z-10 overflow-hidden"
       >
         <div className="relative w-full h-full flex items-center justify-center">
@@ -296,61 +298,68 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
         )}
       </AnimatePresence>
 
-      {/* 3. ОТКЛЮЧЕН ЛИСТ НА ЦЯЛ ЕКРАН (С ПЛАВЕН ПОСТЕПЕНЕН FADE-IN ЕФЕКТ) */}
+      {/* 3. ОТКЛЮЧЕН ЛИСТ НА ЦЯЛ ЕКРАН */}
       <AnimatePresence>
         {isUnlocked && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
+            transition={{ duration: 1.4 }}
             className="fixed inset-0 z-50 flex flex-col items-center justify-center p-0"
           >
-            <div 
-              className="absolute inset-0 z-0 transform rotate-90 scale-[2.5]"
-              style={{
-                backgroundImage: `url('/images/assets/envelope_paper.jpeg')`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat'
-              }}
-            />
-
-            <motion.div 
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.0, delay: 0.3, ease: "easeOut" }}
-              className="w-full h-full max-w-2xl flex flex-col justify-between items-center z-10 py-10 px-6 sm:px-12 text-center"
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-screen h-screen flex flex-col items-center justify-between p-8 sm:p-20 text-center overflow-hidden"
             >
-              <div className="space-y-3">
-                <span className="text-xs uppercase tracking-[0.5em] text-[#958679] font-sans font-bold block">
-                  СПЕЦИАЛНО ПРЕЖИВЯВАНЕ
-                </span>
-                <h2 className="font-serif italic text-2xl sm:text-4xl text-[#635E57] tracking-wide">
-                  Честит Рожден Ден,
-                </h2>
-              </div>
+              <div 
+                className="absolute inset-0 z-0 transform rotate-90 scale-[2.5]"
+                style={{
+                  backgroundImage: `url('/images/assets/envelope_paper.jpeg')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              />
 
-              <div className="py-4">
-                <h1 className="font-serif text-5xl sm:text-8xl text-[#1F1A17] uppercase tracking-wider font-light drop-shadow-sm">
-                  {recipient}
-                </h1>
-                <div className="w-28 h-[1px] bg-[#958679]/40 mx-auto mt-4" />
-              </div>
-
-              <div className="space-y-6 w-full max-w-md">
-                <p className="font-serif italic text-base sm:text-xl text-[#635E57] leading-relaxed">
-                  "Подготвили сме ти неща, които да отключиш..."
-                </p>
-
-                <div>
-                  <button
-                    onClick={handleProceedToQuest}
-                    className="bg-[#1F1A17] text-[#FEFEFD] px-10 py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl shadow-[0_15px_30px_rgba(31,26,23,0.25)] font-sans hover:bg-[#958679] transition duration-300"
-                  >
-                    Започни Приключението ➔
-                  </button>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.6, delay: 0.4 }}
+                className="w-full h-full max-w-2xl flex flex-col justify-between items-center z-10 py-10"
+              >
+                <div className="space-y-3">
+                  <span className="text-xs uppercase tracking-[0.5em] text-[#958679] font-sans font-bold block">
+                    СПЕЦИАЛНО ПРЕЖИВЯВАНЕ
+                  </span>
+                  <h2 className="font-serif italic text-2xl sm:text-4xl text-[#635E57] tracking-wide">
+                    Честит Рожден Ден,
+                  </h2>
                 </div>
-              </div>
+
+                <div className="py-4">
+                  <h1 className="font-serif text-5xl sm:text-8xl text-[#1F1A17] uppercase tracking-wider font-light drop-shadow-sm">
+                    {recipient}
+                  </h1>
+                  <div className="w-28 h-[1px] bg-[#958679]/40 mx-auto mt-4" />
+                </div>
+
+                <div className="space-y-6 w-full max-w-md">
+                  <p className="font-serif italic text-base sm:text-xl text-[#635E57] leading-relaxed">
+                    "Подготвили сме ти неща, които да отключиш..."
+                  </p>
+
+                  <div>
+                    <button
+                      onClick={handleProceedToQuest}
+                      className="bg-[#1F1A17] text-[#FEFEFD] px-10 py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl shadow-[0_15px_30px_rgba(31,26,23,0.25)] font-sans hover:bg-[#958679] transition duration-300"
+                    >
+                      Започни Приключението ➔
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
           </motion.div>
         )}
