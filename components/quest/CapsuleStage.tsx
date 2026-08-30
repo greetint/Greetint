@@ -68,7 +68,7 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden select-none font-sans flex flex-col items-center justify-between px-4 sm:px-6 py-6">
+    <div className="relative w-screen h-[100dvh] overflow-hidden select-none font-sans flex flex-col items-center justify-between px-4 sm:px-6 pt-12 pb-4">
       
       {/* ФОН НА ДНЕВНИК */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FEFEFD] via-[#F9F6F0] to-[#EAE2D6] z-0" />
@@ -101,7 +101,7 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
       </div>
 
       {/* ГОРЕН ИНДИКАТОР ЗА СТРАНИЦА */}
-      <div className="relative z-10 pt-2 flex flex-col items-center space-y-1">
+      <div className="relative z-10 flex flex-col items-center space-y-1">
         <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.45em] text-[#958679] font-bold">
           ЛИЧЕН ДНЕВНИК // СТРАНИЦА {currentIndex + 1} от {questions.length}
         </span>
@@ -125,20 +125,20 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: direction * -50, scale: 0.98 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full space-y-6 text-center relative px-2"
+            className="w-full space-y-5 text-center relative px-2"
           >
             {/* Въпрос с номер */}
-            <div className="space-y-1.5">
-              <span className="text-[10px] uppercase tracking-[0.3em] text-[#8A7C6E] font-bold block">
+            <div className="space-y-1">
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] text-[#8A7C6E] font-bold block">
                 Въпрос {currentIndex + 1}
               </span>
-              <h2 className="font-serif italic text-2xl sm:text-3xl text-[#1F1A17] leading-relaxed drop-shadow-sm">
+              <h2 className="font-serif italic text-xl sm:text-3xl text-[#1F1A17] leading-relaxed drop-shadow-sm px-2">
                 "{currentQuestion}"
               </h2>
             </div>
 
-            {/* Поле за писане с редове като в тетрадка */}
-            <div className="relative max-w-lg mx-auto w-full">
+            {/* Поле за писане с редове като в тетрадка и брояч ОТДОЛУ */}
+            <div className="relative max-w-lg mx-auto w-full text-left">
               <div 
                 className="absolute inset-0 pointer-events-none flex flex-col justify-around py-2 opacity-30"
                 style={{
@@ -146,25 +146,29 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
                 }}
               />
               <textarea
-                rows={4}
+                rows={3}
                 value={currentAnswer}
                 onChange={(e) => handleChange(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Пиши тук... (Натисни Enter за следващ въпрос)"
+                placeholder="Пиши тук... (Натисни Enter)"
                 autoFocus
-                className="w-full bg-transparent px-4 py-1 text-lg sm:text-xl font-serif italic text-[#1F1A17] placeholder-[#958679]/40 focus:outline-none transition-all resize-none relative z-10 leading-[36px]"
+                className="w-full bg-transparent px-4 py-1 text-base sm:text-xl font-serif italic text-[#1F1A17] placeholder-[#958679]/40 focus:outline-none transition-all resize-none relative z-10 leading-[36px]"
               />
-              <span className={`absolute right-3 bottom-1 text-[10px] font-mono z-20 ${charCount >= MAX_CHARS ? 'text-amber-700 font-bold' : 'text-[#958679]/70'}`}>
-                {charCount}/{MAX_CHARS}
-              </span>
+              
+              {/* БРОЯЧ НА ЗНАЦИТЕ ИЗЦЯЛО ПОД ЛИНИИТЕ В ЛЯВО */}
+              <div className="flex justify-start px-4 pt-1">
+                <span className={`text-[10px] font-mono ${charCount >= MAX_CHARS ? 'text-amber-700 font-bold' : 'text-[#958679]/70'}`}>
+                  {charCount} / {MAX_CHARS} знака
+                </span>
+              </div>
             </div>
 
-            {/* Навигационни бутони */}
-            <div className="flex items-center justify-between pt-4 max-w-lg mx-auto w-full">
+            {/* Навигационни бутони (БЕЗ ТЕЖКИ БОРДЪРИ) */}
+            <div className="flex items-center justify-between pt-2 max-w-lg mx-auto w-full">
               {currentIndex > 0 ? (
                 <button
                   onClick={handlePrev}
-                  className="px-6 py-3 rounded-xl border border-[#958679]/30 text-xs uppercase tracking-[0.2em] font-bold text-[#7A6C5E] hover:bg-white/40 transition shadow-sm"
+                  className="px-5 py-2.5 rounded-xl text-xs uppercase tracking-[0.2em] font-bold text-[#7A6C5E] hover:text-[#1F1A17] transition"
                 >
                   ← Предишна
                 </button>
@@ -174,7 +178,7 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={handleNext}
-                className="bg-[#1F1A17] text-[#DBCEB3] px-8 py-3.5 text-xs uppercase tracking-[0.25em] font-bold rounded-xl shadow-lg hover:bg-[#3A332E] transition"
+                className="bg-[#1F1A17] text-[#DBCEB3] px-7 py-3 text-xs uppercase tracking-[0.25em] font-bold rounded-xl hover:bg-[#3A332E] transition shadow-md ml-auto"
               >
                 {currentIndex < questions.length - 1 ? 'Следваща ➔' : 'Запечатай & PDF 📄✨'}
               </motion.button>

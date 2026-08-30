@@ -71,7 +71,7 @@ export function ScratchStage({
     ctx.fillRect(0, 0, width, height);
 
     ctx.fillStyle = '#322720';
-    ctx.font = 'bold 18px serif';
+    ctx.font = 'bold 16px serif'; // Малко по-малък шрифт на скреч полето
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('✦ Изтрий за да разкриеш тайната ✦', width / 2, height / 2);
@@ -147,7 +147,6 @@ export function ScratchStage({
 
   return (
     <div className="relative w-screen h-[100dvh] flex flex-col items-center justify-between overflow-hidden select-none px-4 py-6 sm:p-16">
-      {/* ФОН НА ЦЯЛ ЕКРАН */}
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat scale-110"
         style={{
@@ -157,34 +156,6 @@ export function ScratchStage({
       
       <div className="absolute inset-0 bg-[#3A322D]/10 pointer-events-none z-0" />
 
-      {/* ПЛАВАЩИ ПРАШИНКИ */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {[...Array(12)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute bg-[#DBCEB3] rounded-full blur-[1px]"
-            style={{
-              width: `${Math.random() * 4 + 2}px`,
-              height: `${Math.random() * 4 + 2}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -100, 0],
-              opacity: [0.1, 0.7, 0.1],
-              scale: [1, 1.3, 1],
-            }}
-            transition={{
-              duration: Math.random() * 5 + 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: Math.random() * 3,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* ОСНОВЕН КОНТЕЙНЕР (С БЕЗОПАСЕН ПАДИНГ ОТГОРЕ ЗА МУЗИКАЛНИЯ БУТОН) */}
       <motion.div
         key={currentIndex}
         initial={{ opacity: 0, y: 10 }}
@@ -203,18 +174,16 @@ export function ScratchStage({
           <div className="w-20 sm:w-24 h-[1px] bg-[#958679]/50 mx-auto mt-2" />
         </div>
 
-        {/* ЗОНА ЗА ТРИЕНЕ (ОПТИМИЗИРАНА ЗА МОБИЛНИ ВИСОЧИНИ) */}
         <div 
           ref={containerRef}
-          className="relative w-full max-w-xl h-40 sm:h-56 my-auto flex items-center justify-center rounded-2xl overflow-hidden border border-[#958679]/40 shadow-[0_20px_50px_rgba(31,26,23,0.15)] bg-[#FEFEFD]/80 backdrop-blur-sm p-4 sm:p-10"
+          className="relative w-full max-w-xl h-40 sm:h-56 my-auto flex items-center justify-center rounded-2xl overflow-hidden border border-[#958679]/30 bg-[#FEFEFD]/80 backdrop-blur-sm p-4 sm:p-10"
         >
-          {/* ТЕКСТ */}
           <div className="w-full max-h-full overflow-y-auto px-2 z-0">
             <motion.p 
               initial={{ scale: 0.96 }}
               animate={{ scale: isScratched ? 1 : 0.98 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className={`font-serif italic text-sm sm:text-xl text-[#1F1A17] leading-relaxed text-center px-2 drop-shadow-[0_2px_10px_rgba(219,206,179,0.5)] break-words transition-opacity duration-300 ${
+              className={`font-serif italic text-sm sm:text-xl text-[#1F1A17] leading-relaxed text-center px-2 break-words transition-opacity duration-300 ${
                 isCanvasReady ? 'opacity-100' : 'opacity-0'
               }`}
             >
@@ -222,40 +191,35 @@ export function ScratchStage({
             </motion.p>
           </div>
 
-          {/* ПЛАТНО ЗА ТРИЕНЕ */}
           <canvas
             ref={canvasRef}
             onMouseEnter={() => { lastPosRef.current = null; }}
-            onMouseMove={(e) => {
-              scratch(e.clientX, e.clientY);
-            }}
+            onMouseMove={(e) => { scratch(e.clientX, e.clientY); }}
             onTouchStart={(e) => {
               lastPosRef.current = null;
               scratch(e.touches[0].clientX, e.touches[0].clientY);
             }}
-            onTouchMove={(e) => {
-              scratch(e.touches[0].clientX, e.touches[0].clientY);
-            }}
+            onTouchMove={(e) => { scratch(e.touches[0].clientX, e.touches[0].clientY); }}
             className={`absolute inset-0 z-10 cursor-pointer touch-none transition-opacity duration-700 ${
               isScratched ? 'opacity-0 pointer-events-none' : 'opacity-100'
             }`}
           />
         </div>
 
-        {/* ДОЛНА ЧАСТ С БУТОН */}
+        {/* ИЗЧИСТЕН БУТОН БЕЗ ТЕЖКИ БОРДЪРИ */}
         <div className="w-full max-w-md space-y-3 pb-2">
           <AnimatePresence mode="wait">
             {isScratched ? (
               <motion.div
                 key="next-btn"
-                initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
               >
                 <button
                   onClick={handleNextCard}
-                  className="bg-[#1F1A17] text-[#FEFEFD] px-8 py-3.5 sm:px-10 sm:py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl shadow-[0_15px_30px_rgba(31,26,23,0.25)] font-sans hover:bg-[#958679] transition duration-300 w-full"
+                  className="bg-[#1F1A17] text-[#FEFEFD] px-8 py-3.5 sm:px-10 sm:py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl font-sans hover:bg-[#635E57] transition duration-300 w-full"
                 >
                   {currentIndex < scratchCards.length - 1 ? 'Следваща Тайна ➔' : 'Към Въпросите ➔'}
                 </button>
@@ -266,7 +230,7 @@ export function ScratchStage({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#635E57] font-sans font-bold italic block drop-shadow-sm"
+                className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#635E57] font-sans font-bold italic block"
               >
                 ✦ Плъсни с пръст, за да изтриеш фолиото ✦
               </motion.span>

@@ -146,7 +146,7 @@ export function MemoryWallStage({
         )}
       </AnimatePresence>
 
-      {/* 🎞️ ЦЕНТРАЛНА КИНОЛЕНТА (КОМПАКТНА ЗА ТЕЛЕФОН С ВИДИМИ СЪСЕДНИ КАДРИ) */}
+      {/* 🎞️ ЦЕНТРАЛНА КИНОЛЕНТА (ПОДОБРЕНИ ПЕРФОРАЦИИ И РАЗСТОЯНИЯ ЗА ТЕЛЕФОН) */}
       <div className="relative z-10 w-full h-[70vh] sm:h-[78vh] flex items-center justify-center overflow-hidden my-auto">
         {allFrameIndices.map((frameIdx) => {
           const isActive = frameIdx === activeIdx;
@@ -166,15 +166,15 @@ export function MemoryWallStage({
                 zIndex: isActive ? 30 : 10
               }}
               transition={{ type: "spring", stiffness: 220, damping: 28 }}
-              className={`absolute m-auto top-0 bottom-0 left-0 right-0 w-[82vw] sm:w-[74vw] max-w-[1050px] h-[62vh] sm:h-full bg-[#141210] flex flex-col justify-between p-2 sm:p-3 shadow-[0_25px_60px_rgba(0,0,0,0.7)] border-x-2 border-[#2A2421] ${!isEmpty && !isActive && isUnlocked ? 'cursor-pointer hover:opacity-60' : ''}`}
+              className={`absolute m-auto top-0 bottom-0 left-0 right-0 w-[82vw] sm:w-[74vw] max-w-[1050px] h-[62vh] sm:h-full bg-[#141210] flex flex-col justify-between p-2.5 sm:p-3 shadow-2xl border-x-2 border-[#2A2421] ${!isEmpty && !isActive && isUnlocked ? 'cursor-pointer hover:opacity-60' : ''}`}
             >
-              {/* Горна перфорация */}
-              <div className="h-2.5 sm:h-4 w-full flex items-center justify-around px-2 opacity-90 flex-shrink-0">
-                {[...Array(24)].map((_, i) => <div key={i} className="w-2.5 sm:w-4 h-1.5 sm:h-2.5 bg-[#ECE8E0] rounded-[2px] shadow-inner" />)}
+              {/* Горна перфорация (увеличени квадратчета и разстояния) */}
+              <div className="h-4 sm:h-5 w-full flex items-center justify-around px-3 opacity-95 flex-shrink-0">
+                {[...Array(16)].map((_, i) => <div key={i} className="w-3.5 sm:w-5 h-2 sm:h-3 bg-[#ECE8E0] rounded-[3px] shadow-inner" />)}
               </div>
 
               {/* МЕДИЯ И ОВЪРЛЕИ */}
-              <div className="relative flex-1 w-full bg-black my-1 rounded-md sm:rounded-lg overflow-hidden flex items-center justify-center border border-white/5">
+              <div className="relative flex-1 w-full bg-black my-1.5 rounded-md sm:rounded-lg overflow-hidden flex items-center justify-center border border-white/5">
                 {!isEmpty && memory && (
                   <>
                     {/* Същинският кадър */}
@@ -200,14 +200,14 @@ export function MemoryWallStage({
                       <motion.div 
                         initial={{ opacity: 0, scale: 0.98 }} 
                         animate={{ opacity: 1, scale: 1 }}
-                        className="absolute inset-0 z-20 flex flex-col items-center justify-center p-4 sm:p-12 text-center bg-black/35 backdrop-blur-[2px]"
+                        className="absolute inset-0 z-20 flex flex-col items-center justify-center p-4 sm:p-12 text-center bg-black/40 backdrop-blur-[2px]"
                       >
                         <div className="w-full max-w-xl space-y-3 sm:space-y-5">
-                          <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.5em] text-[#DBCEB3] font-bold drop-shadow-md">
+                          <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.5em] text-[#DBCEB3] font-bold">
                             ✦ Кадър {frameIdx + 1} ✦
                           </span>
                           
-                          <p className="font-serif italic text-xs sm:text-2xl text-[#FEFEFD] leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] px-1">
+                          <p className="font-serif italic text-xs sm:text-2xl text-[#FEFEFD] leading-relaxed drop-shadow-md px-1">
                             "{memory.questionOrCaption}"
                           </p>
                           
@@ -217,18 +217,18 @@ export function MemoryWallStage({
                               value={userAnswer}
                               onChange={(e) => setUserAnswer(e.target.value)}
                               placeholder="Въведи отговора тук..."
-                              className="flex-1 bg-black/50 backdrop-blur-md text-[#FEFEFD] placeholder-[#FEFEFD]/60 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl text-xs sm:text-sm tracking-wide text-center sm:text-left border border-white/20 focus:outline-none focus:border-[#DBCEB3] shadow-lg"
+                              className="flex-1 bg-black/60 backdrop-blur-md text-[#FEFEFD] placeholder-[#FEFEFD]/60 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl text-xs sm:text-sm tracking-wide text-center sm:text-left border border-white/20 focus:outline-none focus:border-[#DBCEB3]"
                             />
                             <button
                               type="submit"
-                              className="bg-[#DBCEB3] text-[#141210] px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl text-[9px] sm:text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#FEFEFD] transition duration-300 shadow-lg whitespace-nowrap"
+                              className="bg-[#DBCEB3] text-[#141210] px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl text-[9px] sm:text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#FEFEFD] transition duration-300 whitespace-nowrap"
                             >
                               Завърти ➔
                             </button>
                           </form>
                           
                           {feedbackMessage && (
-                            <span className="text-[10px] sm:text-xs text-[#DBCEB3] italic block animate-pulse pt-0.5 drop-shadow-md">
+                            <span className="text-[10px] sm:text-xs text-[#DBCEB3] italic block animate-pulse pt-0.5">
                               {feedbackMessage}
                             </span>
                           )}
@@ -236,33 +236,33 @@ export function MemoryWallStage({
                       </motion.div>
                     )}
 
-                    {/* 🔓 ОТКЛЮЧЕН СТЕЙТ - ТЕКСТ ОТГОРЕ СЪС СВЕТЪЛ И ПРОЗРАЧЕН СТЪКЛЕН ФОН */}
+                    {/* 🔓 ОТКЛЮЧЕН СТЕЙТ */}
                     {isUnlocked && isActive && (
                       <motion.div 
                         initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                        className="absolute top-3 left-3 right-3 sm:left-8 sm:right-8 py-2.5 px-4 sm:px-6 bg-[#FEFEFD]/25 backdrop-blur-md rounded-xl sm:rounded-2xl border border-white/30 text-center z-20 shadow-2xl"
+                        className="absolute top-3 left-3 right-3 sm:left-8 sm:right-8 py-2.5 px-4 sm:px-6 bg-[#FEFEFD]/25 backdrop-blur-md rounded-xl sm:rounded-2xl border border-white/30 text-center z-20"
                       >
-                        {feedbackMessage && <p className="text-[9px] sm:text-[10px] text-[#FEFEFD] font-semibold italic pb-0.5 drop-shadow-md">{feedbackMessage}</p>}
-                        <p className="font-serif italic text-xs sm:text-lg text-[#FEFEFD] drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">"{memory.questionOrCaption}"</p>
+                        {feedbackMessage && <p className="text-[9px] sm:text-[10px] text-[#FEFEFD] font-semibold italic pb-0.5">{feedbackMessage}</p>}
+                        <p className="font-serif italic text-xs sm:text-lg text-[#FEFEFD] drop-shadow-md">"{memory.questionOrCaption}"</p>
                       </motion.div>
                     )}
                   </>
                 )}
                 {isEmpty && (
-                  <div className="absolute inset-0 bg-[#0A0908] opacity-50 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] mix-blend-overlay" />
+                  <div className="absolute inset-0 bg-[#0A0908] opacity-50" />
                 )}
               </div>
 
               {/* Долна перфорация */}
-              <div className="h-2.5 sm:h-4 w-full flex items-center justify-around px-2 opacity-90 flex-shrink-0">
-                {[...Array(24)].map((_, i) => <div key={i} className="w-2.5 sm:w-4 h-1.5 sm:h-2.5 bg-[#ECE8E0] rounded-[2px] shadow-inner" />)}
+              <div className="h-4 sm:h-5 w-full flex items-center justify-around px-3 opacity-95 flex-shrink-0">
+                {[...Array(16)].map((_, i) => <div key={i} className="w-3.5 sm:w-5 h-2 sm:h-3 bg-[#ECE8E0] rounded-[3px] shadow-inner" />)}
               </div>
             </motion.div>
           );
         })}
       </div>
 
-      {/* ДОЛНА СИНЕМАТИЧНА НАВИГАЦИЯ */}
+      {/* ДОЛНА СИНЕМАТИЧНА НАВИГАЦИЯ (БЕЗ БОРДЪРИ) */}
       <div className="relative z-10 w-full max-w-5xl h-[7vh] sm:h-[8vh] flex items-center justify-between px-4 sm:px-10 mx-auto">
         <button
           onClick={handlePrevMemory}
@@ -276,7 +276,7 @@ export function MemoryWallStage({
         {isCurrentUnlocked ? (
           <button
             onClick={handleNextMemory}
-            className="bg-[#1F1A17] text-[#FEFEFD] px-7 sm:px-9 py-2.5 sm:py-3 rounded-full text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-bold shadow-[0_10px_20px_rgba(31,26,23,0.2)] hover:bg-[#635E57] hover:shadow-[0_15px_25px_rgba(31,26,23,0.3)] transition-all duration-300 flex items-center space-x-2"
+            className="bg-[#1F1A17] text-[#FEFEFD] px-7 sm:px-9 py-2.5 sm:py-3 rounded-full text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-[#635E57] transition-all duration-300 flex items-center space-x-2"
           >
             <span>{activeIdx < memories.length - 1 ? 'Следващ' : 'Към Финала'}</span>
             <span className="text-[14px]">➔</span>

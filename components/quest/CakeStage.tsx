@@ -111,7 +111,7 @@ const Flame3D: React.FC<{ isBlownOut: boolean }> = ({ isBlownOut }) => {
 };
 
 /* ============================================================================
-   3D ТОРТА (ОПТИМИЗИРАНА ЗА ТЕЛЕФОН И ДЕСКТОП)
+   3D ТОРТА
    ============================================================================ */
 const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean }> = ({ active, isBlownOut, isMobile }) => {
   const groupRef = useRef<THREE.Group>(null);
@@ -129,13 +129,11 @@ const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean
 
   return (
     <group ref={groupRef} position={[0, -6, 0]} scale={isMobile ? 0.78 : 1}>
-      {/* 1 Етаж (Връх) */}
       <mesh position={[0, 1.4, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.85, 0.85, 0.75, 64]} />
         <meshStandardMaterial color="#FFFFFF" roughness={0.1} />
       </mesh>
       
-      {/* Златни перли по ръба на 1 етаж */}
       {[...Array(8)].map((_, i) => {
         const angle = (i / 8) * Math.PI * 2;
         const x = Math.cos(angle) * 0.82;
@@ -148,7 +146,6 @@ const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean
         );
       })}
 
-      {/* 2 Етаж */}
       <mesh position={[0, 0.55, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[1.25, 1.25, 0.8, 64]} />
         <meshStandardMaterial color="#FDFBF7" roughness={0.15} />
@@ -158,7 +155,6 @@ const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean
         <meshStandardMaterial color="#D4AF37" metalness={0.9} roughness={0.15} />
       </mesh>
       
-      {/* Златни мини топчета на 2 етаж */}
       {[...Array(10)].map((_, i) => {
         const angle = (i / 10) * Math.PI * 2;
         const x = Math.cos(angle) * 1.22;
@@ -171,7 +167,6 @@ const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean
         );
       })}
 
-      {/* 3 Етаж (Основа) */}
       <mesh position={[0, -0.3, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[1.75, 1.75, 0.85, 64]} />
         <meshStandardMaterial color="#F5EBE6" roughness={0.2} />
@@ -181,7 +176,6 @@ const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean
         <meshStandardMaterial color="#D4AF37" metalness={0.9} roughness={0.15} />
       </mesh>
 
-      {/* Луксозна Златна Подложка */}
       <mesh position={[0, -0.78, 0]} receiveShadow>
         <cylinderGeometry args={[2.05, 2.05, 0.12, 64]} />
         <meshStandardMaterial color="#D4AF37" metalness={0.95} roughness={0.1} />
@@ -191,7 +185,6 @@ const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean
         <meshStandardMaterial color="#C5A880" metalness={0.8} roughness={0.2} />
       </mesh>
 
-      {/* Свещ */}
       <mesh position={[0, 2.05, 0]} castShadow>
         <cylinderGeometry args={[0.05, 0.05, 0.55, 32]} />
         <meshStandardMaterial color="#FFFFFF" roughness={0.2} />
@@ -287,7 +280,6 @@ export function CakeStage({
     });
   }, [playImpact]);
 
-  // СВРЪХЧУВСТВИТЕЛЕН МИКРОФОН (реагира дори при лек дъх или говор)
   const startListening = useCallback(() => {
     if (stage === 'cake_reveal' && micStatus !== 'active') {
       navigator.mediaDevices
@@ -317,7 +309,6 @@ export function CakeStage({
             for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
             const average = sum / dataArray.length;
 
-            // Много нисък праг (18) за ултра лесно улавяне на полъх или духване
             if (average > 18) {
               blowFrames++;
               if (blowFrames > 2) {
@@ -361,12 +352,12 @@ export function CakeStage({
   };
 
   return (
-    <div className="relative w-screen h-[100dvh] overflow-hidden select-none font-sans flex flex-col items-center justify-between px-4 pt-12 pb-6">
+    <div className="relative w-screen h-[100dvh] overflow-hidden select-none font-sans flex flex-col items-center justify-between px-4 pt-12 pb-4">
       
-      {/* СВЕТЪЛ И ПРАЗНИЧЕН ФОН */}
+      {/* ФОН */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FEFEFD] via-[#FDFBF7] to-[#EAE2D6] z-0" />
       
-      {/* 3D СЦЕНАТА (Three.js WebGL) */}
+      {/* 3D СЦЕНА */}
       <div 
         className="absolute inset-0 z-0 cursor-pointer" 
         onClick={stage === 'cake_reveal' ? handleBlowCandle : undefined}
@@ -387,16 +378,15 @@ export function CakeStage({
         </Canvas>
       </div>
 
-      {/* Фойерверки при духане */}
       {stage === 'blown_celebrate' && <PartyOverlay />}
 
       <div className="relative z-40" />
 
-      {/* ИНТЕРАКТИВЕН UI (ПЕРФЕКТНО ПОЗИЦИОНИРАН БЕЗ ДА ЗАКРИВА ТОРТАТА) */}
-      <div className={`relative z-10 w-full max-w-xl mx-auto flex flex-col items-center justify-center pointer-events-none ${stage === 'blown_celebrate' ? (isMobile ? 'absolute bottom-4 left-4 right-4 max-w-none' : 'absolute bottom-8 left-1/2 -translate-x-1/2') : 'my-auto'}`}>
+      {/* UI - КОМПАКТНО ПОЗИЦИОНИРАН ОТДОЛУ (БЕЗ ДА ЗАКРИВА ТОРТАТА) */}
+      <div className={`relative z-10 w-full max-w-lg mx-auto flex flex-col items-center justify-center pointer-events-none ${stage === 'blown_celebrate' ? 'absolute bottom-2 left-4 right-4 max-w-md mx-auto' : 'my-auto'}`}>
         <AnimatePresence mode="wait">
           
-          {/* ФАЗА 1: Форма за желание */}
+          {/* ФАЗА 1 */}
           {stage === 'wish_entry' && (
             <motion.div
               key="wish-form"
@@ -418,13 +408,13 @@ export function CakeStage({
                   value={userWish}
                   onChange={(e) => setUserWish(e.target.value)}
                   placeholder="Твоето желание тук..."
-                  className="w-full bg-white/30 backdrop-blur-md text-[#1F1A17] placeholder-[#7A6C5E] px-6 py-4 rounded-full text-sm sm:text-base tracking-wide text-center border border-white/50 focus:outline-none focus:border-[#D4AF37] shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all"
+                  className="w-full bg-white/30 backdrop-blur-md text-[#1F1A17] placeholder-[#7A6C5E] px-6 py-4 rounded-full text-sm sm:text-base tracking-wide text-center focus:outline-none focus:border-[#D4AF37] shadow-sm transition-all"
                 />
                 <motion.button
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
-                  className="w-full bg-[#1F1A17] text-[#DBCEB3] py-4 rounded-full font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300 shadow-xl"
+                  className="w-full bg-[#1F1A17] text-[#DBCEB3] py-4 rounded-full font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300"
                 >
                   Заключи Желанието ➔
                 </motion.button>
@@ -432,7 +422,7 @@ export function CakeStage({
             </motion.div>
           )}
 
-          {/* ФАЗА 2: Инструкция НАД тортата */}
+          {/* ФАЗА 2 */}
           {stage === 'cake_reveal' && (
             <motion.div
               key="blow-instruction"
@@ -444,31 +434,31 @@ export function CakeStage({
               <span className="font-serif italic text-lg sm:text-3xl text-[#1F1A17] block drop-shadow-sm">
                 {uppercaseRecipient}
               </span>
-              <p className="text-[9px] sm:text-xs uppercase tracking-[0.3em] text-[#7A6C5E] font-medium bg-white/40 px-4 py-1.5 rounded-full backdrop-blur-md border border-white/50 shadow-sm inline-block animate-pulse">
+              <p className="text-[9px] sm:text-xs uppercase tracking-[0.3em] text-[#7A6C5E] font-medium bg-white/40 px-4 py-1.5 rounded-full backdrop-blur-md inline-block animate-pulse">
                 🎤 Духни в микрофона или кликни тортата
               </p>
             </motion.div>
           )}
 
-          {/* ФАЗА 3: Ултрамодерна изчистена картичка с пожелание (ОТДОЛУ НА СИГУРНО РАЗСТОЯНИЕ) */}
+          {/* ФАЗА 3: ПОСЛАНИЕ И ИЗЧИСТЕН БУТОН БЕЗ БОРДЪРИ */}
           {stage === 'blown_celebrate' && (
             <motion.div
               key="celebration-card"
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="w-full max-w-md bg-white/30 backdrop-blur-md p-5 sm:p-7 rounded-[1.8rem] shadow-[0_15px_35px_rgba(0,0,0,0.06)] border border-white/50 text-center space-y-3.5 pointer-events-auto"
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="w-full bg-white/35 backdrop-blur-md p-4 sm:p-5 rounded-2xl shadow-lg text-center space-y-2.5 pointer-events-auto"
             >
-              <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.4em] text-[#7A6C5E] font-semibold block">
+              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.4em] text-[#7A6C5E] font-semibold block">
                 ПОСЛАНИЕ ОТ ПОДАРЯВАЩИЯ
               </span>
-              <p className="font-serif italic text-xs sm:text-base text-[#1F1A17] leading-relaxed">
+              <p className="font-serif italic text-xs sm:text-sm text-[#1F1A17] leading-relaxed">
                 "{senderWish}"
               </p>
 
               <button
                 onClick={() => onComplete && onComplete(userWish)}
-                className="w-full bg-[#1F1A17] text-[#DBCEB3] py-3.5 rounded-2xl font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300 shadow-lg"
+                className="w-full bg-[#1F1A17] text-[#DBCEB3] py-3 rounded-xl font-sans text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300"
               >
                 Към Капсулата на Бъдещето ➔
               </button>
@@ -477,7 +467,6 @@ export function CakeStage({
         </AnimatePresence>
       </div>
 
-      {/* Копирайт */}
       <div className="relative z-10 pb-1 text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-[#958679] text-center w-full pointer-events-none">
         GREETING ARCHIVE © 2026
       </div>

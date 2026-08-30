@@ -142,7 +142,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
               <div className="pt-4">
                 <button
                   onClick={handleStartInteraction}
-                  className="bg-[#DBCEB3] text-[#1F1A17] px-10 py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.4)] font-sans hover:bg-[#FEFEFD] transition duration-300"
+                  className="bg-[#DBCEB3] text-[#1F1A17] px-10 py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-2xl font-sans hover:bg-[#FEFEFD] transition duration-300"
                 >
                   Отвори Екрана 🎬
                 </button>
@@ -218,7 +218,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
 
 
       {/* ================================================================= */}
-      {/* Б. МОБИЛЕН ВАРИАНТ (ТЕЛЕФОН) — ПОДОБРЕН И ЦЕНТРИРАН                 */}
+      {/* Б. МОБИЛЕН ВАРИАНТ (ТЕЛЕФОН) — ПЕРФЕКТНО РАЗПЪНАТ БЕЗ КАНАЛИ           */}
       {/* ================================================================= */}
       <motion.div 
         animate={{ 
@@ -236,7 +236,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
             playsInline
             autoPlay
             preload="auto"
-            className={`absolute inset-0 w-full h-full object-contain p-4 z-0 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-0' : 'opacity-100'}`}
+            className={`absolute inset-0 w-full h-full object-cover z-0 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-0' : 'opacity-100'}`}
           />
 
           <video
@@ -245,7 +245,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
             muted
             playsInline
             preload="auto"
-            className={`absolute inset-0 w-full h-full object-contain p-4 z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-0 w-full h-full object-cover z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-100' : 'opacity-0'}`}
           />
 
           {!isActionPlaying && !isUnlocked && hasStarted && (
@@ -279,7 +279,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
         </div>
       </motion.div>
 
-      {/* ИНСТРУКЦИЯ ОТДОЛУ (С ДОБРО ОТСТОЯНИЕ) */}
+      {/* ИНСТРУКЦИЯ ОТДОЛУ (СМЪКНАТА НАДОЛУ, ЗА ДА НЕ СЕ ЗАСКРИВА) */}
       <AnimatePresence>
         {!isUnlocked && !isActionPlaying && hasStarted && (
           <motion.div
@@ -287,7 +287,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.4 }}
-            className="relative z-20 text-center pb-8 pt-4 pointer-events-none"
+            className="relative z-20 text-center pb-12 pt-4 pointer-events-none mt-auto"
           >
             <p className="font-serif italic text-base sm:text-2xl text-[#DBCEB3] tracking-wide drop-shadow-sm">
               Натисни и задръж златния печат
@@ -351,7 +351,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
                   <div>
                     <button
                       onClick={handleProceedToQuest}
-                      className="bg-[#1F1A17] text-[#FEFEFD] px-8 py-3.5 sm:px-10 sm:py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl shadow-[0_15px_30px_rgba(31,26,23,0.25)] font-sans hover:bg-[#958679] transition duration-300"
+                      className="bg-[#1F1A17] text-[#FEFEFD] px-8 py-3.5 sm:px-10 sm:py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl font-sans hover:bg-[#958679] transition duration-300"
                     >
                       Започни Приключението ➔
                     </button>

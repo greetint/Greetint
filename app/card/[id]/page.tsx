@@ -33,7 +33,7 @@ export default function CardPage() {
     photos: [] as string[]
   });
 
-  // Управление на фоновата музика
+  // Управление на фоновата музика с непрекъснат loop
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -52,12 +52,10 @@ export default function CardPage() {
     }
   }, [isMuted]);
 
-  // ГЕНЕРАЛЕН БУТОН ЗА СПИРАНЕ И ЗАГЛУШАВАНЕ НА ВСИЧКИ ЗВУЦИ И ВИДЕА
   const toggleMute = () => {
     const newMutedState = !isMuted;
     setIsMuted(newMutedState);
 
-    // 1. Заглушава/спира основната фонова музика
     if (audioRef.current) {
       audioRef.current.muted = newMutedState;
       if (newMutedState) {
@@ -66,20 +64,6 @@ export default function CardPage() {
         audioRef.current.play().catch(() => {});
       }
     }
-
-    // 2. Намира и спира АБСОЛЮТНО ВСИЧКИ други аудио и видео елементи на страницата (гласови модули, видеа и др.)
-    const allMediaElements = document.querySelectorAll('audio');
-    allMediaElements.forEach((el) => {
-      const media = el as HTMLMediaElement;
-      if (media !== audioRef.current) {
-        if (newMutedState) {
-          media.muted = true;
-          media.pause();
-        } else {
-          media.muted = false;
-        }
-      }
-    });
   };
 
   const handleGeneratePdf = async (capsuleAnswers: { question: string; answer: string }[]) => {
@@ -115,19 +99,18 @@ export default function CardPage() {
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-[#ECE8E0] select-none">
       
-      {/* ФОНОВ АУДИО ПЛЕЙЪР */}
-      <audio ref={audioRef} src="/audio/background-music.mp3" preload="auto" />
+      {/* ФОНОВ АУДИО ПЛЕЙЪР С LOOP */}
+      <audio ref={audioRef} src="/audio/background-music.mp3" preload="auto" loop />
 
-      {/* УНИВЕРСАЛНА КРЪГЛА ИКОНКА ЗА ГЛОБАЛЕН МЮТ (ГОРЕ В ДЯСНО) */}
+      {/* МИНИМАЛИСТИЧНА КРЪГЛА ИКОНКА ЗА МУЗИКА (БЕЗ БОРДЪРИ) */}
       <button
         onClick={toggleMute}
-        className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/40 backdrop-blur-md border border-white/60 text-[#1F1A17] rounded-full shadow-md hover:bg-white/70 transition flex items-center justify-center text-base"
-        title={isMuted ? 'Включи звука' : 'Спри всички звуци'}
+        className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/40 backdrop-blur-md text-[#1F1A17] rounded-full shadow-md hover:bg-white/70 transition flex items-center justify-center text-base"
+        title={isMuted ? 'Включи музиката' : 'Спри музиката'}
       >
         <span>{isMuted ? '🔇' : '🔊'}</span>
       </button>
 
-      {/* 1. ЕТАП: ВОСЪЧЕН ПЕЧАТ */}
       {currentStage === 'seal' && (
         <SealStage
           recipient={formattedName}
@@ -135,7 +118,6 @@ export default function CardPage() {
         />
       )}
 
-      {/* 2. ЕТАП: ЗЛАТНО СКРЕЧ ФОЛИО */}
       {currentStage === 'scratch' && (
         <ScratchStage
           recipient={uppercaseName}
@@ -143,7 +125,6 @@ export default function CardPage() {
         />
       )}
 
-      {/* 3. ЕТАП: ПЕРСОНАЛЕН ВЪПРОС */}
       {currentStage === 'quiz' && (
         <QuizStage
           recipient={uppercaseName}
@@ -151,7 +132,6 @@ export default function CardPage() {
         />
       )}
 
-      {/* 4. ЕТАП: ГАЛЕРИЯ СЪС СПОМЕНИ */}
       {currentStage === 'memories' && (
         <MemoryWallStage
           recipient={uppercaseName}
@@ -159,7 +139,6 @@ export default function CardPage() {
         />
       )}
 
-      {/* 5. ЕТАП: ДУХВАНЕ НА СВЕЩ */}
       {currentStage === 'cake' && (
         <CakeStage
           recipient={uppercaseName}
@@ -170,7 +149,6 @@ export default function CardPage() {
         />
       )}
 
-      {/* 6. ФИНАЛЕН ЕТАП: КАПСУЛА НА БЪДЕЩЕТО */}
       {currentStage === 'capsule' && (
         <CapsuleStage
           onGeneratePdf={handleGeneratePdf}
