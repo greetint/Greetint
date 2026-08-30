@@ -112,9 +112,13 @@ const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean
       groupRef.current.rotation.y += 0.0025;
       
       let targetY = active ? (isMobile ? -0.2 : -0.6) : -6;
-      if (isBlownOut) targetY = isMobile ? 0 : -0.3; 
+      if (isBlownOut) targetY = isMobile ? 0.3 : -0.3; 
+
+      // На десктоп изместваме тортата наляво, за да направим място за текста вдясно
+      let targetX = (isBlownOut && !isMobile) ? -1.8 : 0;
 
       groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, delta * 3);
+      groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetX, delta * 3);
     }
   });
 
@@ -365,10 +369,8 @@ export function CakeStage({
 
       {stage === 'blown_celebrate' && <PartyOverlay />}
 
-      <div className="relative z-40" />
-
-      {/* UI - ДОЛНА ЧАСТ */}
-      <div className={`relative z-10 w-full max-w-lg mx-auto flex flex-col items-center justify-center pointer-events-none ${stage === 'blown_celebrate' ? 'absolute bottom-6 left-4 right-4 max-w-md mx-auto' : 'my-auto'}`}>
+      {/* АБСОЛЮТЕН КОНТЕЙНЕР ЗА ИНТЕРФЕЙСА */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
         <AnimatePresence mode="wait">
           
           {/* ФАЗА 1 */}
@@ -379,7 +381,7 @@ export function CakeStage({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, filter: 'blur(20px)', y: -30 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full flex flex-col items-center text-center space-y-6 px-2 pointer-events-auto"
+              className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-6 px-4 pointer-events-auto max-w-lg mx-auto"
             >
               <h1 className="font-serif italic text-xl sm:text-4xl text-[#1F1A17] leading-relaxed max-w-lg drop-shadow-sm px-2">
                 "Преди да се разкрие празничната 3D магия, напиши своето съкровено желание..."
@@ -414,7 +416,7 @@ export function CakeStage({
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="absolute top-2 left-0 right-0 text-center space-y-1 pointer-events-none px-4"
+              className="absolute top-12 left-0 right-0 text-center space-y-1 pointer-events-none px-4"
             >
               <span className="font-serif italic text-lg sm:text-3xl text-[#1F1A17] block drop-shadow-sm">
                 {uppercaseRecipient}
@@ -425,20 +427,25 @@ export function CakeStage({
             </motion.div>
           )}
 
-          {/* ФАЗА 3: ЧИСТ ТЕКСТ НАЙ-ОТДОЛУ И МИНИМАЛИСТИЧЕН БУТОН БЕЗ РАМКИ */}
+          {/* ФАЗА 3: АДАПТИВНО ПОЗИЦИОНИРАНЕ (Тел: отдолу, Десктоп: вдясно) */}
           {stage === 'blown_celebrate' && (
             <motion.div
               key="celebration-card"
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="w-full text-center space-y-2 pointer-events-auto px-6 max-w-sm mx-auto"
+              className="absolute bottom-6 left-4 right-4 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:left-auto md:right-[10%] max-w-sm mx-auto md:mx-0 text-center md:text-left space-y-3 pointer-events-auto px-4"
             >
-              <p className="font-serif italic text-xs sm:text-sm text-[#5A5046] leading-relaxed drop-shadow-sm">
-                "{senderWish}"
-              </p>
+              <div className="space-y-1">
+                <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.4em] text-[#7A6C5E] font-bold block">
+                  ПОСЛАНИЕ ОТ ПОДАРЯВАЩИЯ
+                </span>
+                <p className="font-serif italic text-sm sm:text-base md:text-lg text-[#1F1A17] leading-relaxed drop-shadow-sm">
+                  "{senderWish}"
+                </p>
+              </div>
 
-              <div className="pt-1">
+              <div className="pt-2 md:pt-3">
                 <button
                   onClick={() => onComplete && onComplete(userWish)}
                   className="text-[#1F1A17] font-sans text-[10px] sm:text-xs uppercase tracking-[0.35em] font-bold hover:text-[#7A6C5E] transition duration-300 py-2 inline-flex items-center space-x-2"
@@ -452,7 +459,7 @@ export function CakeStage({
         </AnimatePresence>
       </div>
 
-      <div className="relative z-10 pb-1 text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-[#958679] text-center w-full pointer-events-none">
+      <div className="absolute bottom-1 left-0 right-0 z-10 text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-[#958679] text-center pointer-events-none">
         GREETING ARCHIVE © 2026
       </div>
     </div>
