@@ -41,12 +41,13 @@ const DEFAULT_MEMORIES: MemoryPhotoItem[] = [
   }
 ];
 
+// Оптимизирано разстояние, за да се виждат по-големи съседните кадри отстрани
 const getXOffset = (idx: number, activeIdx: number) => {
   const offset = idx - activeIdx;
   if (offset === 0) return "0%";
   const sign = Math.sign(offset);
   const absOffset = Math.abs(offset);
-  const val = 92.5 + (absOffset - 1) * 85;
+  const val = 82 + (absOffset - 1) * 78;
   return `${sign * val}%`;
 };
 
@@ -146,7 +147,7 @@ export function MemoryWallStage({
         )}
       </AnimatePresence>
 
-      {/* 🎞️ ЦЕНТРАЛНА КИНОЛЕНТА (С ПО-ГОЛЕМИ И ПО-РАЗДАЛЕЧЕНИ КВАДРАТЧЕТА) */}
+      {/* 🎞️ ЦЕНТРАЛНА КИНОЛЕНТА (ПО-ГОЛЕМИ И ПО-ВИДИМИ СЪСЕДНИ КАДРИ) */}
       <div className="relative z-10 w-full h-[70vh] sm:h-[78vh] flex items-center justify-center overflow-hidden my-auto">
         {allFrameIndices.map((frameIdx) => {
           const isActive = frameIdx === activeIdx;
@@ -161,14 +162,14 @@ export function MemoryWallStage({
               initial={false}
               animate={{ 
                 x: getXOffset(frameIdx, activeIdx),
-                scale: isActive ? 1 : 0.85,
-                opacity: isActive ? 1 : 0.35,
+                scale: isActive ? 1 : 0.92, // Увеличен мащаб на съседните кадри, за да изглеждат по-големи отстрани
+                opacity: isActive ? 1 : 0.55, // По-голяма видимост
                 zIndex: isActive ? 30 : 10
               }}
               transition={{ type: "spring", stiffness: 220, damping: 28 }}
-              className={`absolute m-auto top-0 bottom-0 left-0 right-0 w-[82vw] sm:w-[74vw] max-w-[1050px] h-[62vh] sm:h-full bg-[#141210] flex flex-col justify-between p-2.5 sm:p-3 shadow-2xl border-x-2 border-[#2A2421] ${!isEmpty && !isActive && isUnlocked ? 'cursor-pointer hover:opacity-60' : ''}`}
+              className={`absolute m-auto top-0 bottom-0 left-0 right-0 w-[84vw] sm:w-[74vw] max-w-[1050px] h-[62vh] sm:h-full bg-[#141210] flex flex-col justify-between p-2.5 sm:p-3 shadow-2xl border-x-2 border-[#2A2421] ${!isEmpty && !isActive && isUnlocked ? 'cursor-pointer hover:opacity-80' : ''}`}
             >
-              {/* Горна перфорация (намален брой, по-големи квадратчета, по-големи разстояния) */}
+              {/* Горна перфорация */}
               <div className="h-5 sm:h-6 w-full flex items-center justify-around px-4 opacity-95 flex-shrink-0">
                 {[...Array(9)].map((_, i) => <div key={i} className="w-6 sm:w-8 h-3 sm:h-4 bg-[#ECE8E0] rounded-[4px] shadow-inner" />)}
               </div>
