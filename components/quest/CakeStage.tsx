@@ -111,15 +111,15 @@ const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean
     if (groupRef.current) {
       groupRef.current.rotation.y += 0.0025;
       
-      let targetY = active ? (isMobile ? -0.4 : -0.8) : -6;
-      if (isBlownOut) targetY = isMobile ? -0.2 : -0.5; 
+      let targetY = active ? (isMobile ? -0.2 : -0.6) : -6;
+      if (isBlownOut) targetY = isMobile ? 0 : -0.3; 
 
       groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetY, delta * 3);
     }
   });
 
   return (
-    <group ref={groupRef} position={[0, -6, 0]} scale={isMobile ? 0.78 : 1}>
+    <group ref={groupRef} position={[0, -6, 0]} scale={isMobile ? 0.72 : 0.95}>
       <mesh position={[0, 1.4, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.85, 0.85, 0.75, 64]} />
         <meshStandardMaterial color="#FFFFFF" roughness={0.1} />
@@ -347,7 +347,7 @@ export function CakeStage({
         className="absolute inset-0 z-0 cursor-pointer" 
         onClick={stage === 'cake_reveal' ? handleBlowCandle : undefined}
       >
-        <Canvas shadows camera={{ position: [0, 1.5, isMobile ? 8.2 : 6.5], fov: 45 }}>
+        <Canvas shadows camera={{ position: [0, 1.5, isMobile ? 8.5 : 6.5], fov: 45 }}>
           <ambientLight intensity={1.2} color="#FFFFFF" />
           <directionalLight
             position={[5, 10, 5]}
@@ -368,7 +368,7 @@ export function CakeStage({
       <div className="relative z-40" />
 
       {/* UI - ДОЛНА ЧАСТ */}
-      <div className={`relative z-10 w-full max-w-lg mx-auto flex flex-col items-center justify-center pointer-events-none ${stage === 'blown_celebrate' ? 'absolute bottom-4 left-4 right-4 max-w-md mx-auto' : 'my-auto'}`}>
+      <div className={`relative z-10 w-full max-w-lg mx-auto flex flex-col items-center justify-center pointer-events-none ${stage === 'blown_celebrate' ? 'absolute bottom-6 left-4 right-4 max-w-md mx-auto' : 'my-auto'}`}>
         <AnimatePresence mode="wait">
           
           {/* ФАЗА 1 */}
@@ -425,30 +425,26 @@ export function CakeStage({
             </motion.div>
           )}
 
-          {/* ФАЗА 3: ПОСЛАНИЕ И ИЗЧИСТЕН БУТОН БЕЗ РАМКИ И КУТИИ */}
+          {/* ФАЗА 3: ЧИСТ ТЕКСТ НАЙ-ОТДОЛУ И МИНИМАЛИСТИЧЕН БУТОН БЕЗ РАМКИ */}
           {stage === 'blown_celebrate' && (
             <motion.div
               key="celebration-card"
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="w-full text-center space-y-3 pointer-events-auto px-4"
+              className="w-full text-center space-y-2 pointer-events-auto px-6 max-w-sm mx-auto"
             >
-              <div className="space-y-1">
-                <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.4em] text-[#7A6C5E] font-bold block">
-                  ПОСЛАНИЕ ОТ ПОДАРЯВАЩИЯ
-                </span>
-                <p className="font-serif italic text-sm sm:text-base text-[#1F1A17] leading-relaxed drop-shadow-sm">
-                  "{senderWish}"
-                </p>
-              </div>
+              <p className="font-serif italic text-xs sm:text-sm text-[#5A5046] leading-relaxed drop-shadow-sm">
+                "{senderWish}"
+              </p>
 
-              <div className="pt-2">
+              <div className="pt-1">
                 <button
                   onClick={() => onComplete && onComplete(userWish)}
-                  className="bg-[#1F1A17] text-[#DBCEB3] px-8 py-3 rounded-xl font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300 shadow-md"
+                  className="text-[#1F1A17] font-sans text-[10px] sm:text-xs uppercase tracking-[0.35em] font-bold hover:text-[#7A6C5E] transition duration-300 py-2 inline-flex items-center space-x-2"
                 >
-                  Към Капсулата на Бъдещето ➔
+                  <span>Към Капсулата на бъдещето</span>
+                  <span className="text-sm">➔</span>
                 </button>
               </div>
             </motion.div>
