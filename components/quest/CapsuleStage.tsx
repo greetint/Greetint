@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export interface CapsuleStageProps {
   onGeneratePdf: (answers: { question: string; answer: string }[]) => void;
   customQuestions?: string[];
+  recipient?: string; //
 }
 
 const DEFAULT_QUESTIONS = [
