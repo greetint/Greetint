@@ -11,9 +11,6 @@ interface CakeStageProps {
   onComplete?: (userWish: string) => void;
 }
 
-/* ============================================================================
-   АУДИО ЕФЕКТИ
-   ============================================================================ */
 function useCinematicAudio() {
   const ctxRef = useRef<AudioContext | null>(null);
 
@@ -65,9 +62,6 @@ function useCinematicAudio() {
   return { playImpact, playSpark };
 }
 
-/* ============================================================================
-   3D РЕАЛИСТИЧЕН ПЛАМЪК
-   ============================================================================ */
 const Flame3D: React.FC<{ isBlownOut: boolean }> = ({ isBlownOut }) => {
   const outerFlame = useRef<THREE.Mesh>(null);
   const innerFlame = useRef<THREE.Mesh>(null);
@@ -110,9 +104,6 @@ const Flame3D: React.FC<{ isBlownOut: boolean }> = ({ isBlownOut }) => {
   );
 };
 
-/* ============================================================================
-   3D ТОРТА
-   ============================================================================ */
 const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean }> = ({ active, isBlownOut, isMobile }) => {
   const groupRef = useRef<THREE.Group>(null);
 
@@ -199,9 +190,6 @@ const Cake3D: React.FC<{ active: boolean; isBlownOut: boolean; isMobile: boolean
   );
 };
 
-/* ============================================================================
-   ПРАЗНИЧНИ ФОЙЕРВЕРКИ И БАЛОНИ
-   ============================================================================ */
 const PartyOverlay: React.FC = () => {
   const elements = [...Array(35)].map((_, i) => i);
   return (
@@ -244,9 +232,6 @@ const PartyOverlay: React.FC = () => {
   );
 };
 
-/* ============================================================================
-   ОСНОВЕН КОМПОНЕНТ CAKESTAGE
-   ============================================================================ */
 export function CakeStage({
   recipient = 'ВИКТОРИЯ',
   senderWish = 'Нека тази година ти донесе здраве, вдъхновение, безкрайно щастие и много сбъднати мечти!',
@@ -382,8 +367,8 @@ export function CakeStage({
 
       <div className="relative z-40" />
 
-      {/* UI - КОМПАКТНО ПОЗИЦИОНИРАН ОТДОЛУ (БЕЗ ДА ЗАКРИВА ТОРТАТА) */}
-      <div className={`relative z-10 w-full max-w-lg mx-auto flex flex-col items-center justify-center pointer-events-none ${stage === 'blown_celebrate' ? 'absolute bottom-2 left-4 right-4 max-w-md mx-auto' : 'my-auto'}`}>
+      {/* UI - ДОЛНА ЧАСТ */}
+      <div className={`relative z-10 w-full max-w-lg mx-auto flex flex-col items-center justify-center pointer-events-none ${stage === 'blown_celebrate' ? 'absolute bottom-4 left-4 right-4 max-w-md mx-auto' : 'my-auto'}`}>
         <AnimatePresence mode="wait">
           
           {/* ФАЗА 1 */}
@@ -440,28 +425,32 @@ export function CakeStage({
             </motion.div>
           )}
 
-          {/* ФАЗА 3: ПОСЛАНИЕ И ИЗЧИСТЕН БУТОН БЕЗ БОРДЪРИ */}
+          {/* ФАЗА 3: ПОСЛАНИЕ И ИЗЧИСТЕН БУТОН БЕЗ РАМКИ И КУТИИ */}
           {stage === 'blown_celebrate' && (
             <motion.div
               key="celebration-card"
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="w-full bg-white/35 backdrop-blur-md p-4 sm:p-5 rounded-2xl shadow-lg text-center space-y-2.5 pointer-events-auto"
+              className="w-full text-center space-y-3 pointer-events-auto px-4"
             >
-              <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.4em] text-[#7A6C5E] font-semibold block">
-                ПОСЛАНИЕ ОТ ПОДАРЯВАЩИЯ
-              </span>
-              <p className="font-serif italic text-xs sm:text-sm text-[#1F1A17] leading-relaxed">
-                "{senderWish}"
-              </p>
+              <div className="space-y-1">
+                <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.4em] text-[#7A6C5E] font-bold block">
+                  ПОСЛАНИЕ ОТ ПОДАРЯВАЩИЯ
+                </span>
+                <p className="font-serif italic text-sm sm:text-base text-[#1F1A17] leading-relaxed drop-shadow-sm">
+                  "{senderWish}"
+                </p>
+              </div>
 
-              <button
-                onClick={() => onComplete && onComplete(userWish)}
-                className="w-full bg-[#1F1A17] text-[#DBCEB3] py-3 rounded-xl font-sans text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300"
-              >
-                Към Капсулата на Бъдещето ➔
-              </button>
+              <div className="pt-2">
+                <button
+                  onClick={() => onComplete && onComplete(userWish)}
+                  className="bg-[#1F1A17] text-[#DBCEB3] px-8 py-3 rounded-xl font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300 shadow-md"
+                >
+                  Към Капсулата на Бъдещето ➔
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

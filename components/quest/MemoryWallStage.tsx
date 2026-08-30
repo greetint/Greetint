@@ -146,7 +146,7 @@ export function MemoryWallStage({
         )}
       </AnimatePresence>
 
-      {/* 🎞️ ЦЕНТРАЛНА КИНОЛЕНТА (ПОДОБРЕНИ ПЕРФОРАЦИИ И РАЗСТОЯНИЯ ЗА ТЕЛЕФОН) */}
+      {/* 🎞️ ЦЕНТРАЛНА КИНОЛЕНТА (С ПО-ГОЛЕМИ И ПО-РАЗДАЛЕЧЕНИ КВАДРАТЧЕТА) */}
       <div className="relative z-10 w-full h-[70vh] sm:h-[78vh] flex items-center justify-center overflow-hidden my-auto">
         {allFrameIndices.map((frameIdx) => {
           const isActive = frameIdx === activeIdx;
@@ -168,16 +168,15 @@ export function MemoryWallStage({
               transition={{ type: "spring", stiffness: 220, damping: 28 }}
               className={`absolute m-auto top-0 bottom-0 left-0 right-0 w-[82vw] sm:w-[74vw] max-w-[1050px] h-[62vh] sm:h-full bg-[#141210] flex flex-col justify-between p-2.5 sm:p-3 shadow-2xl border-x-2 border-[#2A2421] ${!isEmpty && !isActive && isUnlocked ? 'cursor-pointer hover:opacity-60' : ''}`}
             >
-              {/* Горна перфорация (увеличени квадратчета и разстояния) */}
-              <div className="h-4 sm:h-5 w-full flex items-center justify-around px-3 opacity-95 flex-shrink-0">
-                {[...Array(16)].map((_, i) => <div key={i} className="w-3.5 sm:w-5 h-2 sm:h-3 bg-[#ECE8E0] rounded-[3px] shadow-inner" />)}
+              {/* Горна перфорация (намален брой, по-големи квадратчета, по-големи разстояния) */}
+              <div className="h-5 sm:h-6 w-full flex items-center justify-around px-4 opacity-95 flex-shrink-0">
+                {[...Array(9)].map((_, i) => <div key={i} className="w-6 sm:w-8 h-3 sm:h-4 bg-[#ECE8E0] rounded-[4px] shadow-inner" />)}
               </div>
 
               {/* МЕДИЯ И ОВЪРЛЕИ */}
               <div className="relative flex-1 w-full bg-black my-1.5 rounded-md sm:rounded-lg overflow-hidden flex items-center justify-center border border-white/5">
                 {!isEmpty && memory && (
                   <>
-                    {/* Същинският кадър */}
                     {memory.type === 'video' ? (
                       <video 
                         src={memory.url} 
@@ -195,7 +194,6 @@ export function MemoryWallStage({
                       />
                     )}
                     
-                    {/* 🔒 ЗАКЛЮЧЕН СТЕЙТ - ПОЛЕ ЗА ВЪПРОС */}
                     {!isUnlocked && isActive && (
                       <motion.div 
                         initial={{ opacity: 0, scale: 0.98 }} 
@@ -236,7 +234,6 @@ export function MemoryWallStage({
                       </motion.div>
                     )}
 
-                    {/* 🔓 ОТКЛЮЧЕН СТЕЙТ */}
                     {isUnlocked && isActive && (
                       <motion.div 
                         initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
@@ -254,15 +251,15 @@ export function MemoryWallStage({
               </div>
 
               {/* Долна перфорация */}
-              <div className="h-4 sm:h-5 w-full flex items-center justify-around px-3 opacity-95 flex-shrink-0">
-                {[...Array(16)].map((_, i) => <div key={i} className="w-3.5 sm:w-5 h-2 sm:h-3 bg-[#ECE8E0] rounded-[3px] shadow-inner" />)}
+              <div className="h-5 sm:h-6 w-full flex items-center justify-around px-4 opacity-95 flex-shrink-0">
+                {[...Array(9)].map((_, i) => <div key={i} className="w-6 sm:w-8 h-3 sm:h-4 bg-[#ECE8E0] rounded-[4px] shadow-inner" />)}
               </div>
             </motion.div>
           );
         })}
       </div>
 
-      {/* ДОЛНА СИНЕМАТИЧНА НАВИГАЦИЯ (БЕЗ БОРДЪРИ) */}
+      {/* ДОЛНА СИНЕМАТИЧНА НАВИГАЦИЯ */}
       <div className="relative z-10 w-full max-w-5xl h-[7vh] sm:h-[8vh] flex items-center justify-between px-4 sm:px-10 mx-auto">
         <button
           onClick={handlePrevMemory}
