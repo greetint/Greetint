@@ -9,7 +9,7 @@ import { MemoryWallStage } from '@/components/quest/MemoryWallStage';
 import { QuizStage } from '@/components/quest/QuizStage';
 import { CakeStage } from '@/components/quest/CakeStage';
 import { CapsuleStage } from '@/components/quest/CapsuleStage';
-import TimeCapsulePdf from '@/components/TimeCapsulePdf';
+import { TimeCapsulePdf } from '@/components/TimeCapsulePdf';
 
 type QuestStage = 'seal' | 'scratch' | 'quiz' | 'memories' | 'cake' | 'capsule';
 
@@ -60,7 +60,7 @@ export default function CardPage() {
   const handleGeneratePdf = async (capsuleAnswers: { question: string; answer: string }[]) => {
     try {
       const doc = (
-        <TimeCapsulePdf
+        <CapsuleStage
           recipient={formattedName}
           sender={cardData.sender}
           statusText={cardData.statusText}
