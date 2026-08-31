@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Document, Page, Text, View, Image, StyleSheet, Font, Svg, Polygon } from '@react-pdf/renderer';
+import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
 
+// Регистриране на шрифтовете
 Font.register({
   family: 'Caveat',
   src: 'https://fonts.gstatic.com/s/caveat/v18/Wnz6HAc5bAfYB2Q7Yj82ciM_lZQ.ttf',
@@ -29,22 +30,24 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   topFlapContainer: {
-    position: 'relative',
     width: '100%',
-    height: 140,
+    height: 120,
+    backgroundColor: '#EAE2D6', // Заместваме SVG-то с плътен елегантен блок, за да избегнем краш
+    borderBottomWidth: 2,
+    borderBottomColor: '#D4AF37',
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'flex-end',
+    marginBottom: 20,
   },
   seal: {
-    position: 'absolute',
-    top: 95,
     width: 70,
     height: 70,
+    marginBottom: -35, // Изнасяме печата наполовина извън блока
     zIndex: 10,
   },
   contentContainer: {
     paddingHorizontal: 60,
-    paddingTop: 10,
+    paddingTop: 20,
     zIndex: 5,
   },
   title: {
@@ -140,7 +143,6 @@ const styles = StyleSheet.create({
   }
 });
 
-// ДОБАВЕНО: statusText?: string
 interface PdfProps {
   recipient?: string;
   sender?: string;
@@ -152,22 +154,27 @@ interface PdfProps {
   photos?: string[];
 }
 
-const FilmStrip = ({ src, rotation }: { src: string, rotation: number }) => (
-  <View style={[styles.filmFrame, { transform: `rotate(${rotation}deg)` }]}>
-    <View style={styles.filmHolesRow}>
-      {[...Array(6)].map((_, i) => <View key={`top-${i}`} style={styles.hole} />)}
+const FilmStrip = ({ src, rotation }: { src: string, rotation: number }) => {
+  // ЗАЩИТА: Ако няма src, връщаме null, за да не сринем генератора
+  if (!src) return null; 
+  
+  return (
+    <View style={[styles.filmFrame, { transform: `rotate(${rotation}deg)` }]}>
+      <View style={styles.filmHolesRow}>
+        {[...Array(6)].map((_, i) => <View key={`top-${i}`} style={styles.hole} />)}
+      </View>
+      <Image src={src} style={styles.filmImage} />
+      <View style={styles.filmHolesRowBottom}>
+        {[...Array(6)].map((_, i) => <View key={`bot-${i}`} style={styles.hole} />)}
+      </View>
     </View>
-    <Image src={src || ''} style={styles.filmImage} />
-    <View style={styles.filmHolesRowBottom}>
-      {[...Array(6)].map((_, i) => <View key={`bot-${i}`} style={styles.hole} />)}
-    </View>
-  </View>
-);
+  );
+};
 
 export const TimeCapsulePdf = ({
   recipient = 'Получател',
   sender = 'Подател',
-  statusText = '', // ДОБАВЕНО ТУК
+  statusText = '',
   mainWish = '',
   wishFromCandle = '',
   secretJoke = '',
@@ -175,26 +182,24 @@ export const TimeCapsulePdf = ({
   photos = []
 }: PdfProps) => {
 
-  const displayPhotos = photos.slice(0, 5);
+  const displayPhotos = (photos || []).filter(url => Boolean(url)).slice(0, 5);
   const rotations = [-4, 5, -3, 6, -2]; 
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap={true}>
         
+        {/* ФОН */}
         <Image src="/images/pdf-background.jpg" style={styles.background} fixed />
 
+        {/* ГОРЕН КАПАК (без SVG, за да е 100% стабилно) */}
         <View style={styles.topFlapContainer} wrap={false}>
-          <Svg height="130" width="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0 }}>
-            <Polygon points="0,0 100,0 50,100" fill="#EAE2D6" stroke="#D4AF37" strokeWidth={0.5} />
-          </Svg>
           <Image src="/images/gold-seal.png" style={styles.seal} />
         </View>
 
         <View style={styles.contentContainer}>
           <Text style={styles.title}>Честит рожден ден, {recipient}!</Text>
 
-          {/* ДОБАВЕН БЛОК ЗА СТАТУТ (ако има такъв) */}
           {statusText ? (
             <View style={styles.section} wrap={false}>
               <Text style={styles.sectionTitle}>Начало</Text>
@@ -235,7 +240,7 @@ export const TimeCapsulePdf = ({
             </View>
           ) : null}
 
-          {displayPhotos && displayPhotos.length > 0 ? (
+          {displayPhotos.length > 0 ? (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Запечатани спомени</Text>
               <View style={styles.photoGrid}>
