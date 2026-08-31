@@ -115,7 +115,10 @@ export default function CardPage() {
       {currentStage === 'memories' && (
         <MemoryWallStage
           recipient={uppercaseName}
-          onComplete={() => setCurrentStage('cake')}
+          onComplete={() => {
+            // Можем да прочетем текущите снимки или да ги оставим, но за да няма грешка в компилатора:
+            setCurrentStage('cake');
+          }}
         />
       )}
 
