@@ -24,29 +24,29 @@ export function TimeCapsulePdf({
   photos = []
 }: PdfProps) {
   
-  // Подобрен филтър: Хваща Blob URL-и от качени снимки и изключва само видеа
+  // Филтър за снимки (хваща качените blob файлове и маха видеата)
   const isImage = (url: string) => {
     if (!url) return false;
     const lower = url.toLowerCase();
     if (lower.match(/\.(mp4|webm|ogg)$/)) return false;
     if (lower.startsWith('data:video')) return false;
-    return true; // Всичко останало (вкл. blob:http...) се третира като снимка
+    return true; 
   };
   
   const displayPhotos = (photos || []).filter(isImage).slice(0, 5);
 
-  // Компонент за филмова лента (умален, за да събере до 5 броя вертикално)
+  // Компонент за кинолентата с фиксирани размери
   const FilmStrip = ({ url, rotation }: { url: string, rotation: number }) => (
     <div 
-      className="bg-[#141210] p-1.5 shadow-xl rounded-sm border border-[#2A2421] w-full max-w-[130px] mx-auto mb-4"
+      className="bg-[#141210] p-1.5 shadow-xl rounded-sm border border-[#2A2421] w-[140px] flex-shrink-0 mx-auto"
       style={{ transform: `rotate(${rotation}deg)` }}
     >
       <div className="flex justify-between px-1 mb-1 opacity-90">
-        {[...Array(5)].map((_, idx) => <div key={`top-${idx}`} className="w-1 h-[3px] bg-[#FEFEFD] rounded-[1px]" />)}
+        {[...Array(6)].map((_, idx) => <div key={`top-${idx}`} className="w-1.5 h-[3px] bg-[#FEFEFD] rounded-[1px]" />)}
       </div>
-      <img src={url} alt="Memory" className="w-full h-20 object-cover rounded-[1px] border border-white/10" />
+      <img src={url} alt="Memory" className="w-full h-[90px] object-cover border border-white/10" />
       <div className="flex justify-between px-1 mt-1 opacity-90">
-        {[...Array(5)].map((_, idx) => <div key={`bot-${idx}`} className="w-1 h-[3px] bg-[#FEFEFD] rounded-[1px]" />)}
+        {[...Array(6)].map((_, idx) => <div key={`bot-${idx}`} className="w-1.5 h-[3px] bg-[#FEFEFD] rounded-[1px]" />)}
       </div>
     </div>
   );
@@ -74,106 +74,105 @@ export function TimeCapsulePdf({
         }
       `}</style>
 
-      {/* 
-        ОСНОВЕН A4 КОНТЕЙНЕР
-        Използваме истински <img> таг за фон, за да заобиколим настройките на браузъра 
-      */}
+      {/* ОСНОВЕН A4 КОНТЕЙНЕР */}
       <div className="w-[210mm] h-[297mm] mx-auto relative overflow-hidden">
         
-        {/* ИСТИНСКА КАРТИНКА ЗА ФОН - ГАРАНТИРА ОТПЕЧАТВАНЕ */}
+        {/* КОРЕКТЕН ПЪТ КЪМ ФОНА - ГАРАНТИРА ОТПЕЧАТВАНЕ */}
         <img 
           src="/images/pdf_background.jpg" 
           alt="Background" 
-          className="absolute inset-0 w-full h-full object-fill z-0" 
+          className="absolute inset-0 w-[210mm] h-[297mm] object-cover z-0" 
         />
 
-        {/* 
-          БЕЗОПАСНА ЗОНА ЗА ТЕКСТ (Safe Area)
-          pt-[45mm] пази текста от горния кафяв триъгълник
-          pb-[35mm] пази текста от долния кафяв триъгълник
-        */}
-        <div className="relative z-10 w-full h-full pt-[45mm] pb-[35mm] px-[15mm] flex flex-col">
+        {/* БЕЗОПАСНА ЗОНА ЗА ТЕКСТ (Предпазва от кафявите триъгълници) */}
+        <div className="relative z-10 w-full h-full pt-[55mm] pb-[40mm] px-[20mm] flex flex-col justify-between">
           
           {/* ЗАГЛАВИЕ */}
-          <div className="text-center mb-4 flex-shrink-0">
+          <div className="text-center mb-6 flex-shrink-0 border-b border-[#C8B89D]/60 pb-2">
             <h1 style={{ fontFamily: "'Caveat', cursive" }} className="text-4xl font-bold text-[#3A322D]">
               Капсула на времето за {recipient}
             </h1>
-            <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[10px] italic text-[#7A6C5E] mt-0.5">
+            <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[11px] italic text-[#7A6C5E] mt-1">
               Създадено с любов и надежда, за да се отвори в бъдещето
             </p>
           </div>
 
-          {/* ДВУКОЛОНЕН ДИЗАЙН: Ляво (Снимки) | Дясно (Текстове) */}
-          <div className="flex flex-row w-full flex-1 gap-6">
+          {/* ЗИГ-ЗАГ ДИЗАЙН (Точно като на референцията) */}
+          <div className="flex flex-col gap-6 flex-1">
             
-            {/* ЛЯВА КОЛОНА: КИНОЛЕНТИ */}
-            <div className="w-1/3 flex flex-col items-center justify-start pt-2">
-              {displayPhotos.length > 0 ? (
-                displayPhotos.map((url, i) => (
-                  <FilmStrip key={i} url={url} rotation={i % 2 === 0 ? -3 : 4} />
-                ))
-              ) : (
-                <div className="text-center opacity-60 pt-10">
-                  <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] italic text-[#7A6C5E]">Няма запечатани кадри</span>
+            {/* БЛОК 1: Снимка отляво, Текст отдясно */}
+            {(statusText || mainWish || displayPhotos[0]) && (
+              <div className="flex w-full items-center gap-6">
+                <div className="w-1/3 flex justify-center">
+                  {displayPhotos[0] && <FilmStrip url={displayPhotos[0]} rotation={-4} />}
                 </div>
-              )}
-            </div>
-
-            {/* ДЯСНА КОЛОНА: ТЕКСТОВЕ */}
-            <div className="w-2/3 flex flex-col gap-3 pt-2">
-              
-              {statusText && (
-                <div className="border-b border-[#C8B89D]/50 pb-1.5">
-                  <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Начало</span>
-                  <p style={{ fontFamily: "'Caveat', cursive" }} className="text-[17px] text-[#1F1A17] leading-tight">{statusText}</p>
+                <div className="w-2/3 flex flex-col gap-3">
+                  {statusText && (
+                    <div>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Начало</span>
+                      <p style={{ fontFamily: "'Caveat', cursive" }} className="text-2xl text-[#1F1A17] leading-tight break-words">{statusText}</p>
+                    </div>
+                  )}
+                  {mainWish && (
+                    <div>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Послание</span>
+                      <p style={{ fontFamily: "'Caveat', cursive" }} className="text-2xl text-[#1F1A17] leading-tight break-words">{mainWish}</p>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
-              {mainWish && (
-                <div className="border-b border-[#C8B89D]/50 pb-1.5">
-                  <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Послание</span>
-                  <p style={{ fontFamily: "'Caveat', cursive" }} className="text-[17px] text-[#1F1A17] leading-tight">{mainWish}</p>
+            {/* БЛОК 2: Текст отляво, Снимка отдясно */}
+            {(wishFromCandle || secretJoke || displayPhotos[1]) && (
+              <div className="flex w-full items-center gap-6 flex-row-reverse">
+                <div className="w-1/3 flex justify-center">
+                  {displayPhotos[1] && <FilmStrip url={displayPhotos[1]} rotation={5} />}
                 </div>
-              )}
-
-              {wishFromCandle && (
-                <div className="border-b border-[#C8B89D]/50 pb-1.5">
-                  <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Намислено желание</span>
-                  <p style={{ fontFamily: "'Caveat', cursive" }} className="text-[17px] text-[#1F1A17] leading-tight">"{wishFromCandle}"</p>
+                <div className="w-2/3 flex flex-col gap-3 text-right">
+                  {wishFromCandle && (
+                    <div>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Намислено желание</span>
+                      <p style={{ fontFamily: "'Caveat', cursive" }} className="text-2xl text-[#1F1A17] leading-tight break-words">"{wishFromCandle}"</p>
+                    </div>
+                  )}
+                  {secretJoke && (
+                    <div>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Скреч Тайна</span>
+                      <p style={{ fontFamily: "'Caveat', cursive" }} className="text-2xl text-[#1F1A17] leading-tight break-words">{secretJoke}</p>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
-              {secretJoke && (
-                <div className="border-b border-[#C8B89D]/50 pb-1.5">
-                  <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Скреч Тайна</span>
-                  <p style={{ fontFamily: "'Caveat', cursive" }} className="text-[17px] text-[#1F1A17] leading-tight">{secretJoke}</p>
+            {/* БЛОК 3: Дневник (Снимка отляво, Грид с отговори отдясно) */}
+            {(capsuleAnswers.length > 0 || displayPhotos[2]) && (
+              <div className="flex w-full items-center gap-4 mt-2">
+                <div className="w-1/3 flex justify-center">
+                  {displayPhotos[2] && <FilmStrip url={displayPhotos[2]} rotation={-3} />}
                 </div>
-              )}
-
-              {/* ДНЕВНИК (Отговори) - Компактен списък, за да събере 130 символа на отговор */}
-              {capsuleAnswers.length > 0 && (
-                <div className="mt-1 space-y-1.5">
-                  <h3 style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-center text-[#8A7C6E] border-b border-[#C8B89D] pb-0.5 mb-2">
-                    Поглед към бъдещето
+                <div className="w-2/3 bg-white/30 p-3 rounded border border-[#C8B89D]/40 shadow-sm">
+                  <h3 style={{ fontFamily: "'Playfair Display', serif" }} className="text-[10px] uppercase tracking-widest text-center text-[#8A7C6E] border-b border-[#C8B89D]/60 pb-1 mb-2">
+                    Дневник на бъдещето
                   </h3>
-                  <div className="flex flex-col gap-1.5">
+                  <div className="grid grid-cols-2 gap-2">
                     {capsuleAnswers.map((item, idx) => (
-                      <div key={idx} className="bg-white/30 px-2 py-1.5 rounded-sm border border-[#C8B89D]/40">
-                        <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] italic text-[#635E57] mb-0.5">{item.question}</p>
-                        <p style={{ fontFamily: "'Caveat', cursive" }} className="text-[15px] text-[#1F1A17] font-bold leading-tight">{item.answer}</p>
+                      <div key={idx} className="mb-1">
+                        <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] italic text-[#635E57] mb-0.5 break-words">{item.question}</p>
+                        <p style={{ fontFamily: "'Caveat', cursive" }} className="text-[18px] text-[#1F1A17] font-bold leading-tight break-words">{item.answer}</p>
                       </div>
                     ))}
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-            </div>
           </div>
 
           {/* ПОДПИС */}
-          <div className="flex-shrink-0 mt-4 pt-3 border-t border-[#C8B89D] text-right">
-            <p style={{ fontFamily: "'Caveat', cursive" }} className="text-2xl text-[#1F1A17]">
+          <div className="flex-shrink-0 mt-6 pt-4 border-t border-[#C8B89D]/60 text-right">
+            <p style={{ fontFamily: "'Caveat', cursive" }} className="text-3xl text-[#1F1A17] pr-4">
               С любов, {sender}
             </p>
           </div>
@@ -182,10 +181,10 @@ export function TimeCapsulePdf({
 
         {/* АВТОРСКО ПРАВО - Абсолютно позиционирано в долната тъмна част */}
         <div 
-          className="absolute bottom-6 left-0 right-0 text-center z-20"
+          className="absolute bottom-[18mm] left-0 right-0 text-center z-20"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          <span className="text-[8px] uppercase tracking-[0.4em] text-[#C8B89D] opacity-70">
+          <span className="text-[9px] uppercase tracking-[0.4em] text-[#EAE2D6] opacity-70">
             GREETING ARCHIVE © 2026
           </span>
         </div>
