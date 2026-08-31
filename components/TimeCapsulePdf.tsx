@@ -32,27 +32,38 @@ export function TimeCapsulePdf({
     return true; 
   };
   
-  const displayPhotos = (photos || []).filter(isImage).slice(0, 5);
+  const displayPhotos = (photos || []).filter(isImage);
 
-  // ИСТИНСКА КИНЕМОТОГРАФСКА РАМКА ЧРЕЗ ТВОЯТ ФАЙЛ /images/blank_film.png
-  const FilmStrip = ({ url, rotation }: { url: string, rotation: number }) => (
-    <div 
-      className="relative w-[135px] h-[85px] flex-shrink-0 mx-auto shadow-2xl flex items-center justify-center"
-      style={{ transform: `rotate(${rotation}deg)` }}
-    >
-      {/* Самата потребителска снимка, позиционирана точно в черното поле на лентата */}
-      <div className="absolute inset-x-[12%] inset-y-[15%] z-0 bg-black overflow-hidden flex items-center justify-center">
-        <img src={url} alt="Memory Frame" className="w-full h-full object-cover" />
+  // СТИЛНА КИНЕМАТОГРАФСКА ЛЕНТА СЪЗДАТЕНА ИЗЦЯЛО С КОД (Перфектен бордер и перфорации)
+  const FilmStrip = ({ url, rotation }: { url?: string, rotation: number }) => {
+    if (!url) return null; // Ако няма снимка, не показваме празна лента
+
+    return (
+      <div 
+        className="bg-[#141210] p-1.5 shadow-2xl rounded-sm border-2 border-[#2A2421] w-[130px] flex-shrink-0 mx-auto"
+        style={{ transform: `rotate(${rotation}deg)` }}
+      >
+        {/* Горна редица перфорации */}
+        <div className="flex justify-between px-1 mb-1 bg-[#141210] py-0.5">
+          {[...Array(5)].map((_, idx) => (
+            <div key={`top-${idx}`} className="w-2 h-1 bg-[#FAF6EE] rounded-[1px]" />
+          ))}
+        </div>
+
+        {/* Самата снимка в лентата */}
+        <div className="w-full h-[75px] bg-black overflow-hidden border border-white/10 rounded-xs">
+          <img src={url} alt="Memory Frame" className="w-full h-full object-cover" />
+        </div>
+
+        {/* Долна редица перфорации */}
+        <div className="flex justify-between px-1 mt-1 bg-[#141210] py-0.5">
+          {[...Array(5)].map((_, idx) => (
+            <div key={`bot-${idx}`} className="w-2 h-1 bg-[#FAF6EE] rounded-[1px]" />
+          ))}
+        </div>
       </div>
-
-      {/* Твоята картинка за кинолента отгоре, която прави перфектните перфорации */}
-      <img 
-        src="/images/blank_film.png" 
-        alt="Film Frame" 
-        className="relative z-10 w-full h-full object-fill pointer-events-none drop-shadow-md" 
-      />
-    </div>
-  );
+    );
+  };
 
   return (
     <div id="pdf-print-area" className="hidden print:block fixed inset-0 z-[9999] bg-white overflow-hidden">
@@ -108,7 +119,7 @@ export function TimeCapsulePdf({
             {(statusText || mainWish || displayPhotos[0]) && (
               <div className="flex w-full items-center gap-4">
                 <div className="w-[32%] flex justify-center">
-                  {displayPhotos[0] && <FilmStrip url={displayPhotos[0]} rotation={-3} />}
+                  <FilmStrip url={displayPhotos[0]} rotation={-3} />
                 </div>
                 <div className="w-[68%] flex flex-col gap-1.5">
                   {statusText && (
@@ -131,7 +142,7 @@ export function TimeCapsulePdf({
             {(wishFromCandle || secretJoke || displayPhotos[1]) && (
               <div className="flex w-full items-center gap-4 flex-row-reverse">
                 <div className="w-[32%] flex justify-center">
-                  {displayPhotos[1] && <FilmStrip url={displayPhotos[1]} rotation={3} />}
+                  <FilmStrip url={displayPhotos[1]} rotation={3} />
                 </div>
                 <div className="w-[68%] flex flex-col gap-1.5 text-right">
                   {wishFromCandle && (
@@ -154,19 +165,25 @@ export function TimeCapsulePdf({
             {(capsuleAnswers.length > 0 || displayPhotos[2]) && (
               <div className="flex w-full items-center gap-3">
                 <div className="w-[32%] flex justify-center">
-                  {displayPhotos[2] && <FilmStrip url={displayPhotos[2]} rotation={-2} />}
+                  <FilmStrip url={displayPhotos[2]} rotation={-2} />
                 </div>
                 <div className="w-[68%] px-1">
                   <h3 style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-center text-[#8A7C6E] border-b border-[#C8B89D]/50 pb-0.5 mb-1.5">
                     Отговори от капсулата
                   </h3>
                   <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                    {capsuleAnswers.map((item, idx) => (
-                      <div key={idx} className="mb-0.5">
-                        <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[7px] italic text-[#635E57] mb-0.5 leading-none break-all">{item.question}</p>
-                        <p style={{ fontFamily: "'Caveat', cursive" }} className="text-lg text-[#1F1A17] font-bold leading-tight break-all">{item.answer}</p>
+                    {capsuleAnswers.length > 0 ? (
+                      capsuleAnswers.map((item, idx) => (
+                        <div key={idx} className="mb-0.5">
+                          <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[7px] italic text-[#635E57] mb-0.5 leading-none break-all">{item.question}</p>
+                          <p style={{ fontFamily: "'Caveat', cursive" }} className="text-lg text-[#1F1A17] font-bold leading-tight break-all">{item.answer}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-2 text-center">
+                        <p style={{ fontFamily: "'Caveat', cursive" }} className="text-base text-[#1F1A17]/60 italic">Няма въведени отговори все още</p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               </div>
