@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
@@ -10,24 +10,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     backgroundColor: '#FDFBF7',
   },
-  background: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 595.28,
-    height: 841.89,
-    zIndex: -1,
-  },
   topFlapContainer: {
     width: '100%',
-    height: 90,
+    height: 70,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   seal: {
-    width: 55,
-    height: 55,
+    width: 45,
+    height: 45,
   },
   contentContainer: {
     paddingHorizontal: 20,
@@ -161,13 +153,6 @@ export const TimeCapsulePdf = ({
   capsuleAnswers = [],
   photos = []
 }: PdfProps) => {
-  const [baseUrl, setBaseUrl] = useState('');
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setBaseUrl(window.location.origin);
-    }
-  }, []);
 
   const isImage = (url: string) => {
     if (!url) return false;
@@ -182,12 +167,9 @@ export const TimeCapsulePdf = ({
     <Document>
       <Page size="A4" style={styles.page} wrap={true}>
         
-        {/* Фон на писмото */}
-        {baseUrl ? <Image src={`${baseUrl}/images/pdf-background.jpg`} style={styles.background} fixed /> : null}
-
-        {/* Златен печат най-горе */}
+        {/* Използваме директен публичен път без window.location */}
         <View style={styles.topFlapContainer} wrap={false}>
-          {baseUrl ? <Image src={`${baseUrl}/images/gold-seal.png`} style={styles.seal} /> : null}
+          <Image src="/images/gold-seal.png" style={styles.seal} />
         </View>
 
         <View style={styles.contentContainer}>
