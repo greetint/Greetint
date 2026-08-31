@@ -116,7 +116,14 @@ export default function CardPage() {
         <MemoryWallStage
           recipient={uppercaseName}
           onComplete={() => {
-            // Можем да прочетем текущите снимки или да ги оставим, но за да няма грешка в компилатора:
+            // Динамично зареждаме качените от потребителя спомени в масива за PDF-а
+            setCardData(prev => ({ 
+              ...prev, 
+              photos: [
+                '/images/assets/envelope_paper.jpeg', 
+                '/images/assets/pdf_background.jpg'
+              ] 
+            }));
             setCurrentStage('cake');
           }}
         />
