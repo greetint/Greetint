@@ -34,18 +34,29 @@ export function TimeCapsulePdf({
   
   const displayPhotos = (photos || []).filter(isImage).slice(0, 5);
 
-  // ПРИНУДИТЕЛНА ЧЕРНА КИНОЛЕНТА (Няма бели полароиди)
+  // ГАРАНТИРАНА КИНЕМАТОГРАФСКА ЛЕНТА С ЧИСТ КОД (Черно каре + бели перфорации)
   const FilmStrip = ({ url, rotation }: { url: string, rotation: number }) => (
     <div 
-      className="bg-[#141210] p-1.5 shadow-xl rounded-sm border border-[#2A2421] w-[115px] flex-shrink-0 mx-auto"
+      className="bg-[#141210] p-1.5 shadow-2xl rounded-sm border-2 border-[#2A2421] w-[125px] flex-shrink-0 mx-auto"
       style={{ transform: `rotate(${rotation}deg)` }}
     >
-      <div className="flex justify-between px-1 mb-1 opacity-90">
-        {[...Array(5)].map((_, idx) => <div key={`top-${idx}`} className="w-1 h-[2px] bg-[#FEFEFD] rounded-[1px]" />)}
+      {/* Горна редица перфорации */}
+      <div className="flex justify-between px-1.5 mb-1 bg-[#141210] py-0.5">
+        {[...Array(5)].map((_, idx) => (
+          <div key={`top-${idx}`} className="w-2 h-1 bg-[#FAF6EE] rounded-[1px]" />
+        ))}
       </div>
-      <img src={url} alt="Memory" className="w-full h-[75px] object-cover border border-white/10 rounded-[1px]" />
-      <div className="flex justify-between px-1 mt-1 opacity-90">
-        {[...Array(5)].map((_, idx) => <div key={`bot-${idx}`} className="w-1 h-[2px] bg-[#FEFEFD] rounded-[1px]" />)}
+
+      {/* Самата снимка в лентата */}
+      <div className="w-full h-[80px] bg-black overflow-hidden border border-white/10 rounded-xs">
+        <img src={url} alt="Memory" className="w-full h-full object-cover" />
+      </div>
+
+      {/* Долна редица перфорации */}
+      <div className="flex justify-between px-1.5 mt-1 bg-[#141210] py-0.5">
+        {[...Array(5)].map((_, idx) => (
+          <div key={`bot-${idx}`} className="w-2 h-1 bg-[#FAF6EE] rounded-[1px]" />
+        ))}
       </div>
     </div>
   );
@@ -84,7 +95,7 @@ export function TimeCapsulePdf({
           className="absolute inset-0 w-[210mm] h-[297mm] object-cover z-0" 
         />
 
-        {/* БЕЗОПАСНА ЗОНА (С по-голям долен отстъп, за да издърпаме подписа нагоре) */}
+        {/* БЕЗОПАСНА ЗОНА */}
         <div className="relative z-10 w-full h-full pt-[42mm] pb-[38mm] px-[16mm] flex flex-col justify-between box-border">
           
           {/* ЗАГЛАВИЕ */}
@@ -104,11 +115,7 @@ export function TimeCapsulePdf({
             {(statusText || mainWish || displayPhotos[0]) && (
               <div className="flex w-full items-center gap-4">
                 <div className="w-[32%] flex justify-center">
-                  {displayPhotos[0] ? (
-                    <FilmStrip url={displayPhotos[0]} rotation={-3} />
-                  ) : (
-                    <FilmStrip url="/images/birthday_pdf_basic.jpg" rotation={-3} />
-                  )}
+                  {displayPhotos[0] && <FilmStrip url={displayPhotos[0]} rotation={-3} />}
                 </div>
                 <div className="w-[68%] flex flex-col gap-1">
                   {statusText && (
@@ -131,11 +138,7 @@ export function TimeCapsulePdf({
             {(wishFromCandle || secretJoke || displayPhotos[1]) && (
               <div className="flex w-full items-center gap-4 flex-row-reverse">
                 <div className="w-[32%] flex justify-center">
-                  {displayPhotos[1] ? (
-                    <FilmStrip url={displayPhotos[1]} rotation={3} />
-                  ) : (
-                    <FilmStrip url="/images/birthday_pdf_basic.jpg" rotation={3} />
-                  )}
+                  {displayPhotos[1] && <FilmStrip url={displayPhotos[1]} rotation={3} />}
                 </div>
                 <div className="w-[68%] flex flex-col gap-1 text-right">
                   {wishFromCandle && (
@@ -158,11 +161,7 @@ export function TimeCapsulePdf({
             {(capsuleAnswers.length > 0 || displayPhotos[2]) && (
               <div className="flex w-full items-center gap-3">
                 <div className="w-[32%] flex justify-center">
-                  {displayPhotos[2] ? (
-                    <FilmStrip url={displayPhotos[2]} rotation={-2} />
-                  ) : (
-                    <FilmStrip url="/images/birthday_pdf_basic.jpg" rotation={-2} />
-                  )}
+                  {displayPhotos[2] && <FilmStrip url={displayPhotos[2]} rotation={-2} />}
                 </div>
                 <div className="w-[68%] px-1">
                   <h3 style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] uppercase tracking-widest text-center text-[#8A7C6E] border-b border-[#C8B89D]/50 pb-0.5 mb-1">
@@ -182,7 +181,7 @@ export function TimeCapsulePdf({
 
           </div>
 
-          {/* ПОДПИС (ИЗТЕГЛЕН НАГОРЕ В БЕЗПАСНАТА ЗОНА) */}
+          {/* ПОДПИС */}
           <div className="flex-shrink-0 pt-2 pb-1 border-t border-[#C8B89D]/50 text-right">
             <p style={{ fontFamily: "'Caveat', cursive" }} className="text-3xl text-[#1F1A17] pr-6 leading-none">
               С любов, {sender}
