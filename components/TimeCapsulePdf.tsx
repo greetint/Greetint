@@ -3,7 +3,6 @@
 import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet, Font, Svg, Polygon } from '@react-pdf/renderer';
 
-// Регистриране на ръкописен шрифт (Caveat) и изчистен шрифт (Roboto) за контраст
 Font.register({
   family: 'Caveat',
   src: 'https://fonts.gstatic.com/s/caveat/v18/Wnz6HAc5bAfYB2Q7Yj82ciM_lZQ.ttf',
@@ -38,7 +37,7 @@ const styles = StyleSheet.create({
   },
   seal: {
     position: 'absolute',
-    top: 95, // Центрирано на върха на триъгълника
+    top: 95,
     width: 70,
     height: 70,
     zIndex: 10,
@@ -75,7 +74,6 @@ const styles = StyleSheet.create({
     color: '#1F1A17',
     lineHeight: 1.3,
   },
-  // Дневник (Въпроси и Отговори)
   journalBlock: {
     marginBottom: 12,
   },
@@ -92,7 +90,6 @@ const styles = StyleSheet.create({
     color: '#1F1A17',
     lineHeight: 1.2,
   },
-  // Снимки (Кинолента)
   photoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -143,9 +140,11 @@ const styles = StyleSheet.create({
   }
 });
 
+// ДОБАВЕНО: statusText?: string
 interface PdfProps {
   recipient?: string;
   sender?: string;
+  statusText?: string; 
   mainWish?: string;
   wishFromCandle?: string;
   secretJoke?: string;
@@ -153,7 +152,6 @@ interface PdfProps {
   photos?: string[];
 }
 
-// Компонент за генериране на кинолента с подадена ротация
 const FilmStrip = ({ src, rotation }: { src: string, rotation: number }) => (
   <View style={[styles.filmFrame, { transform: `rotate(${rotation}deg)` }]}>
     <View style={styles.filmHolesRow}>
@@ -169,6 +167,7 @@ const FilmStrip = ({ src, rotation }: { src: string, rotation: number }) => (
 export const TimeCapsulePdf = ({
   recipient = 'Получател',
   sender = 'Подател',
+  statusText = '', // ДОБАВЕНО ТУК
   mainWish = '',
   wishFromCandle = '',
   secretJoke = '',
@@ -176,19 +175,15 @@ export const TimeCapsulePdf = ({
   photos = []
 }: PdfProps) => {
 
-  // Ограничаваме снимките до 5 и задаваме алтернативни ъгли за разпръснат ефект
   const displayPhotos = photos.slice(0, 5);
   const rotations = [-4, 5, -3, 6, -2]; 
 
   return (
     <Document>
-      {/* wrap={true} позволява на съдържанието автоматично да създава нови страници */}
       <Page size="A4" style={styles.page} wrap={true}>
         
-        {/* ФОНЪТ се повтаря на всяка страница (с долния ръб на плика) */}
         <Image src="/images/pdf-background.jpg" style={styles.background} fixed />
 
-        {/* ГОРЕН КАПАК НА ПЛИКА - рендира се само на ПЪРВАТА страница */}
         <View style={styles.topFlapContainer} wrap={false}>
           <Svg height="130" width="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0 }}>
             <Polygon points="0,0 100,0 50,100" fill="#EAE2D6" stroke="#D4AF37" strokeWidth={0.5} />
@@ -196,9 +191,16 @@ export const TimeCapsulePdf = ({
           <Image src="/images/gold-seal.png" style={styles.seal} />
         </View>
 
-        {/* ДИНАМИЧНО СЪДЪРЖАНИЕ */}
         <View style={styles.contentContainer}>
           <Text style={styles.title}>Честит рожден ден, {recipient}!</Text>
+
+          {/* ДОБАВЕН БЛОК ЗА СТАТУТ (ако има такъв) */}
+          {statusText ? (
+            <View style={styles.section} wrap={false}>
+              <Text style={styles.sectionTitle}>Начало</Text>
+              <Text style={styles.textContent}>{statusText}</Text>
+            </View>
+          ) : null}
 
           {mainWish ? (
             <View style={styles.section} wrap={false}>
@@ -251,7 +253,6 @@ export const TimeCapsulePdf = ({
           </View>
         </View>
 
-        {/* КОПИРАЙТ - стои фиксиран най-долу на всяка генерирана страница */}
         <Text style={styles.footer} fixed>
           GREETING ARCHIVE © 2026
         </Text>
