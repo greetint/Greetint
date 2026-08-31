@@ -1,132 +1,125 @@
 'use client';
 
-import React from 'react';
-import { Document, Page, Text, View, Image, StyleSheet, Svg, Polygon } from '@react-pdf/renderer';
-
-// НЕ ИЗПОЛЗВАМЕ EXTERNAL FONT.REGISTER, ЗА ДА ИЗБЕГНЕМ 404 ГРЕШКИ И КРАШВАНИЯ.
-// Използваме стандартните вградени шрифтове на PDF генератора (Helvetica).
+import React, { useEffect, useState } from 'react';
+import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
   page: {
-    paddingBottom: 80,
+    paddingTop: 30,
+    paddingBottom: 50,
+    paddingHorizontal: 40,
     backgroundColor: '#FDFBF7',
   },
   background: {
     position: 'absolute',
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
+    width: 595.28,
+    height: 841.89,
     zIndex: -1,
   },
   topFlapContainer: {
     width: '100%',
-    height: 120,
-    backgroundColor: '#EAE2D6',
-    borderBottomWidth: 2,
-    borderBottomColor: '#D4AF37',
+    height: 90,
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginBottom: 20,
+    justifyContent: 'center',
+    marginBottom: 5,
   },
   seal: {
-    width: 70,
-    height: 70,
-    marginBottom: -35,
-    zIndex: 10,
+    width: 55,
+    height: 55,
   },
   contentContainer: {
-    paddingHorizontal: 60,
-    paddingTop: 20,
+    paddingHorizontal: 20,
     zIndex: 5,
   },
   title: {
     fontFamily: 'Helvetica-Bold',
-    fontSize: 28,
+    fontSize: 22,
     color: '#3A322D',
     textAlign: 'center',
-    marginBottom: 25,
+    marginBottom: 15,
   },
   section: {
-    marginBottom: 18,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontFamily: 'Helvetica-Bold',
-    fontSize: 9,
+    fontSize: 8,
     textTransform: 'uppercase',
     letterSpacing: 2,
     color: '#958679',
-    marginBottom: 6,
+    marginBottom: 3,
     borderBottomWidth: 1,
     borderBottomColor: '#DBCEB3',
-    paddingBottom: 4,
+    paddingBottom: 2,
   },
   textContent: {
     fontFamily: 'Helvetica-Oblique',
-    fontSize: 16,
+    fontSize: 13,
     color: '#1F1A17',
-    lineHeight: 1.4,
+    lineHeight: 1.3,
   },
   journalBlock: {
-    marginBottom: 10,
+    marginBottom: 6,
   },
   journalQ: {
     fontFamily: 'Helvetica-Oblique',
-    fontSize: 11,
+    fontSize: 9,
     color: '#635E57',
-    marginBottom: 2,
+    marginBottom: 1,
   },
   journalA: {
     fontFamily: 'Helvetica-Bold',
-    fontSize: 15,
+    fontSize: 12,
     color: '#1F1A17',
-    lineHeight: 1.3,
+    lineHeight: 1.2,
   },
   photoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    marginTop: 15,
-    gap: 15,
+    marginTop: 8,
+    gap: 8,
   },
   filmFrame: {
     width: '45%',
     backgroundColor: '#141210',
-    padding: 6,
+    padding: 4,
     borderRadius: 2,
-    marginBottom: 15,
+    marginBottom: 8,
   },
   filmHolesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   filmHolesRowBottom: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 4,
+    marginTop: 2,
   },
   hole: {
-    width: 6,
-    height: 4,
+    width: 4,
+    height: 2,
     backgroundColor: '#FEFEFD',
     borderRadius: 1,
   },
   filmImage: {
     width: '100%',
-    height: 110,
+    height: 80,
     objectFit: 'cover',
     borderWidth: 1,
     borderColor: '#3A322D',
   },
   footer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 15,
     left: 0,
     right: 0,
     textAlign: 'center',
     fontFamily: 'Helvetica',
-    fontSize: 8,
+    fontSize: 7,
     letterSpacing: 3,
     color: '#958679',
   }
@@ -168,6 +161,13 @@ export const TimeCapsulePdf = ({
   capsuleAnswers = [],
   photos = []
 }: PdfProps) => {
+  const [baseUrl, setBaseUrl] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setBaseUrl(window.location.origin);
+    }
+  }, []);
 
   const isImage = (url: string) => {
     if (!url) return false;
@@ -175,17 +175,19 @@ export const TimeCapsulePdf = ({
     return lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png') || lower.startsWith('data:image/');
   };
 
-  const displayPhotos = (photos || []).filter(isImage).slice(0, 5);
-  const rotations = [-4, 5, -3, 6, -2]; 
+  const displayPhotos = (photos || []).filter(isImage).slice(0, 4);
+  const rotations = [-3, 4, -2, 3]; 
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap={true}>
         
-        <Image src="/images/pdf-background.jpg" style={styles.background} fixed />
+        {/* Фон на писмото */}
+        {baseUrl ? <Image src={`${baseUrl}/images/pdf-background.jpg`} style={styles.background} fixed /> : null}
 
+        {/* Златен печат най-горе */}
         <View style={styles.topFlapContainer} wrap={false}>
-          <Image src="/images/gold-seal.png" style={styles.seal} />
+          {baseUrl ? <Image src={`${baseUrl}/images/gold-seal.png`} style={styles.seal} /> : null}
         </View>
 
         <View style={styles.contentContainer}>
@@ -242,7 +244,7 @@ export const TimeCapsulePdf = ({
             </View>
           ) : null}
 
-          <View style={[styles.section, { marginTop: 15 }]} wrap={false}>
+          <View style={[styles.section, { marginTop: 10 }]} wrap={false}>
             <Text style={[styles.textContent, { textAlign: 'right', fontFamily: 'Helvetica-Bold' }]}>
               С любов,{'\n'}{sender}
             </Text>
