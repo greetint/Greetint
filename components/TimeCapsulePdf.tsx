@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, Image, StyleSheet, Font, Svg, Polygon } from '@react-pdf/renderer';
 
-// Зареждане на шрифтовете
+// РЕГИСТРИРАНЕ НА ШРИФТОВЕ
 Font.register({
   family: 'Caveat',
   src: 'https://fonts.gstatic.com/s/caveat/v18/Wnz6HAc5bAfYB2Q7Yj82ciM_lZQ.ttf',
@@ -18,126 +18,119 @@ Font.register({
 
 const styles = StyleSheet.create({
   page: {
-    paddingBottom: 80,
-    backgroundColor: '#FDFBF7',
+    paddingTop: 40,
+    paddingBottom: 60,
+    paddingHorizontal: 50,
+    backgroundColor: '#F3ECE1', // Топъл пергаментов цвят, генериран с код
   },
-  background: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    zIndex: -1,
-  },
+  // Горна част (Капак на плика и печат)
   topFlapContainer: {
+    position: 'relative',
     width: '100%',
-    height: 120,
-    backgroundColor: '#EAE2D6', 
-    borderBottomWidth: 2,
-    borderBottomColor: '#D4AF37',
+    height: 110,
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   seal: {
-    width: 70,
-    height: 70,
-    marginBottom: -35,
-    zIndex: 10,
+    position: 'absolute',
+    top: 70,
+    width: 65,
+    height: 65,
+    zIndex: 20,
   },
-  contentContainer: {
-    paddingHorizontal: 60,
-    paddingTop: 20,
-    zIndex: 5,
-  },
+  // Главно заглавие
   title: {
     fontFamily: 'Caveat',
-    fontSize: 42,
+    fontSize: 38,
     color: '#3A322D',
     textAlign: 'center',
-    marginBottom: 25,
+    marginBottom: 20,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   sectionTitle: {
     fontFamily: 'Roboto',
-    fontSize: 10,
+    fontSize: 9,
     textTransform: 'uppercase',
     letterSpacing: 2,
     color: '#958679',
-    marginBottom: 8,
-    borderBottomWidth: 1,
+    marginBottom: 4,
+    borderBottomWidth: 0.7,
     borderBottomColor: '#DBCEB3',
-    paddingBottom: 4,
+    paddingBottom: 2,
   },
   textContent: {
     fontFamily: 'Caveat',
-    fontSize: 24,
+    fontSize: 22,
     color: '#1F1A17',
-    lineHeight: 1.3,
+    lineHeight: 1.25,
   },
+  // Дневник
   journalBlock: {
-    marginBottom: 12,
+    marginBottom: 10,
   },
   journalQ: {
     fontFamily: 'Roboto',
     fontStyle: 'italic',
-    fontSize: 12,
-    color: '#635E57',
-    marginBottom: 3,
+    fontSize: 10,
+    color: '#7A6C5E',
+    marginBottom: 2,
   },
   journalA: {
     fontFamily: 'Caveat',
-    fontSize: 22,
+    fontSize: 20,
     color: '#1F1A17',
-    lineHeight: 1.2,
+    lineHeight: 1.15,
   },
+  // Снимки (Киноленти)
   photoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    marginTop: 15,
-    gap: 15,
+    marginTop: 10,
+    gap: 12,
   },
   filmFrame: {
     width: '45%',
     backgroundColor: '#141210',
-    padding: 6,
+    padding: 5,
     borderRadius: 2,
-    marginBottom: 15,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
   },
   filmHolesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginBottom: 3,
   },
   filmHolesRowBottom: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 4,
+    marginTop: 3,
   },
   hole: {
-    width: 6,
-    height: 4,
+    width: 5,
+    height: 3,
     backgroundColor: '#FEFEFD',
     borderRadius: 1,
   },
   filmImage: {
     width: '100%',
-    height: 110,
+    height: 100,
     objectFit: 'cover',
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: '#3A322D',
   },
   footer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 15,
     left: 0,
     right: 0,
     textAlign: 'center',
     fontFamily: 'Roboto',
-    fontSize: 8,
+    fontSize: 7,
     letterSpacing: 3,
     color: '#958679',
   }
@@ -180,28 +173,30 @@ export const TimeCapsulePdf = ({
   photos = []
 }: PdfProps) => {
 
-  // СТРОГ ФИЛТЪР: Блокира .mp4 и .webm файлове, за да не крашва PDF-ът!
   const isImage = (url: string) => {
     if (!url) return false;
     const lower = url.toLowerCase();
     return lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png') || lower.startsWith('data:image/');
   };
 
-  const displayPhotos = (photos || []).filter(isImage).slice(0, 5);
-  const rotations = [-4, 5, -3, 6, -2]; 
+  const displayPhotos = (photos || []).filter(isImage).slice(0, 6); // До 6 снимки за перфектен баланс
+  const rotations = [-4, 5, -2, 4, -5, 3]; 
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap={true}>
         
-        {/* АКО ТЕЗИ ИЗОБРАЖЕНИЯ ЛИПСВАТ В /public/images/, PDF-ЪТ ЩЕ КРАШНЕ. ПРОЕРИ ДАЛИ ГИ ИМА! */}
-        <Image src="/images/pdf-background.jpg" style={styles.background} fixed />
-
+        {/* ГОРЕН ТРИЪГЪЛЕН КАПАК НА ПЛИКА (Генериран изцяло с код) */}
         <View style={styles.topFlapContainer} wrap={false}>
+          <Svg height="110" width="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0 }}>
+            <Polygon points="0,0 100,0 50,100" fill="#E5DAC9" stroke="#D4AF37" strokeWidth={0.3} />
+          </Svg>
+          {/* Златният печат се запазва като акцент върху капака */}
           <Image src="/images/gold-seal.png" style={styles.seal} />
         </View>
 
-        <View style={styles.contentContainer}>
+        {/* СЪДЪРЖАНИЕ НА ПИСМОТО */}
+        <View style={{ paddingHorizontal: 20 }}>
           <Text style={styles.title}>Честит рожден ден, {recipient}!</Text>
 
           {statusText ? (
@@ -255,7 +250,7 @@ export const TimeCapsulePdf = ({
             </View>
           ) : null}
 
-          <View style={[styles.section, { marginTop: 10 }]} wrap={false}>
+          <View style={[styles.section, { marginTop: 15 }]} wrap={false}>
             <Text style={[styles.textContent, { textAlign: 'right' }]}>
               С любов,{'\n'}{sender}
             </Text>
