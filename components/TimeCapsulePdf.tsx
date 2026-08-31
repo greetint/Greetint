@@ -3,7 +3,7 @@
 import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
 
-// Регистриране на шрифтовете
+// Зареждане на шрифтовете
 Font.register({
   family: 'Caveat',
   src: 'https://fonts.gstatic.com/s/caveat/v18/Wnz6HAc5bAfYB2Q7Yj82ciM_lZQ.ttf',
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   topFlapContainer: {
     width: '100%',
     height: 120,
-    backgroundColor: '#EAE2D6', // Заместваме SVG-то с плътен елегантен блок, за да избегнем краш
+    backgroundColor: '#EAE2D6', 
     borderBottomWidth: 2,
     borderBottomColor: '#D4AF37',
     alignItems: 'center',
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   seal: {
     width: 70,
     height: 70,
-    marginBottom: -35, // Изнасяме печата наполовина извън блока
+    marginBottom: -35,
     zIndex: 10,
   },
   contentContainer: {
@@ -155,9 +155,7 @@ interface PdfProps {
 }
 
 const FilmStrip = ({ src, rotation }: { src: string, rotation: number }) => {
-  // ЗАЩИТА: Ако няма src, връщаме null, за да не сринем генератора
   if (!src) return null; 
-  
   return (
     <View style={[styles.filmFrame, { transform: `rotate(${rotation}deg)` }]}>
       <View style={styles.filmHolesRow}>
@@ -182,17 +180,23 @@ export const TimeCapsulePdf = ({
   photos = []
 }: PdfProps) => {
 
-  const displayPhotos = (photos || []).filter(url => Boolean(url)).slice(0, 5);
+  // СТРОГ ФИЛТЪР: Блокира .mp4 и .webm файлове, за да не крашва PDF-ът!
+  const isImage = (url: string) => {
+    if (!url) return false;
+    const lower = url.toLowerCase();
+    return lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png') || lower.startsWith('data:image/');
+  };
+
+  const displayPhotos = (photos || []).filter(isImage).slice(0, 5);
   const rotations = [-4, 5, -3, 6, -2]; 
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap={true}>
         
-        {/* ФОН */}
+        {/* АКО ТЕЗИ ИЗОБРАЖЕНИЯ ЛИПСВАТ В /public/images/, PDF-ЪТ ЩЕ КРАШНЕ. ПРОЕРИ ДАЛИ ГИ ИМА! */}
         <Image src="/images/pdf-background.jpg" style={styles.background} fixed />
 
-        {/* ГОРЕН КАПАК (без SVG, за да е 100% стабилно) */}
         <View style={styles.topFlapContainer} wrap={false}>
           <Image src="/images/gold-seal.png" style={styles.seal} />
         </View>
