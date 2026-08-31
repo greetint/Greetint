@@ -1,135 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer';
-
-const styles = StyleSheet.create({
-  page: {
-    paddingTop: 40,
-    paddingBottom: 50,
-    paddingHorizontal: 40,
-    backgroundColor: '#FDFBF7', // Пергаментов цвят на хартията
-  },
-  // Заглавна част (Плик / Печат)
-  headerContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#DBCEB3',
-    paddingBottom: 15,
-  },
-  seal: {
-    width: 50,
-    height: 50,
-    marginBottom: 8,
-  },
-  title: {
-    fontFamily: 'Helvetica-Bold',
-    fontSize: 24,
-    color: '#3A322D',
-    textAlign: 'center',
-    letterSpacing: 1,
-  },
-  subtitle: {
-    fontFamily: 'Helvetica-Oblique',
-    fontSize: 10,
-    color: '#958679',
-    textAlign: 'center',
-    marginTop: 4,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  // Основен двуколонен布局 (Ляво: Снимки, Дясно: Текстове)
-  mainLayout: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
-  leftColumn: {
-    width: '42%',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 15,
-  },
-  rightColumn: {
-    width: '54%',
-    flexDirection: 'column',
-    gap: 12,
-  },
-  // Стил за кинолентите със снимки
-  filmFrame: {
-    width: '100%',
-    backgroundColor: '#141210',
-    padding: 5,
-    borderRadius: 3,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-  },
-  filmHolesRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 3,
-  },
-  filmHolesRowBottom: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 3,
-  },
-  hole: {
-    width: 5,
-    height: 3,
-    backgroundColor: '#FEFEFD',
-    borderRadius: 1,
-  },
-  filmImage: {
-    width: '100%',
-    height: 110,
-    objectFit: 'cover',
-    borderWidth: 1,
-    borderColor: '#3A322D',
-  },
-  // Текстови блокове
-  textBlock: {
-    marginBottom: 8,
-  },
-  blockTitle: {
-    fontFamily: 'Helvetica-Bold',
-    fontSize: 8,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    color: '#958679',
-    marginBottom: 2,
-  },
-  textBody: {
-    fontFamily: 'Helvetica-Oblique',
-    fontSize: 12,
-    color: '#1F1A17',
-    lineHeight: 1.4,
-  },
-  journalQ: {
-    fontFamily: 'Helvetica-Oblique',
-    fontSize: 9,
-    color: '#635E57',
-  },
-  journalA: {
-    fontFamily: 'Helvetica-Bold',
-    fontSize: 11,
-    color: '#1F1A17',
-    lineHeight: 1.25,
-    marginBottom: 6,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 20,
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-    fontFamily: 'Helvetica',
-    fontSize: 7,
-    letterSpacing: 3,
-    color: '#958679',
-  }
-});
 
 interface PdfProps {
   recipient?: string;
@@ -142,22 +13,7 @@ interface PdfProps {
   photos?: string[];
 }
 
-const FilmStrip = ({ src, rotation }: { src: string, rotation: number }) => {
-  if (!src) return null; 
-  return (
-    <View style={[styles.filmFrame, { transform: `rotate(${rotation}deg)` }]}>
-      <View style={styles.filmHolesRow}>
-        {[...Array(6)].map((_, i) => <View key={`top-${i}`} style={styles.hole} />)}
-      </View>
-      <Image src={src} style={styles.filmImage} />
-      <View style={styles.filmHolesRowBottom}>
-        {[...Array(6)].map((_, i) => <View key={`bot-${i}`} style={styles.hole} />)}
-      </View>
-    </View>
-  );
-};
-
-export const TimeCapsulePdf = ({
+export function TimeCapsulePdf({
   recipient = 'Получател',
   sender = 'Подател',
   statusText = '',
@@ -166,8 +22,7 @@ export const TimeCapsulePdf = ({
   secretJoke = '',
   capsuleAnswers = [],
   photos = []
-}: PdfProps) => {
-
+}: PdfProps) {
   const isImage = (url: string) => {
     if (!url) return false;
     const lower = url.toLowerCase();
@@ -175,88 +30,163 @@ export const TimeCapsulePdf = ({
   };
 
   const displayPhotos = (photos || []).filter(isImage).slice(0, 4);
-  const rotations = [-2, 3, -3, 2]; // Леки артистични наклони
 
   return (
-    <Document>
-      <Page size="A4" style={styles.page} wrap={true}>
+    <div id="pdf-print-area" className="hidden print:block fixed inset-0 bg-[#FDFBF7] p-8 z-[9999] text-[#1F1A17] overflow-y-auto">
+      {/* Зареждаме Google Fonts с пълна поддръжка на Кирилица */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Montserrat:ital,wght@0,400;0,600;1,400&display=swap');
+
+        @media print {
+          body * {
+            visibility: hidden !important;
+          }
+          #pdf-print-area, #pdf-print-area * {
+            visibility: visible !important;
+          }
+          #pdf-print-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            background-color: #FDFBF7 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          @page {
+            size: A4;
+            margin: 15mm;
+          }
+        }
+      `}</style>
+
+      {/* ГОРЕН КАПАК СЪС ЗЛАТЕН ПЕЧАТ */}
+      <div className="flex flex-col items-center mb-6">
+        <div className="w-full h-16 bg-[#EAE2D6] border-b-2 border-[#D4AF37] relative flex items-center justify-center rounded-t-lg">
+          <img src="/images/gold-seal.png" alt="Seal" className="w-14 h-14 absolute -bottom-6 drop-shadow-md z-10" />
+        </div>
+      </div>
+
+      {/* ЗАГЛАВИЕ */}
+      <div className="text-center mt-6 mb-8">
+        <h1 style={{ fontFamily: "'Caveat', cursive" }} className="text-4xl font-bold text-[#3A322D]">
+          Честит рожден ден, {recipient}!
+        </h1>
+        <p style={{ fontFamily: "'Montserrat', sans-serif" }} className="text-[10px] uppercase tracking-[0.3em] text-[#958679] mt-1">
+          Капсула на времето // GREETING ARCHIVE
+        </p>
+      </div>
+
+      {/* ДВУКОЛОНЕН ДИЗАЙН (Снимки отляво, Текст отдясно) */}
+      <div className="grid grid-cols-12 gap-8 items-start">
         
-        {/* Заглавна част с печат */}
-        <View style={styles.headerContainer} wrap={false}>
-          <Image src="/images/gold-seal.png" style={styles.seal} />
-          <Text style={styles.title}>Капсула на времето</Text>
-          <Text style={styles.subtitle}>Честит рожден ден, {recipient}!</Text>
-        </View>
-
-        {/* Двуколонен дизайн (Снимки отляво, Текстове отдясно) */}
-        <View style={styles.mainLayout}>
-          
-          {/* ЛЯВА КОЛОНА: Артистични киноленти */}
-          <View style={styles.leftColumn}>
-            {displayPhotos.map((url, i) => (
-              <FilmStrip key={i} src={url} rotation={rotations[i % rotations.length]} />
-            ))}
-          </View>
-
-          {/* ДЯСНА КОЛОНА: Послания, желания и дневник */}
-          <View style={styles.rightColumn}>
-            
-            {statusText ? (
-              <View style={styles.textBlock} wrap={false}>
-                <Text style={styles.blockTitle}>Начало на пътуването</Text>
-                <Text style={styles.textBody}>{statusText}</Text>
-              </View>
-            ) : null}
-
-            {mainWish ? (
-              <View style={styles.textBlock} wrap={false}>
-                <Text style={styles.blockTitle}>Послание от подаряващия</Text>
-                <Text style={styles.textBody}>{mainWish}</Text>
-              </View>
-            ) : null}
-
-            {wishFromCandle ? (
-              <View style={styles.textBlock} wrap={false}>
-                <Text style={styles.blockTitle}>Намислено желание</Text>
-                <Text style={styles.textBody}>"{wishFromCandle}"</Text>
-              </View>
-            ) : null}
-
-            {secretJoke ? (
-              <View style={styles.textBlock} wrap={false}>
-                <Text style={styles.blockTitle}>Скреч тайна</Text>
-                <Text style={styles.textBody}>{secretJoke}</Text>
-              </View>
-            ) : null}
-
-            {capsuleAnswers && capsuleAnswers.length > 0 ? (
-              <View style={styles.textBlock}>
-                <Text style={styles.blockTitle}>Поглед към бъдещето</Text>
-                {capsuleAnswers.map((item, idx) => (
-                  <View key={idx} wrap={false} style={{ marginBottom: 4 }}>
-                    <Text style={styles.journalQ}>{item.question || 'Въпрос'}</Text>
-                    <Text style={styles.journalA}>{item.answer || 'Без отговор'}</Text>
-                  </View>
+        {/* ЛЯВА КОЛОНА: КИНОЛЕНТИ СЪС СНИМКИ */}
+        <div className="col-span-5 flex flex-col gap-6">
+          {displayPhotos.map((url, i) => (
+            <div 
+              key={i} 
+              className="bg-[#141210] p-2 rounded shadow-md border border-[#2A2421]"
+              style={{ transform: `rotate(${i % 2 === 0 ? '-3deg' : '3deg'})` }}
+            >
+              {/* Горна перфорация */}
+              <div className="flex justify-between items-center mb-1.5 px-1 opacity-90">
+                {[...Array(6)].map((_, idx) => (
+                  <div key={idx} className="w-2 h-1.5 bg-[#FEFEFD] rounded-[1px]" />
                 ))}
-              </View>
-            ) : null}
+              </div>
+              
+              <img src={url} alt="Memory" className="w-full h-32 object-cover border border-white/10 rounded-sm" />
 
-            <View style={{ marginTop: 15 }} wrap={false}>
-              <Text style={[styles.textBody, { textAlign: 'right', fontFamily: 'Helvetica-Bold' }]}>
-                С любов,{'\n'}{sender}
-              </Text>
-            </View>
+              {/* Долна перфорация */}
+              <div className="flex justify-between items-center mt-1.5 px-1 opacity-90">
+                {[...Array(6)].map((_, idx) => (
+                  <div key={idx} className="w-2 h-1.5 bg-[#FEFEFD] rounded-[1px]" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
 
-          </View>
-        </View>
+        {/* ДЯСНА КОЛОНА: ПОСЛАНИЯ И ТЕКСТОВЕ */}
+        <div className="col-span-7 space-y-5">
+          {statusText && (
+            <div className="space-y-1">
+              <span style={{ fontFamily: "'Montserrat', sans-serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block border-b border-[#DBCEB3] pb-1">
+                Начало
+              </span>
+              <p style={{ fontFamily: "'Caveat', cursive" }} className="text-xl text-[#1F1A17] leading-tight">
+                {statusText}
+              </p>
+            </div>
+          )}
 
-        <Text style={styles.footer} fixed>
-          GREETING ARCHIVE © 2026
-        </Text>
+          {mainWish && (
+            <div className="space-y-1">
+              <span style={{ fontFamily: "'Montserrat', sans-serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block border-b border-[#DBCEB3] pb-1">
+                Послание от подаряващия
+              </span>
+              <p style={{ fontFamily: "'Caveat', cursive" }} className="text-xl text-[#1F1A17] leading-tight">
+                {mainWish}
+              </p>
+            </div>
+          )}
 
-      </Page>
-    </Document>
+          {wishFromCandle && (
+            <div className="space-y-1">
+              <span style={{ fontFamily: "'Montserrat', sans-serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block border-b border-[#DBCEB3] pb-1">
+                Намисленото желание
+              </span>
+              <p style={{ fontFamily: "'Caveat', cursive" }} className="text-xl text-[#1F1A17] leading-tight">
+                "{wishFromCandle}"
+              </p>
+            </div>
+          )}
+
+          {secretJoke && (
+            <div className="space-y-1">
+              <span style={{ fontFamily: "'Montserrat', sans-serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block border-b border-[#DBCEB3] pb-1">
+                Скреч Тайната
+              </span>
+              <p style={{ fontFamily: "'Caveat', cursive" }} className="text-xl text-[#1F1A17] leading-tight">
+                {secretJoke}
+              </p>
+            </div>
+          )}
+
+          {capsuleAnswers.length > 0 && (
+            <div className="space-y-3 pt-1">
+              <span style={{ fontFamily: "'Montserrat', sans-serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block border-b border-[#DBCEB3] pb-1">
+                Дневник на бъдещето
+              </span>
+              {capsuleAnswers.map((item, idx) => (
+                <div key={idx} className="space-y-0.5">
+                  <p style={{ fontFamily: "'Montserrat', sans-serif" }} className="text-[10px] italic text-[#635E57]">
+                    {item.question}
+                  </p>
+                  <p style={{ fontFamily: "'Caveat', cursive" }} className="text-lg text-[#1F1A17] font-bold leading-tight">
+                    {item.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="pt-6 text-right">
+            <p style={{ fontFamily: "'Caveat', cursive" }} className="text-2xl text-[#1F1A17]">
+              С любов,<br />{sender}
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* КОПИРАЙТ */}
+      <div style={{ fontFamily: "'Montserrat', sans-serif" }} className="mt-12 text-center text-[8px] uppercase tracking-[0.3em] text-[#958679] border-t border-[#DBCEB3] pt-4">
+        GREETING ARCHIVE © 2026
+      </div>
+    </div>
   );
-};
+}
 
 export default TimeCapsulePdf;

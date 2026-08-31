@@ -2,14 +2,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { pdf } from '@react-pdf/renderer';
 import { SealStage } from '@/components/quest/SealStage';
 import { ScratchStage } from '@/components/quest/ScratchStage';
 import { MemoryWallStage } from '@/components/quest/MemoryWallStage';
 import { QuizStage } from '@/components/quest/QuizStage';
 import { CakeStage } from '@/components/quest/CakeStage';
 import { CapsuleStage } from '@/components/quest/CapsuleStage';
-import TimeCapsulePdf from '@/components/TimeCapsulePdf';
+import { TimeCapsulePdf } from '@/components/pdf/TimeCapsulePdf'; 
 
 type QuestStage = 'seal' | 'scratch' | 'quiz' | 'memories' | 'cake' | 'capsule';
 
@@ -32,6 +31,9 @@ export default function CardPage() {
     wishFromCandle: '',
     photos: [] as string[]
   });
+
+  // Състояние за съхранение на отговорите от дневника/капсулата
+  const [capsuleAnswers, setCapsuleAnswers] = useState<{ question: string; answer: string }[]>([]);
 
   // Управление на фоновата музика с непрекъснат loop
   useEffect(() => {
@@ -66,34 +68,12 @@ export default function CardPage() {
     }
   };
 
-  const handleGeneratePdf = async (capsuleAnswers: { question: string; answer: string }[]) => {
-    try {
-      const doc = (
-        <TimeCapsulePdf
-          recipient={formattedName}
-          sender={cardData.sender}
-          statusText={cardData.statusText}
-          secretJoke={cardData.secretJoke}
-          mainWish={cardData.mainWish}
-          wishFromCandle={cardData.wishFromCandle}
-          capsuleAnswers={capsuleAnswers}
-          photos={cardData.photos}
-        />
-      );
-
-      const blob = await pdf(doc).toBlob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Kapsula_na_vremeto_${formattedName}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Грешка при генериране на PDF:', error);
-      alert('Възникна грешка при генерирането на PDF файла.');
-    }
+  // Използваме вградения в браузъра перфектен Print/Save to PDF механизъм
+  const handleGeneratePdf = async (answers: { question: string; answer: string }[]) => {
+    setCapsuleAnswers(answers);
+    setTimeout(() => {
+      window.print();
+    }, 300);
   };
 
   return (
@@ -154,6 +134,18 @@ export default function CardPage() {
           onGeneratePdf={handleGeneratePdf}
         />
       )}
+
+      {/* СКРИТ КОНТЕЙНЕР ЗА ПРИНТ / PDF ИЗГЛЕД */}
+      <TimeCapsulePdf
+        recipient={formattedName}
+        sender={cardData.sender}
+        statusText={cardData.statusText}
+        mainWish={cardData.mainWish}
+        wishFromCandle={cardData.wishFromCandle}
+        secretJoke={cardData.secretJoke}
+        capsuleAnswers={capsuleAnswers}
+        photos={cardData.photos}
+      />
 
     </main>
   );
