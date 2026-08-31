@@ -34,30 +34,23 @@ export function TimeCapsulePdf({
   
   const displayPhotos = (photos || []).filter(isImage).slice(0, 5);
 
-  // ЕДЕНТИЧНА КИНОЛЕНТА С ТОЗИ ОТ MEMORYWALLSTAGE (Черен блок + перфорации)
+  // ИСТИНСКА КИНЕМОТОГРАФСКА РАМКА ЧРЕЗ ТВОЯТ ФАЙЛ /images/blank_film.png
   const FilmStrip = ({ url, rotation }: { url: string, rotation: number }) => (
     <div 
-      className="bg-[#141210] p-2 shadow-2xl rounded-sm border-2 border-[#2A2421] w-[130px] flex-shrink-0 mx-auto"
+      className="relative w-[135px] h-[85px] flex-shrink-0 mx-auto shadow-2xl flex items-center justify-center"
       style={{ transform: `rotate(${rotation}deg)` }}
     >
-      {/* Горна перфорация (също като в MemoryWallStage) */}
-      <div className="h-4 w-full flex items-center justify-around px-1 opacity-95 mb-1.5">
-        {[...Array(6)].map((_, i) => (
-          <div key={`top-${i}`} className="w-3 h-2.5 bg-[#ECE8E0] rounded-[2px] shadow-inner" />
-        ))}
-      </div>
-
-      {/* Снимка */}
-      <div className="w-full h-[85px] bg-black overflow-hidden rounded-xs border border-white/10">
+      {/* Самата потребителска снимка, позиционирана точно в черното поле на лентата */}
+      <div className="absolute inset-x-[12%] inset-y-[15%] z-0 bg-black overflow-hidden flex items-center justify-center">
         <img src={url} alt="Memory Frame" className="w-full h-full object-cover" />
       </div>
 
-      {/* Долна перфорация (също като в MemoryWallStage) */}
-      <div className="h-4 w-full flex items-center justify-around px-1 opacity-95 mt-1.5">
-        {[...Array(6)].map((_, i) => (
-          <div key={`bot-${i}`} className="w-3 h-2.5 bg-[#ECE8E0] rounded-[2px] shadow-inner" />
-        ))}
-      </div>
+      {/* Твоята картинка за кинолента отгоре, която прави перфектните перфорации */}
+      <img 
+        src="/images/blank_film.png" 
+        alt="Film Frame" 
+        className="relative z-10 w-full h-full object-fill pointer-events-none drop-shadow-md" 
+      />
     </div>
   );
 
@@ -88,14 +81,14 @@ export function TimeCapsulePdf({
       {/* A4 КОНТЕЙНЕР */}
       <div className="w-[210mm] h-[297mm] mx-auto relative overflow-hidden bg-[#FAF6EE] box-border">
         
-        {/* ФОНОВО ИЗОБРАЖЕНИЕ */}
+        {/* ФОНОВО ИЗОБРАЖЕНИЕ НА ЛИСТА */}
         <img 
           src="/images/birthday_pdf_basic.jpg" 
           alt="Background" 
           className="absolute inset-0 w-[210mm] h-[297mm] object-cover z-0" 
         />
 
-        {/* БЕЗОПАСНА ЗОНА (Изтеглена нагоре, с идеални отстояния) */}
+        {/* БЕЗОПАСНА ЗОНА */}
         <div className="relative z-10 w-full h-full pt-[42mm] pb-[36mm] px-[16mm] flex flex-col justify-between box-border">
           
           {/* ЗАГЛАВИЕ */}
@@ -108,7 +101,7 @@ export function TimeCapsulePdf({
             </p>
           </div>
 
-          {/* СЪДЪРЖАНИЕ (ЗИГ-ЗАГ СТРУКТУРА С УВЕЛИЧЕН БАЗОВ ШРИФТ) */}
+          {/* СЪДЪРЖАНИЕ */}
           <div className="flex flex-col gap-3 flex-1 justify-around my-1">
             
             {/* БЛОК 1 */}
@@ -181,7 +174,7 @@ export function TimeCapsulePdf({
 
           </div>
 
-          {/* ПОДПИС (Вдигнат нагоре в светлата част на листа) */}
+          {/* ПОДПИС */}
           <div className="flex-shrink-0 pt-2 pb-1 border-t border-[#C8B89D]/50 text-right">
             <p style={{ fontFamily: "'Caveat', cursive" }} className="text-3xl text-[#1F1A17] pr-6 leading-none">
               С любов, {sender}
@@ -190,7 +183,7 @@ export function TimeCapsulePdf({
 
         </div>
 
-        {/* АВТОРСКО ПРАВО В ДОЛНОТО ПОЛЕ */}
+        {/* АВТОРСКО ПРАВО */}
         <div 
           className="absolute bottom-[10mm] left-0 right-0 text-center z-20"
           style={{ fontFamily: "'Playfair Display', serif" }}
