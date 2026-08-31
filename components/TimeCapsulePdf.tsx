@@ -34,28 +34,29 @@ export function TimeCapsulePdf({
   
   const displayPhotos = (photos || []).filter(isImage);
 
-  // СТИЛНА КИНЕМАТОГРАФСКА ЛЕНТА СЪЗДАТЕНА ИЗЦЯЛО С КОД (Перфектен бордер и перфорации)
+  // ГАРАНТИРАНА КИНЕМАТОГРАФСКА ЛЕНТА С ПЕРФОРАЦИИ (ЧЕРЕН ФОН + БЕЛИ КВАДРАТЧЕТА)
   const FilmStrip = ({ url, rotation }: { url?: string, rotation: number }) => {
-    if (!url) return null; // Ако няма снимка, не показваме празна лента
+    // Ако няма качена снимка, слагаме фоновата хартия, за да не седи празно на теста
+    const activePhoto = url && url.length > 0 ? url : '/images/birthday_pdf_basic.jpg';
 
     return (
       <div 
         className="bg-[#141210] p-1.5 shadow-2xl rounded-sm border-2 border-[#2A2421] w-[130px] flex-shrink-0 mx-auto"
         style={{ transform: `rotate(${rotation}deg)` }}
       >
-        {/* Горна редица перфорации */}
+        {/* Горна редица перфорации (бели квадратчета) */}
         <div className="flex justify-between px-1 mb-1 bg-[#141210] py-0.5">
           {[...Array(5)].map((_, idx) => (
             <div key={`top-${idx}`} className="w-2 h-1 bg-[#FAF6EE] rounded-[1px]" />
           ))}
         </div>
 
-        {/* Самата снимка в лентата */}
+        {/* Кадърът със снимката */}
         <div className="w-full h-[75px] bg-black overflow-hidden border border-white/10 rounded-xs">
-          <img src={url} alt="Memory Frame" className="w-full h-full object-cover" />
+          <img src={activePhoto} alt="Memory Frame" className="w-full h-full object-cover" />
         </div>
 
-        {/* Долна редица перфорации */}
+        {/* Долна редица перфорации (бели квадратчета) */}
         <div className="flex justify-between px-1 mt-1 bg-[#141210] py-0.5">
           {[...Array(5)].map((_, idx) => (
             <div key={`bot-${idx}`} className="w-2 h-1 bg-[#FAF6EE] rounded-[1px]" />
@@ -116,7 +117,7 @@ export function TimeCapsulePdf({
           <div className="flex flex-col gap-3 flex-1 justify-around my-1">
             
             {/* БЛОК 1 */}
-            {(statusText || mainWish || displayPhotos[0]) && (
+            {(statusText || mainWish || true) && (
               <div className="flex w-full items-center gap-4">
                 <div className="w-[32%] flex justify-center">
                   <FilmStrip url={displayPhotos[0]} rotation={-3} />
@@ -139,7 +140,7 @@ export function TimeCapsulePdf({
             )}
 
             {/* БЛОК 2 */}
-            {(wishFromCandle || secretJoke || displayPhotos[1]) && (
+            {(wishFromCandle || secretJoke || true) && (
               <div className="flex w-full items-center gap-4 flex-row-reverse">
                 <div className="w-[32%] flex justify-center">
                   <FilmStrip url={displayPhotos[1]} rotation={3} />
@@ -162,7 +163,7 @@ export function TimeCapsulePdf({
             )}
 
             {/* БЛОК 3: ОТГОВОРИ */}
-            {(capsuleAnswers.length > 0 || displayPhotos[2]) && (
+            {(capsuleAnswers.length > 0 || true) && (
               <div className="flex w-full items-center gap-3">
                 <div className="w-[32%] flex justify-center">
                   <FilmStrip url={displayPhotos[2]} rotation={-2} />
