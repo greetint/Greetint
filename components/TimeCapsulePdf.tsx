@@ -1,136 +1,132 @@
 'use client';
 
 import React from 'react';
-import { Document, Page, Text, View, Image, StyleSheet, Font, Svg, Polygon } from '@react-pdf/renderer';
+import { Document, Page, Text, View, Image, StyleSheet, Svg, Polygon } from '@react-pdf/renderer';
 
-// РЕГИСТРИРАНЕ НА ШРИФТОВЕ
-Font.register({
-  family: 'Caveat',
-  src: 'https://fonts.gstatic.com/s/caveat/v18/Wnz6HAc5bAfYB2Q7Yj82ciM_lZQ.ttf',
-});
-Font.register({
-  family: 'Roboto',
-  fonts: [
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf', fontWeight: 'normal' },
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-italic-webfont.ttf', fontStyle: 'italic' },
-  ]
-});
+// НЕ ИЗПОЛЗВАМЕ EXTERNAL FONT.REGISTER, ЗА ДА ИЗБЕГНЕМ 404 ГРЕШКИ И КРАШВАНИЯ.
+// Използваме стандартните вградени шрифтове на PDF генератора (Helvetica).
 
 const styles = StyleSheet.create({
   page: {
-    paddingTop: 40,
-    paddingBottom: 60,
-    paddingHorizontal: 50,
-    backgroundColor: '#F3ECE1', // Топъл пергаментов цвят, генериран с код
+    paddingBottom: 80,
+    backgroundColor: '#FDFBF7',
   },
-  // Горна част (Капак на плика и печат)
-  topFlapContainer: {
-    position: 'relative',
-    width: '100%',
-    height: 110,
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  seal: {
+  background: {
     position: 'absolute',
-    top: 70,
-    width: 65,
-    height: 65,
-    zIndex: 20,
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: -1,
   },
-  // Главно заглавие
-  title: {
-    fontFamily: 'Caveat',
-    fontSize: 38,
-    color: '#3A322D',
-    textAlign: 'center',
+  topFlapContainer: {
+    width: '100%',
+    height: 120,
+    backgroundColor: '#EAE2D6',
+    borderBottomWidth: 2,
+    borderBottomColor: '#D4AF37',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
     marginBottom: 20,
   },
+  seal: {
+    width: 70,
+    height: 70,
+    marginBottom: -35,
+    zIndex: 10,
+  },
+  contentContainer: {
+    paddingHorizontal: 60,
+    paddingTop: 20,
+    zIndex: 5,
+  },
+  title: {
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 28,
+    color: '#3A322D',
+    textAlign: 'center',
+    marginBottom: 25,
+  },
   section: {
-    marginBottom: 15,
+    marginBottom: 18,
   },
   sectionTitle: {
-    fontFamily: 'Roboto',
+    fontFamily: 'Helvetica-Bold',
     fontSize: 9,
     textTransform: 'uppercase',
     letterSpacing: 2,
     color: '#958679',
-    marginBottom: 4,
-    borderBottomWidth: 0.7,
+    marginBottom: 6,
+    borderBottomWidth: 1,
     borderBottomColor: '#DBCEB3',
-    paddingBottom: 2,
+    paddingBottom: 4,
   },
   textContent: {
-    fontFamily: 'Caveat',
-    fontSize: 22,
+    fontFamily: 'Helvetica-Oblique',
+    fontSize: 16,
     color: '#1F1A17',
-    lineHeight: 1.25,
+    lineHeight: 1.4,
   },
-  // Дневник
   journalBlock: {
     marginBottom: 10,
   },
   journalQ: {
-    fontFamily: 'Roboto',
-    fontStyle: 'italic',
-    fontSize: 10,
-    color: '#7A6C5E',
+    fontFamily: 'Helvetica-Oblique',
+    fontSize: 11,
+    color: '#635E57',
     marginBottom: 2,
   },
   journalA: {
-    fontFamily: 'Caveat',
-    fontSize: 20,
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 15,
     color: '#1F1A17',
-    lineHeight: 1.15,
+    lineHeight: 1.3,
   },
-  // Снимки (Киноленти)
   photoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    marginTop: 10,
-    gap: 12,
+    marginTop: 15,
+    gap: 15,
   },
   filmFrame: {
     width: '45%',
     backgroundColor: '#141210',
-    padding: 5,
+    padding: 6,
     borderRadius: 2,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
+    marginBottom: 15,
   },
   filmHolesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 3,
+    marginBottom: 4,
   },
   filmHolesRowBottom: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 3,
+    marginTop: 4,
   },
   hole: {
-    width: 5,
-    height: 3,
+    width: 6,
+    height: 4,
     backgroundColor: '#FEFEFD',
     borderRadius: 1,
   },
   filmImage: {
     width: '100%',
-    height: 100,
+    height: 110,
     objectFit: 'cover',
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderColor: '#3A322D',
   },
   footer: {
     position: 'absolute',
-    bottom: 15,
+    bottom: 20,
     left: 0,
     right: 0,
     textAlign: 'center',
-    fontFamily: 'Roboto',
-    fontSize: 7,
+    fontFamily: 'Helvetica',
+    fontSize: 8,
     letterSpacing: 3,
     color: '#958679',
   }
@@ -179,24 +175,20 @@ export const TimeCapsulePdf = ({
     return lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png') || lower.startsWith('data:image/');
   };
 
-  const displayPhotos = (photos || []).filter(isImage).slice(0, 6); // До 6 снимки за перфектен баланс
-  const rotations = [-4, 5, -2, 4, -5, 3]; 
+  const displayPhotos = (photos || []).filter(isImage).slice(0, 5);
+  const rotations = [-4, 5, -3, 6, -2]; 
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap={true}>
         
-        {/* ГОРЕН ТРИЪГЪЛЕН КАПАК НА ПЛИКА (Генериран изцяло с код) */}
+        <Image src="/images/pdf-background.jpg" style={styles.background} fixed />
+
         <View style={styles.topFlapContainer} wrap={false}>
-          <Svg height="110" width="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', top: 0, left: 0 }}>
-            <Polygon points="0,0 100,0 50,100" fill="#E5DAC9" stroke="#D4AF37" strokeWidth={0.3} />
-          </Svg>
-          {/* Златният печат се запазва като акцент върху капака */}
           <Image src="/images/gold-seal.png" style={styles.seal} />
         </View>
 
-        {/* СЪДЪРЖАНИЕ НА ПИСМОТО */}
-        <View style={{ paddingHorizontal: 20 }}>
+        <View style={styles.contentContainer}>
           <Text style={styles.title}>Честит рожден ден, {recipient}!</Text>
 
           {statusText ? (
@@ -251,7 +243,7 @@ export const TimeCapsulePdf = ({
           ) : null}
 
           <View style={[styles.section, { marginTop: 15 }]} wrap={false}>
-            <Text style={[styles.textContent, { textAlign: 'right' }]}>
+            <Text style={[styles.textContent, { textAlign: 'right', fontFamily: 'Helvetica-Bold' }]}>
               С любов,{'\n'}{sender}
             </Text>
           </View>
