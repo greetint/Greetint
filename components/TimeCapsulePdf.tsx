@@ -34,28 +34,28 @@ export function TimeCapsulePdf({
   
   const displayPhotos = (photos || []).filter(isImage).slice(0, 5);
 
-  // ГАРАНТИРАНА КИНЕМАТОГРАФСКА ЛЕНТА С ЧИСТ КОД (Черно каре + бели перфорации)
+  // ЕДЕНТИЧНА КИНОЛЕНТА С ТОЗИ ОТ MEMORYWALLSTAGE (Черен блок + перфорации)
   const FilmStrip = ({ url, rotation }: { url: string, rotation: number }) => (
     <div 
-      className="bg-[#141210] p-1.5 shadow-2xl rounded-sm border-2 border-[#2A2421] w-[125px] flex-shrink-0 mx-auto"
+      className="bg-[#141210] p-2 shadow-2xl rounded-sm border-2 border-[#2A2421] w-[130px] flex-shrink-0 mx-auto"
       style={{ transform: `rotate(${rotation}deg)` }}
     >
-      {/* Горна редица перфорации */}
-      <div className="flex justify-between px-1.5 mb-1 bg-[#141210] py-0.5">
-        {[...Array(5)].map((_, idx) => (
-          <div key={`top-${idx}`} className="w-2 h-1 bg-[#FAF6EE] rounded-[1px]" />
+      {/* Горна перфорация (също като в MemoryWallStage) */}
+      <div className="h-4 w-full flex items-center justify-around px-1 opacity-95 mb-1.5">
+        {[...Array(6)].map((_, i) => (
+          <div key={`top-${i}`} className="w-3 h-2.5 bg-[#ECE8E0] rounded-[2px] shadow-inner" />
         ))}
       </div>
 
-      {/* Самата снимка в лентата */}
-      <div className="w-full h-[80px] bg-black overflow-hidden border border-white/10 rounded-xs">
-        <img src={url} alt="Memory" className="w-full h-full object-cover" />
+      {/* Снимка */}
+      <div className="w-full h-[85px] bg-black overflow-hidden rounded-xs border border-white/10">
+        <img src={url} alt="Memory Frame" className="w-full h-full object-cover" />
       </div>
 
-      {/* Долна редица перфорации */}
-      <div className="flex justify-between px-1.5 mt-1 bg-[#141210] py-0.5">
-        {[...Array(5)].map((_, idx) => (
-          <div key={`bot-${idx}`} className="w-2 h-1 bg-[#FAF6EE] rounded-[1px]" />
+      {/* Долна перфорация (също като в MemoryWallStage) */}
+      <div className="h-4 w-full flex items-center justify-around px-1 opacity-95 mt-1.5">
+        {[...Array(6)].map((_, i) => (
+          <div key={`bot-${i}`} className="w-3 h-2.5 bg-[#ECE8E0] rounded-[2px] shadow-inner" />
         ))}
       </div>
     </div>
@@ -95,21 +95,21 @@ export function TimeCapsulePdf({
           className="absolute inset-0 w-[210mm] h-[297mm] object-cover z-0" 
         />
 
-        {/* БЕЗОПАСНА ЗОНА */}
-        <div className="relative z-10 w-full h-full pt-[42mm] pb-[38mm] px-[16mm] flex flex-col justify-between box-border">
+        {/* БЕЗОПАСНА ЗОНА (Изтеглена нагоре, с идеални отстояния) */}
+        <div className="relative z-10 w-full h-full pt-[42mm] pb-[36mm] px-[16mm] flex flex-col justify-between box-border">
           
           {/* ЗАГЛАВИЕ */}
           <div className="text-center mb-1 flex-shrink-0 border-b border-[#C8B89D]/50 pb-1">
-            <h1 style={{ fontFamily: "'Caveat', cursive" }} className="text-3xl font-bold text-[#3A322D] leading-tight">
+            <h1 style={{ fontFamily: "'Caveat', cursive" }} className="text-4xl font-bold text-[#3A322D] leading-tight">
               Капсула на времето за {recipient}
             </h1>
-            <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] italic text-[#7A6C5E]">
+            <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[10px] italic text-[#7A6C5E]">
               Създадено с любов и надежда, за да се отвори в бъдещето
             </p>
           </div>
 
-          {/* СЪДЪРЖАНИЕ */}
-          <div className="flex flex-col gap-2 flex-1 justify-around my-0.5">
+          {/* СЪДЪРЖАНИЕ (ЗИГ-ЗАГ СТРУКТУРА С УВЕЛИЧЕН БАЗОВ ШРИФТ) */}
+          <div className="flex flex-col gap-3 flex-1 justify-around my-1">
             
             {/* БЛОК 1 */}
             {(statusText || mainWish || displayPhotos[0]) && (
@@ -117,16 +117,16 @@ export function TimeCapsulePdf({
                 <div className="w-[32%] flex justify-center">
                   {displayPhotos[0] && <FilmStrip url={displayPhotos[0]} rotation={-3} />}
                 </div>
-                <div className="w-[68%] flex flex-col gap-1">
+                <div className="w-[68%] flex flex-col gap-1.5">
                   {statusText && (
                     <div>
-                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[7.5px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Начало</span>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Начало</span>
                       <p style={{ fontFamily: "'Caveat', cursive" }} className="text-2xl text-[#1F1A17] leading-tight break-all">{statusText}</p>
                     </div>
                   )}
                   {mainWish && (
                     <div>
-                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[7.5px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Послание</span>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Послание</span>
                       <p style={{ fontFamily: "'Caveat', cursive" }} className="text-2xl text-[#1F1A17] leading-tight break-all">{mainWish}</p>
                     </div>
                   )}
@@ -140,16 +140,16 @@ export function TimeCapsulePdf({
                 <div className="w-[32%] flex justify-center">
                   {displayPhotos[1] && <FilmStrip url={displayPhotos[1]} rotation={3} />}
                 </div>
-                <div className="w-[68%] flex flex-col gap-1 text-right">
+                <div className="w-[68%] flex flex-col gap-1.5 text-right">
                   {wishFromCandle && (
                     <div>
-                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[7.5px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Намислено желание</span>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Намислено желание</span>
                       <p style={{ fontFamily: "'Caveat', cursive" }} className="text-2xl text-[#1F1A17] leading-tight break-all">"{wishFromCandle}"</p>
                     </div>
                   )}
                   {secretJoke && (
                     <div>
-                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[7.5px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Скреч Тайна</span>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Скреч Тайна</span>
                       <p style={{ fontFamily: "'Caveat', cursive" }} className="text-2xl text-[#1F1A17] leading-tight break-all">{secretJoke}</p>
                     </div>
                   )}
@@ -164,14 +164,14 @@ export function TimeCapsulePdf({
                   {displayPhotos[2] && <FilmStrip url={displayPhotos[2]} rotation={-2} />}
                 </div>
                 <div className="w-[68%] px-1">
-                  <h3 style={{ fontFamily: "'Playfair Display', serif" }} className="text-[8px] uppercase tracking-widest text-center text-[#8A7C6E] border-b border-[#C8B89D]/50 pb-0.5 mb-1">
+                  <h3 style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-center text-[#8A7C6E] border-b border-[#C8B89D]/50 pb-0.5 mb-1.5">
                     Отговори от капсулата
                   </h3>
-                  <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                     {capsuleAnswers.map((item, idx) => (
                       <div key={idx} className="mb-0.5">
-                        <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[6.5px] italic text-[#635E57] mb-0.5 leading-none break-all">{item.question}</p>
-                        <p style={{ fontFamily: "'Caveat', cursive" }} className="text-[15px] text-[#1F1A17] font-bold leading-tight break-all">{item.answer}</p>
+                        <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[7px] italic text-[#635E57] mb-0.5 leading-none break-all">{item.question}</p>
+                        <p style={{ fontFamily: "'Caveat', cursive" }} className="text-lg text-[#1F1A17] font-bold leading-tight break-all">{item.answer}</p>
                       </div>
                     ))}
                   </div>
@@ -181,7 +181,7 @@ export function TimeCapsulePdf({
 
           </div>
 
-          {/* ПОДПИС */}
+          {/* ПОДПИС (Вдигнат нагоре в светлата част на листа) */}
           <div className="flex-shrink-0 pt-2 pb-1 border-t border-[#C8B89D]/50 text-right">
             <p style={{ fontFamily: "'Caveat', cursive" }} className="text-3xl text-[#1F1A17] pr-6 leading-none">
               С любов, {sender}
@@ -190,7 +190,7 @@ export function TimeCapsulePdf({
 
         </div>
 
-        {/* АВТОРСКО ПРАВО */}
+        {/* АВТОРСКО ПРАВО В ДОЛНОТО ПОЛЕ */}
         <div 
           className="absolute bottom-[10mm] left-0 right-0 text-center z-20"
           style={{ fontFamily: "'Playfair Display', serif" }}
