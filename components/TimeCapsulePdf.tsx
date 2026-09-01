@@ -34,32 +34,35 @@ export function TimeCapsulePdf({
   
   const displayPhotos = (photos || []).filter(isImage);
 
-  // ГАРАНТИРАНА КИНЕМАТОГРАФСКА ЛЕНТА С ПЕРФОРАЦИИ (ЧЕРЕН ФОН + БЕЛИ КВАДРАТЧЕТА)
+  // НАЙ-ОБИКНОВЕНА, НО БРОНИРАНА РАМКА ЗА СНИМКА (Твърди цветове, за да се отпечатат винаги)
   const FilmStrip = ({ url, rotation }: { url?: string, rotation: number }) => {
-    // Ако няма качена снимка, слагаме фоновата хартия, за да не седи празно на теста
     const activePhoto = url && url.length > 0 ? url : '/images/birthday_pdf_basic.jpg';
 
     return (
       <div 
-        className="bg-[#141210] p-1.5 shadow-2xl rounded-sm border-2 border-[#2A2421] w-[130px] flex-shrink-0 mx-auto"
-        style={{ transform: `rotate(${rotation}deg)` }}
+        className="p-1.5 shadow-md w-[120px] flex-shrink-0 mx-auto"
+        style={{ 
+          transform: `rotate(${rotation}deg)`,
+          backgroundColor: '#141210', /* Твърдо зададен черен фон */
+          border: '1px solid #2A2421'
+        }}
       >
-        {/* Горна редица перфорации (бели квадратчета) */}
-        <div className="flex justify-between px-1 mb-1 bg-[#141210] py-0.5">
+        {/* Горни перфорации */}
+        <div className="flex justify-between px-1 mb-1.5">
           {[...Array(5)].map((_, idx) => (
-            <div key={`top-${idx}`} className="w-2 h-1 bg-[#FAF6EE] rounded-[1px]" />
+            <div key={`top-${idx}`} className="w-1.5 h-1 rounded-[1px]" style={{ backgroundColor: '#FAF6EE' }} />
           ))}
         </div>
 
-        {/* Кадърът със снимката */}
-        <div className="w-full h-[75px] bg-black overflow-hidden border border-white/10 rounded-xs">
-          <img src={activePhoto} alt="Memory Frame" className="w-full h-full object-cover" />
+        {/* Снимката */}
+        <div className="w-full h-[75px] overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.15)' }}>
+          <img src={activePhoto} alt="Memory" className="w-full h-full object-cover" />
         </div>
 
-        {/* Долна редица перфорации (бели квадратчета) */}
-        <div className="flex justify-between px-1 mt-1 bg-[#141210] py-0.5">
+        {/* Долни перфорации */}
+        <div className="flex justify-between px-1 mt-1.5">
           {[...Array(5)].map((_, idx) => (
-            <div key={`bot-${idx}`} className="w-2 h-1 bg-[#FAF6EE] rounded-[1px]" />
+            <div key={`bot-${idx}`} className="w-1.5 h-1 rounded-[1px]" style={{ backgroundColor: '#FAF6EE' }} />
           ))}
         </div>
       </div>
@@ -73,7 +76,15 @@ export function TimeCapsulePdf({
 
         @media print {
           body * { visibility: hidden !important; }
-          #pdf-print-area, #pdf-print-area * { visibility: visible !important; }
+          
+          #pdf-print-area, #pdf-print-area * { 
+            visibility: visible !important; 
+            /* ТОВА ПРИНУЖДАВА БРАУЗЪРА ДА ПЕЧАТА ЦВЕТОВЕТЕ НА РАМКИТЕ: */
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          
           #pdf-print-area {
             position: absolute !important;
             left: 0 !important;
@@ -93,7 +104,7 @@ export function TimeCapsulePdf({
       {/* A4 КОНТЕЙНЕР */}
       <div className="w-[210mm] h-[297mm] mx-auto relative overflow-hidden bg-[#FAF6EE] box-border">
         
-        {/* ФОНОВО ИЗОБРАЖЕНИЕ НА ЛИСТА */}
+        {/* ФОНОВО ИЗОБРАЖЕНИЕ */}
         <img 
           src="/images/birthday_pdf_basic.jpg" 
           alt="Background" 
