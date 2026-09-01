@@ -19,7 +19,7 @@ const BULGARIAN_FONTS = [
   { name: 'Caveat (Ръкописен Стил)', family: 'font-mono' },
 ];
 
-// ПАДАЩИ МЕНЮТА С ГОТОВИ ИДЕИ
+// ГОТОВИ ИДЕИ ЗА СТАТУТ И ТАЙНИ
 const STATUS_OPTIONS = [
   "✍️ Напиши свой собствен вариант...",
   "☕ Човекът, който пие 3 кафета на ден и пак намира енергия за щури идеи.",
@@ -57,7 +57,9 @@ export default function CreateCardPage() {
   const [age, setAge] = useState('');
   const [sender, setSender] = useState('');
 
-  // 2. Статут & Шега
+  // 2. Печат, Свещ, Статут & Шега
+  const [sealText, setSealText] = useState('ТВОЯТА ГОДИНА');
+  const [candleWish, setCandleWish] = useState('');
   const [statusText, setStatusText] = useState('');
   const [secretJoke, setSecretJoke] = useState('');
 
@@ -156,10 +158,21 @@ export default function CreateCardPage() {
               </div>
             </div>
 
-            {/* 2. СТАТУТ И ТАЙНА ШЕГА */}
+            {/* 2. ПЕЧАТ, СВЕЩ, СТАТУТ И ТАЙНА ШЕГА */}
             <div className="space-y-4 pt-4 border-t border-[#958679]/20">
-              <h2 className="text-xs uppercase tracking-widest font-sans font-bold text-[#958679]">2. Статут & Скрита Тайна</h2>
+              <h2 className="text-xs uppercase tracking-widest font-sans font-bold text-[#958679]">2. Настройки на Куеста (Печат, Свещ & Статут)</h2>
               
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] uppercase font-sans text-[#635E57] mb-1">Текст на восъчния печат (Seal Stage)</label>
+                  <input type="text" value={sealText} onChange={e => setSealText(e.target.value)} placeholder="НАПРИМЕР: ТВОЯТА ГОДИНА" className="w-full bg-[#F7F4EF] border border-[#958679]/30 p-2.5 rounded-lg text-xs font-sans" />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-sans text-[#635E57] mb-1">Послание за свещта (Candle Stage)</label>
+                  <input type="text" value={candleWish} onChange={e => setCandleWish(e.target.value)} placeholder="Намисли си пожелание..." className="w-full bg-[#F7F4EF] border border-[#958679]/30 p-2.5 rounded-lg text-xs font-sans" />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-[10px] uppercase font-sans text-[#635E57] mb-1">Статут / Профил за годината</label>
                 <select onChange={(e) => handleSelectDropdown(e.target.value, setStatusText)} className="w-full bg-[#F7F4EF] border border-[#958679]/30 p-2 rounded-lg text-xs font-sans mb-1.5">
@@ -179,7 +192,7 @@ export default function CreateCardPage() {
 
             {/* 3. А, Б, В ИГРА С МАРКИРАНЕ НА ВЕРЕН ОТГОВОР */}
             <div className="space-y-4 pt-4 border-t border-[#958679]/20">
-              <h2 className="text-xs uppercase tracking-widest font-sans font-bold text-[#958679]">3. А, Б, В Игра (2 Забавни Въпроса)</h2>
+              <h2 className="text-xs uppercase tracking-widest font-sans font-bold text-[#958679]">3. А, Б, В Игра (Забавни Въпроси)</h2>
               {quizList.map((q, idx) => (
                 <div key={idx} className="bg-[#F7F4EF] p-4 rounded-xl border border-[#958679]/20 space-y-3">
                   <p className="text-[10px] uppercase font-sans font-bold text-[#958679]">Въпрос #{idx + 1}</p>
