@@ -14,9 +14,8 @@ const CARD_TEMPLATES = [
 
 const BULGARIAN_FONTS = [
   { name: 'Cormorant Garamond (Класика)', family: 'font-serif' },
-  { name: 'Montserrat (Модерен & Изчистен)', family: 'font-sans' },
-  { name: 'Caveat (Ръкописен Стил)', family: 'font-mono' },
-  { name: 'Playfair Display (Елегантен)', family: 'font-serif' },
+  { name: 'Montserrat (Модерен)', family: 'font-sans' },
+  { name: 'Caveat (Ръкописен)', family: 'font-mono' },
 ];
 
 const CAPSULE_QUESTION_OPTIONS = [
@@ -52,7 +51,7 @@ export default function CreateCardPage() {
   const [statusText, setStatusText] = useState('');
   const [secretMessages, setSecretMessages] = useState<string[]>(['']);
 
-  // Игри и снимки (до 10 игри, до 5 снимки, до 10 скрити послания)
+  // Игри и снимки
   const [quizList, setQuizList] = useState<QuizQuestion[]>([
     { question: '', optionA: '', optionB: '', optionC: '', correct: 'A' }
   ]);
@@ -62,8 +61,9 @@ export default function CreateCardPage() {
   // Капсула на времето (Само въпроси)
   const [capsuleQuestions, setCapsuleQuestions] = useState<string[]>([CAPSULE_QUESTION_OPTIONS[0]]);
 
-  // Картичка и персонализация
+  // Редактор за картичка
   const [includeCard, setIncludeCard] = useState(true);
+  const [cardOrientation, setCardOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const [selectedCardImg, setSelectedCardImg] = useState(CARD_TEMPLATES[0].img);
   const [customCardBg, setCustomCardBg] = useState<string | null>(null);
   const [cardText, setCardText] = useState('');
@@ -75,7 +75,10 @@ export default function CreateCardPage() {
   const [createdLink, setCreatedLink] = useState<string | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
 
-  // Drag & Drop за снимки
+  // Генериран линк за преглед / QR код в реално време
+  const activePreviewUrl = createdLink || 'https://greetint.com/preview-live';
+
+  // Drag & Drop снимки
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -114,22 +117,27 @@ export default function CreateCardPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF6EE] py-12 px-4 sm:px-6 font-serif text-[#1F1A17] flex justify-center">
-      <div className="max-w-3xl w-full bg-white p-6 sm:p-12 rounded-3xl shadow-sm border border-[#E5DFDE] space-y-12">
+      <div className="max-w-4xl w-full bg-white p-8 sm:p-14 rounded-[40px] shadow-sm border border-[#E5DFDE] space-y-12 relative overflow-hidden">
         
-        {/* ЗАГЛАВИЕ */}
-        <div className="text-center border-b border-[#E5DFDE] pb-6">
-          <span className="text-[10px] uppercase tracking-[0.4em] text-[#958679] font-sans font-semibold">GREETINT STUDIO</span>
-          <h1 className="text-3xl sm:text-4xl font-serif mt-2">Режисирай Преживяването</h1>
-          <p className="text-xs text-[#635E57] font-sans mt-1">Изчистен дизайн без тежки рамки и каси.</p>
+        {/* ОРГАНИЧНИ ФОНОВИ ЕЛЕМЕНТИ (СТИЛ РЕФЕРЕНЦИЯ) */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#FAF6EE] rounded-full filter blur-3xl opacity-60 pointer-events-none -mr-20 -mt-20" />
+
+        {/* ЛОГО И ЗАГЛАВИЕ */}
+        <div className="relative z-10 text-center space-y-3 border-b border-[#E5DFDE] pb-8">
+          <div className="flex justify-center mb-2">
+            <img src="/logo-horizontal.png" alt="Greetint Logo" className="h-10 object-contain" />
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-serif text-[#1F1A17]">Режисирай Своето Преживяване</h1>
+          <p className="text-xs text-[#635E57] font-sans">Модерен, изчистен дизайн без рамки с пълна свобода на редакция.</p>
         </div>
 
         {!createdLink ? (
-          <form onSubmit={handleSubmit} className="space-y-12">
+          <form onSubmit={handleSubmit} className="relative z-10 space-y-12">
             
             {/* 1. ОСНОВНИ ДАННИ */}
             <div className="space-y-4">
               <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">1. За кого е изненадата?</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Име на получателя</label>
                   <input 
@@ -138,17 +146,17 @@ export default function CreateCardPage() {
                       setRecipient(e.target.value);
                       if (!cardText) setCardText(`За ${e.target.value}`);
                     }} 
-                    className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17]" 
+                    className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17] transition" 
                     placeholder="напр. Виктория" 
                   />
                 </div>
                 <div>
                   <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Дата на събитието</label>
-                  <input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17]" />
+                  <input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17] transition" />
                 </div>
                 <div>
                   <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Име на подателя</label>
-                  <input type="text" required value={sender} onChange={e => setSender(e.target.value)} className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17]" placeholder="напр. от Алекс" />
+                  <input type="text" required value={sender} onChange={e => setSender(e.target.value)} className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17] transition" placeholder="напр. от Алекс" />
                 </div>
               </div>
             </div>
@@ -162,7 +170,7 @@ export default function CreateCardPage() {
               <textarea 
                 rows={4} required value={candleWish} 
                 onChange={e => setCandleWish(e.target.value)} 
-                className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-4 text-sm font-serif focus:outline-none focus:border-[#1F1A17]" 
+                className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-4 text-sm font-serif focus:outline-none focus:border-[#1F1A17] transition resize-none rounded-2xl" 
                 placeholder="Напиши своето сърдечно пожелание тук..." 
               />
             </div>
@@ -177,7 +185,7 @@ export default function CreateCardPage() {
                   </button>
                 )}
               </div>
-              <input type="text" value={statusText} onChange={e => setStatusText(e.target.value)} placeholder="Забавен етикет / статус (напр. Човекът с 3 кафета...)" className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17]" />
+              <input type="text" value={statusText} onChange={e => setStatusText(e.target.value)} placeholder="Забавен етикет / статус (напр. Човекът с 3 кафета...)" className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17] transition" />
               
               <div className="space-y-2 pt-2">
                 {secretMessages.map((msg, idx) => (
@@ -191,7 +199,7 @@ export default function CreateCardPage() {
                         setSecretMessages(updated);
                       }} 
                       placeholder={`Скрито послание / шега #${idx + 1} (до 10)`} 
-                      className="flex-1 bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-2.5 text-xs font-sans focus:outline-none focus:border-[#1F1A17]"
+                      className="flex-1 bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-2.5 text-xs font-sans focus:outline-none focus:border-[#1F1A17] transition"
                     />
                     {secretMessages.length > 1 && (
                       <button type="button" onClick={() => setSecretMessages(secretMessages.filter((_, i) => i !== idx))} className="text-xs text-red-500 font-sans">Изтрий</button>
@@ -206,14 +214,14 @@ export default function CreateCardPage() {
               <div className="flex justify-between items-center">
                 <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">4. Спомени & Снимки (До 5 броя)</h2>
                 <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} id="photo-input" className="hidden" />
-                <label htmlFor="photo-input" className="text-xs font-sans font-semibold bg-[#1F1A17] text-white px-4 py-2 rounded-xl cursor-pointer">Избери файлове</label>
+                <label htmlFor="photo-input" className="text-xs font-sans font-semibold bg-[#1F1A17] text-white px-4 py-2 rounded-xl cursor-pointer hover:bg-[#958679] transition">Избери файлове</label>
               </div>
 
               <div 
                 onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={handleDrop}
-                className={`border-2 border-dashed rounded-2xl p-6 text-center transition ${isDragging ? 'border-[#1F1A17] bg-[#FAF6EE]' : 'border-[#E5DFDE] bg-white'}`}
+                className={`border-2 border-dashed rounded-3xl p-8 text-center transition ${isDragging ? 'border-[#1F1A17] bg-[#FAF6EE]' : 'border-[#E5DFDE] bg-white'}`}
               >
                 <p className="text-xs text-[#635E57] font-sans">Плъсни и пусни снимките си тук (Drag & Drop)</p>
               </div>
@@ -264,7 +272,7 @@ export default function CreateCardPage() {
               </div>
 
               {quizList.map((q, idx) => (
-                <div key={idx} className="bg-[#FAF6EE] p-4 rounded-2xl space-y-3">
+                <div key={idx} className="bg-[#FAF6EE] p-5 rounded-2xl space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-[11px] font-sans font-semibold text-[#958679]">Въпрос #{idx + 1}</span>
                     {quizList.length > 1 && (
@@ -273,9 +281,9 @@ export default function CreateCardPage() {
                   </div>
                   <input type="text" value={q.question} onChange={e => { const u = [...quizList]; u[idx].question = e.target.value; setQuizList(u); }} placeholder="Въведи въпрос..." className="w-full bg-white border-0 border-b border-[#E5DFDE] p-2 text-xs font-sans font-semibold focus:outline-none" />
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <input type="text" value={q.optionA} onChange={e => { const u = [...quizList]; u[idx].optionA = e.target.value; setQuizList(u); }} placeholder="Опция А" className="bg-white p-2 text-xs font-sans rounded-xl border border-[#E5DFDE]" />
-                    <input type="text" value={q.optionB} onChange={e => { const u = [...quizList]; u[idx].optionB = e.target.value; setQuizList(u); }} placeholder="Опция Б" className="bg-white p-2 text-xs font-sans rounded-xl border border-[#E5DFDE]" />
-                    <input type="text" value={q.optionC} onChange={e => { const u = [...quizList]; u[idx].optionC = e.target.value; setQuizList(u); }} placeholder="Опция В" className="bg-white p-2 text-xs font-sans rounded-xl border border-[#E5DFDE]" />
+                    <input type="text" value={q.optionA} onChange={e => { const u = [...quizList]; u[idx].optionA = e.target.value; setQuizList(u); }} placeholder="Опция А" className="bg-white p-2.5 text-xs font-sans rounded-xl border border-[#E5DFDE]" />
+                    <input type="text" value={q.optionB} onChange={e => { const u = [...quizList]; u[idx].optionB = e.target.value; setQuizList(u); }} placeholder="Опция Б" className="bg-white p-2.5 text-xs font-sans rounded-xl border border-[#E5DFDE]" />
+                    <input type="text" value={q.optionC} onChange={e => { const u = [...quizList]; u[idx].optionC = e.target.value; setQuizList(u); }} placeholder="Опция В" className="bg-white p-2.5 text-xs font-sans rounded-xl border border-[#E5DFDE]" />
                   </div>
                 </div>
               ))}
@@ -327,42 +335,64 @@ export default function CreateCardPage() {
               ))}
             </div>
 
-            {/* 7. ПЕРСОНАЛИЗИРАНЕ НА КАРТИЧКА С ДРАГ & ДРОП НА ЕЛЕМЕНТИТЕ */}
+            {/* 7. ПЕРСОНАЛИЗИРАНЕ НА КАРТИЧКА С ФОРМАТ, ОРИЕНТАЦИЯ И ДРАГ & ДРОП */}
             <div className="space-y-6 pt-6 border-t border-[#E5DFDE]">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">7. Персонализиране на Картичката</h2>
+                <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">7. Редактор за Printable Картичка</h2>
                 <input type="checkbox" checked={includeCard} onChange={e => setIncludeCard(e.target.checked)} className="w-5 h-5 accent-[#1F1A17]" />
               </div>
 
               {includeCard && (
-                <div className="space-y-6 bg-[#FAF6EE] p-6 rounded-3xl">
+                <div className="space-y-6 bg-[#FAF6EE] p-6 sm:p-8 rounded-3xl">
                   
-                  {/* ИЗБОР НА ШАБЛОН ИЛИ КАЧВАНЕ НА СОБСТВЕНА СНИМКА */}
+                  {/* ИЗБОР НА ОРИЕНТАЦИЯ (ВЕРТИКАЛНА / ХОРИЗОНТАЛНА) */}
+                  <div className="space-y-2">
+                    <label className="block text-[11px] uppercase font-sans text-[#635E57]">Формат / Ориентация</label>
+                    <div className="flex gap-4">
+                      <button 
+                        type="button" 
+                        onClick={() => setCardOrientation('portrait')} 
+                        className={`px-4 py-2 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'portrait' ? 'bg-[#1F1A17] text-white' : 'bg-white text-[#1F1A17] border border-[#E5DFDE]'}`}
+                      >
+                        Вертикална (Portrait)
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setCardOrientation('landscape')} 
+                        className={`px-4 py-2 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'landscape' ? 'bg-[#1F1A17] text-white' : 'bg-white text-[#1F1A17] border border-[#E5DFDE]'}`}
+                      >
+                        Хоризонтална (Landscape)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* ИЗБОР НА ШАБЛОН ИЛИ СОБСТВЕНА СНИМКА */}
                   <div className="space-y-3">
-                    <label className="block text-[11px] uppercase font-sans text-[#635E57]">Избери готов дизайн или качи своя картичка</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <label className="block text-[11px] uppercase font-sans text-[#635E57]">Избери дизайн или качи своя картинка</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {CARD_TEMPLATES.map(card => (
-                        <button key={card.id} type="button" onClick={() => { setSelectedCardImg(card.img); setCustomCardBg(null); }} className={`border-2 p-1 rounded-xl transition ${selectedCardImg === card.img && !customCardBg ? 'border-[#1F1A17]' : 'border-transparent'}`}>
-                          <img src={card.img} alt={card.name} className="w-full h-auto rounded-lg" />
+                        <button key={card.id} type="button" onClick={() => { setSelectedCardImg(card.img); setCustomCardBg(null); }} className={`border-2 p-1 rounded-2xl transition ${selectedCardImg === card.img && !customCardBg ? 'border-[#1F1A17]' : 'border-transparent'}`}>
+                          <img src={card.img} alt={card.name} className="w-full h-auto rounded-xl" />
                         </button>
                       ))}
                     </div>
                     <div className="pt-2">
                       <input type="file" accept="image/*" onChange={handleCustomCardUpload} id="custom-card-file" className="hidden" />
-                      <label htmlFor="custom-card-file" className="inline-block bg-white border border-[#E5DFDE] text-[#1F1A17] px-4 py-2 rounded-xl text-xs font-sans font-semibold cursor-pointer">
+                      <label htmlFor="custom-card-file" className="inline-block bg-white border border-[#E5DFDE] text-[#1F1A17] px-4 py-2.5 rounded-xl text-xs font-sans font-semibold cursor-pointer hover:bg-gray-50 transition">
                         + Качи твоя снимка за картичка
                       </label>
                     </div>
                   </div>
 
+                  {/* КОНТРОЛЕРИ ЗА ЦВЕТОВЕ И ТЕКСТ */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Надпис</label>
-                      <input type="text" value={cardText} onChange={e => setCardText(e.target.value)} className="w-full bg-white border border-[#E5DFDE] p-3 rounded-xl text-xs font-sans" />
+                      <input type="text" value={cardText} onChange={e => setCardText(e.target.value)} className="w-full bg-white border border-[#E5DFDE] p-3 rounded-xl text-xs font-sans focus:outline-none" />
                     </div>
                     <div>
                       <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Шрифт</label>
-                      <select value={selectedFont} onChange={e => setSelectedFont(e.target.value)} className="w-full bg-white border border-[#E5DFDE] p-3 rounded-xl text-xs font-sans">
+                      <select value={selectedFont} onChange={e => setSelectedFont(e.target.value)} className="w-full bg-white border border-[#E5DFDE] p-3 rounded-xl text-xs font-sans focus:outline-none">
                         {BULGARIAN_FONTS.map((f, i) => <option key={i} value={f.family}>{f.name}</option>)}
                       </select>
                     </div>
@@ -379,17 +409,17 @@ export default function CreateCardPage() {
                     </div>
                     <div>
                       <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Лични бележки</label>
-                      <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} placeholder="Допълнителен текст..." className="w-full bg-white border border-[#E5DFDE] p-3 rounded-xl text-xs font-sans" />
+                      <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} placeholder="Допълнителен текст..." className="w-full bg-white border border-[#E5DFDE] p-3 rounded-xl text-xs font-sans focus:outline-none" />
                     </div>
                   </div>
 
-                  {/* ИНТЕРАКТИВНО ПРЕВЮ С DRAG & DROP НА ТЕКСТА И QR КОДА */}
+                  {/* ИНТЕРАКТИВНО ПРЕВЮ С ДРАГ & ДРОП И ДИНАМИЧЕН QR КОД */}
                   <div className="pt-4 text-center">
                     <p className="text-[11px] uppercase font-sans font-semibold text-[#958679] mb-3">Хвани и плъзни елементите свободно върху картичката ↓</p>
                     <div 
                       ref={previewRef} 
-                      className="relative w-full max-w-xs mx-auto overflow-hidden bg-white rounded-2xl shadow-md border border-[#E5DFDE]"
-                      style={{ aspectRatio: '1/1.4' }}
+                      className={`relative mx-auto overflow-hidden bg-white rounded-3xl shadow-lg border border-[#E5DFDE] ${cardOrientation === 'portrait' ? 'w-full max-w-xs' : 'w-full max-w-md'}`}
+                      style={{ aspectRatio: cardOrientation === 'portrait' ? '1/1.4' : '1.4/1' }}
                     >
                       <img src={customCardBg || selectedCardImg} alt="Card Preview" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
                       
@@ -404,15 +434,15 @@ export default function CreateCardPage() {
                         {cardText || 'За получателя'}
                       </motion.div>
 
-                      {/* МЕСТЕЩ СЕ QR КОД */}
+                      {/* МЕСТЕЩ СЕ И ДИНАМИЧНО ГЕНЕРИРАН QR КОД */}
                       <motion.div
                         drag
                         dragConstraints={previewRef}
                         dragMomentum={false}
-                        className="absolute cursor-grab active:cursor-grabbing p-2 bg-white/90 rounded-xl shadow-lg"
+                        className="absolute cursor-grab active:cursor-grabbing p-2 bg-white/95 rounded-2xl shadow-xl border border-black/5"
                         style={{ top: '55%', left: '55%', width: '30%' }}
                       >
-                        <QRCodeSVG value="https://greetint.com/preview" size={70} fgColor={qrColor} className="w-full h-auto pointer-events-none" />
+                        <QRCodeSVG value={activePreviewUrl} size={70} fgColor={qrColor} className="w-full h-auto pointer-events-none" />
                       </motion.div>
                     </div>
                   </div>
