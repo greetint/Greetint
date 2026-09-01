@@ -4,7 +4,14 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 
-// ШАБЛОНИ КАРТИЧКИ
+// ИМПОРТ НА РЕАЛНИТЕ СТЕЙДЖОВЕ ОТ КУЕСТА
+import SealStage from '@/components/quest/SealStage';
+import CakeStage from '@/components/quest/CakeStage';
+import ScratchStage from '@/components/quest/ScratchStage';
+import MemoryWallStage from '@/components/quest/MemoryWallStage';
+import QuizStage from '@/components/quest/QuizStage';
+import CapsuleStage from '@/components/quest/CapsuleStage';
+
 const CARD_TEMPLATES = [
   { id: '1', name: 'Signature Luxe', img: '/images/cards/card-1.png' },
   { id: '2', name: 'Playful Celebration', img: '/images/cards/card-2.png' },
@@ -43,25 +50,31 @@ interface QuizQuestion {
 export default function CreateCardPage() {
   const previewRef = useRef<HTMLDivElement | null>(null);
 
-  // Основни данни
+  // 1. Основни данни
   const [recipient, setRecipient] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [sender, setSender] = useState('');
+
+  // 2. Основно пожелание (при духване на свещта)
   const [candleWish, setCandleWish] = useState('');
+
+  // 3. Статут & Скрити послания
   const [statusText, setStatusText] = useState('');
   const [secretMessages, setSecretMessages] = useState<string[]>(['']);
 
-  // Игри и снимки
-  const [quizList, setQuizList] = useState<QuizQuestion[]>([
-    { question: '', optionA: '', optionB: '', optionC: '', correct: 'A' }
-  ]);
+  // 4. Снимки с въпроси и отговори
   const [photos, setPhotos] = useState<MemoryPhoto[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Капсула на времето
+  // 5. А, Б, В игри (с избор на верен отговор)
+  const [quizList, setQuizList] = useState<QuizQuestion[]>([
+    { question: '', optionA: '', optionB: '', optionC: '', correct: 'A' }
+  ]);
+
+  // 6. Капсула на времето (Само въпроси)
   const [capsuleQuestions, setCapsuleQuestions] = useState<string[]>([CAPSULE_QUESTION_OPTIONS[0]]);
 
-  // Редактор за картичка
+  // 7. Редактор на картичка
   const [includeCard, setIncludeCard] = useState(true);
   const [cardOrientation, setCardOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const [selectedCardImg, setSelectedCardImg] = useState(CARD_TEMPLATES[0].img);
@@ -72,9 +85,10 @@ export default function CreateCardPage() {
   const [textColor, setTextColor] = useState('#1F1A17');
   const [customNotes, setCustomNotes] = useState('');
 
+  // ДИНАМИЧНО ГЕНЕРИРАН ЛИНК И СИМУЛАТОР
   const [createdLink, setCreatedLink] = useState<string | null>(null);
-  const [showLiveSimulator, setShowLiveSimulator] = useState(false);
-  const [simulatorStep, setSimulatorStep] = useState(1);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [currentSimulatorStage, setCurrentSimulatorStage] = useState(0);
 
   const activePreviewUrl = createdLink || 'https://greetint.com/preview-live';
 
@@ -112,23 +126,31 @@ export default function CreateCardPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const uniqueId = Math.random().toString(36).substring(2, 9);
-    setCreatedLink(`https://greetint.com/card/${uniqueId}`);
+    const generatedUrl = `https://greetint.com/card/${uniqueId}`;
+    setCreatedLink(generatedUrl);
   };
+
+  // Списък със стейджовете за реалния симулатор на преживяването
+  const simulatorStages = [
+    <SealStage key="seal" recipient={recipient || 'Получател'} onComplete={() => setCurrentSimulatorStage(1)} />,
+    <CakeStage key="cake" recipient={recipient || 'Получател'} mainWish={candleWish || 'Щастлив празник!'} onComplete={() => setCurrentSimulatorStage(2)} />,
+    <ScratchStage key="scratch" statusText={statusText || 'Специален човек'} secretJoke={secretMessages[0] || 'Твоята тайна'} onComplete={() => setCurrentSimulatorStage(3)} />,
+    <MemoryWallStage key="memory" recipient={recipient || 'Получател'} memories={photos.length > 0 ? photos.map((p, i) => ({ id: String(i), url: p.fileUrl, type: 'image', questionOrCaption: p.question, correctAnswer: p.answer })) : undefined} onComplete={() => setCurrentSimulatorStage(4)} />,
+    <QuizStage key="quiz" questions={quizList.map(q => ({ question: q.question || 'Въпрос', options: [q.optionA || 'А', q.optionB || 'Б', q.optionC || 'В'], correctIndex: q.correct === 'A' ? 0 : q.correct === 'B' ? 1 : 2 }))} onComplete={() => setCurrentSimulatorStage(5)} />,
+    <CapsuleStage key="capsule" recipient={recipient || 'Получател'} questions={capsuleQuestions.filter(Boolean)} onComplete={() => setIsSimulating(false)} />
+  ];
 
   return (
     <div className="min-h-screen bg-[#11100F] text-[#FAF6EE] py-12 px-4 sm:px-6 font-serif flex justify-center selection:bg-[#958679]/30">
       <div className="max-w-4xl w-full bg-[#1A1816] p-8 sm:p-14 rounded-[40px] shadow-2xl border border-white/10 space-y-12 relative overflow-hidden">
         
-        {/* СВЕТЕЩИ МОДЕРНИ АКЦЕНТИ НА ФОНА */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-[#958679]/10 to-transparent rounded-full filter blur-[120px] pointer-events-none -mr-32 -mt-32" />
-
-        {/* ЛОГО И МОДЕРНО ЗАГЛАВИЕ */}
+        {/* ЛОГО И ЗАГЛАВИЕ */}
         <div className="relative z-10 text-center space-y-4 border-b border-white/10 pb-8">
           <div className="flex justify-center mb-2">
             <img src="/images/logo/logo-horizontal.png" alt="Greetint Logo" className="h-10 object-contain filter invert opacity-90" />
           </div>
           <h1 className="text-4xl sm:text-5xl font-serif font-light tracking-wide">Режисирай Преживяването</h1>
-          <p className="text-xs text-[#958679] font-sans tracking-widest uppercase">Модерен студиен редактор</p>
+          <p className="text-xs text-[#958679] font-sans tracking-widest uppercase">Студио за създаване на интерактивен куест</p>
         </div>
 
         {!createdLink ? (
@@ -165,7 +187,7 @@ export default function CreateCardPage() {
             <div className="space-y-3 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
               <div>
                 <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">2. Основно Пожелание (При духване на свещта) *</h2>
-                <p className="text-[11px] text-white/50 font-sans mt-0.5">Емоционалният връх на преживяването.</p>
+                <p className="text-[11px] text-white/50 font-sans mt-0.5">Емоционалният връх, който получателят ще види, когато духне свещта.</p>
               </div>
               <textarea 
                 rows={4} required value={candleWish} 
@@ -260,7 +282,7 @@ export default function CreateCardPage() {
               </div>
             </div>
 
-            {/* 5. А, Б, В ИГРИ */}
+            {/* 5. А, Б, В ИГРИ С ИЗБОР НА ВЕРЕН ОТГОВОР */}
             <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
               <div className="flex justify-between items-center">
                 <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">5. Забавни Въпроси (А, Б, В - До 10)</h2>
@@ -280,16 +302,38 @@ export default function CreateCardPage() {
                     )}
                   </div>
                   <input type="text" value={q.question} onChange={e => { const u = [...quizList]; u[idx].question = e.target.value; setQuizList(u); }} placeholder="Въведи въпрос..." className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none" />
+                  
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <input type="text" value={q.optionA} onChange={e => { const u = [...quizList]; u[idx].optionA = e.target.value; setQuizList(u); }} placeholder="Опция А" className="bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white" />
                     <input type="text" value={q.optionB} onChange={e => { const u = [...quizList]; u[idx].optionB = e.target.value; setQuizList(u); }} placeholder="Опция Б" className="bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white" />
                     <input type="text" value={q.optionC} onChange={e => { const u = [...quizList]; u[idx].optionC = e.target.value; setQuizList(u); }} placeholder="Опция В" className="bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white" />
                   </div>
+
+                  {/* ИЗБОР НА ВЕРЕН ОТГОВОР */}
+                  <div className="flex items-center gap-4 pt-2 border-t border-white/10">
+                    <span className="text-[11px] uppercase font-sans text-white/60 font-semibold">Верен отговор:</span>
+                    {(['A', 'B', 'C'] as const).map(letter => (
+                      <label key={letter} className="flex items-center gap-1.5 cursor-pointer font-sans text-xs text-white">
+                        <input 
+                          type="radio" 
+                          name={`correct-ans-${idx}`} 
+                          checked={q.correct === letter} 
+                          onChange={() => {
+                            const u = [...quizList];
+                            u[idx].correct = letter;
+                            setQuizList(u);
+                          }}
+                          className="accent-[#FAF6EE]"
+                        />
+                        <span className="font-bold">{letter}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* 6. КАПСУЛА НА ВРЕМЕТО */}
+            {/* 6. КАПСУЛА НА ВРЕМЕТО (САМО ВЪПРОСИ) */}
             <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
               <div className="flex justify-between items-center">
                 <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">6. Въпроси за Капсулата на Времето</h2>
@@ -335,7 +379,7 @@ export default function CreateCardPage() {
               ))}
             </div>
 
-            {/* 7. РЕДАКТОР НА КАРТИЧКА */}
+            {/* 7. РЕДАКТОР НА КАРТИЧКА С ДИНАМИЧЕН QR КОД */}
             <div className="space-y-6 pt-6 border-t border-white/10">
               <div className="flex justify-between items-center">
                 <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">7. Редактор на Printable Картичка</h2>
@@ -454,7 +498,7 @@ export default function CreateCardPage() {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button 
                 type="button" 
-                onClick={() => setShowLiveSimulator(true)} 
+                onClick={() => { setCurrentSimulatorStage(0); setIsSimulating(true); }} 
                 className="flex-1 bg-white/5 border border-white/10 text-[#FAF6EE] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl hover:bg-white/10 transition"
               >
                 Симулатор на преживяването 👀
@@ -483,72 +527,44 @@ export default function CreateCardPage() {
 
       </div>
 
-      {/* ИСТИНСКИ СИМУЛАТОР НА ПРЕЖИВЯВАНЕТО (LIVE SIMULATOR MODAL) */}
-      {showLiveSimulator && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#1A1816] max-w-xl w-full p-8 rounded-[35px] border border-white/10 space-y-6 relative max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-white/10 pb-4">
-              <h3 className="text-sm font-sans uppercase tracking-widest text-[#958679]">Симулатор на преживяването (Стъпка {simulatorStep}/4)</h3>
-              <button onClick={() => setShowLiveSimulator(false)} className="text-xs font-sans text-white/60 hover:text-white">Затвори ✕</button>
-            </div>
+      {/* РЕАЛЕН СИМУЛАТОР НА ПРЕЖИВЯВАНЕТО (ИЗГРАЖДА СТЕЙДЖОВЕТЕ ЕДИН СЛЕД ДРУГ) */}
+      {isSimulating && (
+        <div className="fixed inset-0 z-50 bg-[#11100F] flex flex-col justify-between overflow-y-auto">
+          {/* Горна лента за управление на симулатора */}
+          <div className="bg-[#1A1816] border-b border-white/10 px-6 py-4 flex justify-between items-center z-50">
+            <span className="text-xs font-sans uppercase tracking-widest text-[#958679]">
+              Симулатор на куеста (Стъпка {currentSimulatorStage + 1} от {simulatorStages.length})
+            </span>
+            <button 
+              onClick={() => setIsSimulating(false)} 
+              className="bg-white/10 text-white px-4 py-2 rounded-xl text-xs font-sans font-semibold hover:bg-white/20 transition"
+            >
+              Изход от симулатора ✕
+            </button>
+          </div>
 
-            <div className="py-6 text-center space-y-6 min-h-[300px] flex flex-col justify-center items-center">
-              {simulatorStep === 1 && (
-                <div className="space-y-4">
-                  <span className="text-4xl">🕯️</span>
-                  <h4 className="text-2xl font-serif">Духване на свещта за {recipient || 'Получател'}</h4>
-                  <p className="text-xs font-sans text-white/70 max-w-md italic bg-black/30 p-4 rounded-2xl border border-white/5">
-                    "{candleWish || 'Тук ще се появи твоето основно пожелание...'}"
-                  </p>
-                </div>
-              )}
+          {/* РЕАЛНИЯТ СТЕЙДЖ */}
+          <div className="flex-1 relative flex items-center justify-center">
+            {simulatorStages[currentSimulatorStage]}
+          </div>
 
-              {simulatorStep === 2 && (
-                <div className="space-y-4">
-                  <span className="text-4xl">🤫</span>
-                  <h4 className="text-xl font-serif">Скреч тайна / Профил</h4>
-                  <p className="text-xs font-sans text-[#958679]">{statusText || 'Статут не е въведен'}</p>
-                  <div className="bg-black/40 p-4 rounded-2xl border border-white/10 text-xs font-sans">
-                    Скрити послания: {secretMessages.filter(Boolean).length || 0} добавени
-                  </div>
-                </div>
-              )}
-
-              {simulatorStep === 3 && (
-                <div className="space-y-4">
-                  <span className="text-4xl">📸</span>
-                  <h4 className="text-xl font-serif">Паметна стена (Спомени)</h4>
-                  <p className="text-xs font-sans text-white/70">Качени снимки: {photos.length} броя</p>
-                  <p className="text-xs font-sans text-white/70">А,Б,В игри: {quizList.length} въпроса</p>
-                </div>
-              )}
-
-              {simulatorStep === 4 && (
-                <div className="space-y-4">
-                  <span className="text-4xl">⏳</span>
-                  <h4 className="text-xl font-serif">Капсула на времето</h4>
-                  <p className="text-xs font-sans text-white/70">Брой въпроси за бъдещето: {capsuleQuestions.length}</p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-between items-center pt-4 border-t border-white/10">
-              <button 
-                disabled={simulatorStep === 1} 
-                onClick={() => setSimulatorStep(prev => prev - 1)} 
-                className="text-xs font-sans text-white/60 disabled:opacity-30"
-              >
-                ← Предишна стъпка
-              </button>
-              <span className="text-xs font-sans text-[#958679]">{simulatorStep} от 4</span>
-              <button 
-                disabled={simulatorStep === 4} 
-                onClick={() => setSimulatorStep(prev => prev - 1 + 2)} 
-                className="text-xs font-sans text-white bg-white/10 px-4 py-2 rounded-xl disabled:opacity-30"
-              >
-                Следваща стъпка →
-              </button>
-            </div>
+          {/* Долна лента за навигация */}
+          <div className="bg-[#1A1816] border-t border-white/10 px-6 py-4 flex justify-between items-center z-50">
+            <button 
+              disabled={currentSimulatorStage === 0} 
+              onClick={() => setCurrentSimulatorStage(prev => prev - 1)} 
+              className="text-xs font-sans text-white/60 disabled:opacity-30 hover:text-white"
+            >
+              ← Предишна стъпка
+            </button>
+            <span className="text-xs font-sans text-white/40">Навигирай и тествай стейджовете</span>
+            <button 
+              disabled={currentSimulatorStage === simulatorStages.length - 1} 
+              onClick={() => setCurrentSimulatorStage(prev => prev + 1)} 
+              className="text-xs font-sans text-white bg-white/10 px-5 py-2 rounded-xl hover:bg-white/20 disabled:opacity-30"
+            >
+              Следваща стъпка →
+            </button>
           </div>
         </div>
       )}
