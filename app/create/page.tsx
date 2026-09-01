@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 
 // ШАБЛОНИ КАРТИЧКИ
@@ -58,7 +58,7 @@ export default function CreateCardPage() {
   const [photos, setPhotos] = useState<MemoryPhoto[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Капсула на времето (Само въпроси)
+  // Капсула на времето
   const [capsuleQuestions, setCapsuleQuestions] = useState<string[]>([CAPSULE_QUESTION_OPTIONS[0]]);
 
   // Редактор за картичка
@@ -73,9 +73,9 @@ export default function CreateCardPage() {
   const [customNotes, setCustomNotes] = useState('');
 
   const [createdLink, setCreatedLink] = useState<string | null>(null);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [showLiveSimulator, setShowLiveSimulator] = useState(false);
+  const [simulatorStep, setSimulatorStep] = useState(1);
 
-  // Генериран линк за преглед / QR код в реално време
   const activePreviewUrl = createdLink || 'https://greetint.com/preview-live';
 
   // Drag & Drop снимки
@@ -116,76 +116,76 @@ export default function CreateCardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF6EE] py-12 px-4 sm:px-6 font-serif text-[#1F1A17] flex justify-center">
-      <div className="max-w-4xl w-full bg-white p-8 sm:p-14 rounded-[40px] shadow-sm border border-[#E5DFDE] space-y-12 relative overflow-hidden">
+    <div className="min-h-screen bg-[#11100F] text-[#FAF6EE] py-12 px-4 sm:px-6 font-serif flex justify-center selection:bg-[#958679]/30">
+      <div className="max-w-4xl w-full bg-[#1A1816] p-8 sm:p-14 rounded-[40px] shadow-2xl border border-white/10 space-y-12 relative overflow-hidden">
         
-        {/* ОРГАНИЧНИ ФОНОВИ ЕЛЕМЕНТИ (СТИЛ РЕФЕРЕНЦИЯ) */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#FAF6EE] rounded-full filter blur-3xl opacity-60 pointer-events-none -mr-20 -mt-20" />
+        {/* СВЕТЕЩИ МОДЕРНИ АКЦЕНТИ НА ФОНА */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-[#958679]/10 to-transparent rounded-full filter blur-[120px] pointer-events-none -mr-32 -mt-32" />
 
-        {/* ЛОГО И ЗАГЛАВИЕ */}
-        <div className="relative z-10 text-center space-y-3 border-b border-[#E5DFDE] pb-8">
+        {/* ЛОГО И МОДЕРНО ЗАГЛАВИЕ */}
+        <div className="relative z-10 text-center space-y-4 border-b border-white/10 pb-8">
           <div className="flex justify-center mb-2">
-            <img src="/logo-horizontal.png" alt="Greetint Logo" className="h-10 object-contain" />
+            <img src="/images/logo/logo-horizontal.png" alt="Greetint Logo" className="h-10 object-contain filter invert opacity-90" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif text-[#1F1A17]">Режисирай Своето Преживяване</h1>
-          <p className="text-xs text-[#635E57] font-sans">Модерен, изчистен дизайн без рамки с пълна свобода на редакция.</p>
+          <h1 className="text-4xl sm:text-5xl font-serif font-light tracking-wide">Режисирай Преживяването</h1>
+          <p className="text-xs text-[#958679] font-sans tracking-widest uppercase">Модерен студиен редактор</p>
         </div>
 
         {!createdLink ? (
           <form onSubmit={handleSubmit} className="relative z-10 space-y-12">
             
             {/* 1. ОСНОВНИ ДАННИ */}
-            <div className="space-y-4">
-              <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">1. За кого е изненадата?</h2>
+            <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
+              <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">1. За кого е изненадата?</h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Име на получателя</label>
+                  <label className="block text-[11px] uppercase font-sans text-white/60 mb-2">Име на получателя</label>
                   <input 
                     type="text" required value={recipient} 
                     onChange={e => {
                       setRecipient(e.target.value);
                       if (!cardText) setCardText(`За ${e.target.value}`);
                     }} 
-                    className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17] transition" 
+                    className="w-full bg-black/40 border border-white/10 rounded-2xl p-3.5 text-xs font-sans text-white focus:outline-none focus:border-[#958679] transition" 
                     placeholder="напр. Виктория" 
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Дата на събитието</label>
-                  <input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17] transition" />
+                  <label className="block text-[11px] uppercase font-sans text-white/60 mb-2">Дата на събитието</label>
+                  <input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-2xl p-3.5 text-xs font-sans text-white focus:outline-none focus:border-[#958679] transition" />
                 </div>
                 <div>
-                  <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Име на подателя</label>
-                  <input type="text" required value={sender} onChange={e => setSender(e.target.value)} className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17] transition" placeholder="напр. от Алекс" />
+                  <label className="block text-[11px] uppercase font-sans text-white/60 mb-2">Име на подателя</label>
+                  <input type="text" required value={sender} onChange={e => setSender(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-2xl p-3.5 text-xs font-sans text-white focus:outline-none focus:border-[#958679] transition" placeholder="напр. от Алекс" />
                 </div>
               </div>
             </div>
 
-            {/* 2. НАЙ-ВАЖНОТО: ПОЖЕЛАНИЕ ПРИ ДУХВАНЕ НА СВЕЩТА */}
-            <div className="space-y-3">
+            {/* 2. ПОЖЕЛАНИЕ ПРИ ДУХВАНЕ НА СВЕЩТА */}
+            <div className="space-y-3 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
               <div>
-                <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">2. Основно Пожелание (При духване на свещта) *</h2>
-                <p className="text-[11px] text-[#635E57] font-sans">Това е най-важното емоционално послание, което получателят ще види на финала.</p>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">2. Основно Пожелание (При духване на свещта) *</h2>
+                <p className="text-[11px] text-white/50 font-sans mt-0.5">Емоционалният връх на преживяването.</p>
               </div>
               <textarea 
                 rows={4} required value={candleWish} 
                 onChange={e => setCandleWish(e.target.value)} 
-                className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-4 text-sm font-serif focus:outline-none focus:border-[#1F1A17] transition resize-none rounded-2xl" 
+                className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 text-sm font-serif text-white focus:outline-none focus:border-[#958679] transition resize-none" 
                 placeholder="Напиши своето сърдечно пожелание тук..." 
               />
             </div>
 
-            {/* 3. СТАТУТ & СКРИТИ ПОСЛАНИЯ / ШЕГИ (ДО 10) */}
-            <div className="space-y-4">
+            {/* 3. СТАТУТ & СКРИТИ ПОСЛАНИЯ */}
+            <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">3. Профил на годината & Скрити Послания</h2>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">3. Профил & Скрити Послания</h2>
                 {secretMessages.length < 10 && (
-                  <button type="button" onClick={() => setSecretMessages([...secretMessages, ''])} className="text-xs font-sans text-[#1F1A17] font-semibold underline">
+                  <button type="button" onClick={() => setSecretMessages([...secretMessages, ''])} className="text-xs font-sans text-[#958679] hover:text-white underline">
                     + Добави послание
                   </button>
                 )}
               </div>
-              <input type="text" value={statusText} onChange={e => setStatusText(e.target.value)} placeholder="Забавен етикет / статус (напр. Човекът с 3 кафета...)" className="w-full bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-3 text-xs font-sans focus:outline-none focus:border-[#1F1A17] transition" />
+              <input type="text" value={statusText} onChange={e => setStatusText(e.target.value)} placeholder="Забавен етикет / статус (напр. Човекът с 3 кафета...)" className="w-full bg-black/40 border border-white/10 rounded-2xl p-3.5 text-xs font-sans text-white focus:outline-none focus:border-[#958679]" />
               
               <div className="space-y-2 pt-2">
                 {secretMessages.map((msg, idx) => (
@@ -199,37 +199,37 @@ export default function CreateCardPage() {
                         setSecretMessages(updated);
                       }} 
                       placeholder={`Скрито послание / шега #${idx + 1} (до 10)`} 
-                      className="flex-1 bg-[#FAF6EE] border-0 border-b-2 border-[#E5DFDE] p-2.5 text-xs font-sans focus:outline-none focus:border-[#1F1A17] transition"
+                      className="flex-1 bg-black/40 border border-white/10 rounded-2xl p-3 text-xs font-sans text-white focus:outline-none focus:border-[#958679]"
                     />
                     {secretMessages.length > 1 && (
-                      <button type="button" onClick={() => setSecretMessages(secretMessages.filter((_, i) => i !== idx))} className="text-xs text-red-500 font-sans">Изтрий</button>
+                      <button type="button" onClick={() => setSecretMessages(secretMessages.filter((_, i) => i !== idx))} className="text-xs text-red-400">Изтрий</button>
                     )}
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* 4. DRAG & DROP СНИМКИ (ДО 5) */}
-            <div className="space-y-4">
+            {/* 4. DRAG & DROP СНИМКИ */}
+            <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">4. Спомени & Снимки (До 5 броя)</h2>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">4. Спомени & Снимки (До 5 броя)</h2>
                 <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} id="photo-input" className="hidden" />
-                <label htmlFor="photo-input" className="text-xs font-sans font-semibold bg-[#1F1A17] text-white px-4 py-2 rounded-xl cursor-pointer hover:bg-[#958679] transition">Избери файлове</label>
+                <label htmlFor="photo-input" className="text-xs font-sans font-semibold bg-[#FAF6EE] text-[#11100F] px-4 py-2.5 rounded-xl cursor-pointer hover:bg-white transition">Избери файлове</label>
               </div>
 
               <div 
                 onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={handleDrop}
-                className={`border-2 border-dashed rounded-3xl p-8 text-center transition ${isDragging ? 'border-[#1F1A17] bg-[#FAF6EE]' : 'border-[#E5DFDE] bg-white'}`}
+                className={`border-2 border-dashed rounded-3xl p-8 text-center transition ${isDragging ? 'border-[#958679] bg-white/5' : 'border-white/10 bg-black/20'}`}
               >
-                <p className="text-xs text-[#635E57] font-sans">Плъсни и пусни снимките си тук (Drag & Drop)</p>
+                <p className="text-xs text-white/60 font-sans">Плъсни и пусни снимките си тук (Drag & Drop)</p>
               </div>
 
               <div className="space-y-3">
                 {photos.map((photo, idx) => (
-                  <div key={idx} className="bg-[#FAF6EE] p-4 rounded-2xl flex flex-col sm:flex-row gap-4 items-center">
-                    <img src={photo.fileUrl} alt="Memory" className="w-16 h-16 object-cover rounded-xl flex-shrink-0" />
+                  <div key={idx} className="bg-black/40 p-4 rounded-2xl border border-white/10 flex flex-col sm:flex-row gap-4 items-center">
+                    <img src={photo.fileUrl} alt="Memory" className="w-16 h-16 object-cover rounded-xl flex-shrink-0 border border-white/10" />
                     <div className="flex-1 w-full space-y-2">
                       <input 
                         type="text" 
@@ -240,7 +240,7 @@ export default function CreateCardPage() {
                           setPhotos(updated);
                         }} 
                         placeholder="Въпрос към тази снимка..." 
-                        className="w-full bg-white border-0 border-b border-[#E5DFDE] p-2 text-xs font-sans focus:outline-none"
+                        className="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-xs font-sans text-white focus:outline-none"
                       />
                       <input 
                         type="text" 
@@ -251,59 +251,59 @@ export default function CreateCardPage() {
                           setPhotos(updated);
                         }} 
                         placeholder="Очакван отговор..." 
-                        className="w-full bg-white border-0 border-b border-[#E5DFDE] p-2 text-xs font-sans focus:outline-none"
+                        className="w-full bg-white/5 border border-white/10 p-2.5 rounded-xl text-xs font-sans text-white focus:outline-none"
                       />
                     </div>
-                    <button type="button" onClick={() => setPhotos(photos.filter((_, i) => i !== idx))} className="text-xs text-red-500 font-sans">Премахни</button>
+                    <button type="button" onClick={() => setPhotos(photos.filter((_, i) => i !== idx))} className="text-xs text-red-400">Премахни</button>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* 5. А, Б, В ИГРИ (ДО 10 ВЪПРОСА) */}
-            <div className="space-y-4">
+            {/* 5. А, Б, В ИГРИ */}
+            <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">5. Забавни Въпроси (А, Б, В - До 10)</h2>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">5. Забавни Въпроси (А, Б, В - До 10)</h2>
                 {quizList.length < 10 && (
-                  <button type="button" onClick={() => setQuizList([...quizList, { question: '', optionA: '', optionB: '', optionC: '', correct: 'A' }])} className="text-xs font-sans text-[#1F1A17] font-semibold underline">
+                  <button type="button" onClick={() => setQuizList([...quizList, { question: '', optionA: '', optionB: '', optionC: '', correct: 'A' }])} className="text-xs font-sans text-[#958679] hover:text-white underline">
                     + Добави въпрос
                   </button>
                 )}
               </div>
 
               {quizList.map((q, idx) => (
-                <div key={idx} className="bg-[#FAF6EE] p-5 rounded-2xl space-y-3">
+                <div key={idx} className="bg-black/40 p-5 rounded-2xl border border-white/10 space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-[11px] font-sans font-semibold text-[#958679]">Въпрос #{idx + 1}</span>
                     {quizList.length > 1 && (
-                      <button type="button" onClick={() => setQuizList(quizList.filter((_, i) => i !== idx))} className="text-xs text-red-500 font-sans">Изтрий</button>
+                      <button type="button" onClick={() => setQuizList(quizList.filter((_, i) => i !== idx))} className="text-xs text-red-400">Изтрий</button>
                     )}
                   </div>
-                  <input type="text" value={q.question} onChange={e => { const u = [...quizList]; u[idx].question = e.target.value; setQuizList(u); }} placeholder="Въведи въпрос..." className="w-full bg-white border-0 border-b border-[#E5DFDE] p-2 text-xs font-sans font-semibold focus:outline-none" />
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <input type="text" value={q.optionA} onChange={e => { const u = [...quizList]; u[idx].optionA = e.target.value; setQuizList(u); }} placeholder="Опция А" className="bg-white p-2.5 text-xs font-sans rounded-xl border border-[#E5DFDE]" />
-                    <input type="text" value={q.optionB} onChange={e => { const u = [...quizList]; u[idx].optionB = e.target.value; setQuizList(u); }} placeholder="Опция Б" className="bg-white p-2.5 text-xs font-sans rounded-xl border border-[#E5DFDE]" />
-                    <input type="text" value={q.optionC} onChange={e => { const u = [...quizList]; u[idx].optionC = e.target.value; setQuizList(u); }} placeholder="Опция В" className="bg-white p-2.5 text-xs font-sans rounded-xl border border-[#E5DFDE]" />
+                  <input type="text" value={q.question} onChange={e => { const u = [...quizList]; u[idx].question = e.target.value; setQuizList(u); }} placeholder="Въведи въпрос..." className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none" />
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input type="text" value={q.optionA} onChange={e => { const u = [...quizList]; u[idx].optionA = e.target.value; setQuizList(u); }} placeholder="Опция А" className="bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white" />
+                    <input type="text" value={q.optionB} onChange={e => { const u = [...quizList]; u[idx].optionB = e.target.value; setQuizList(u); }} placeholder="Опция Б" className="bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white" />
+                    <input type="text" value={q.optionC} onChange={e => { const u = [...quizList]; u[idx].optionC = e.target.value; setQuizList(u); }} placeholder="Опция В" className="bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white" />
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* 6. КАПСУЛА НА ВРЕМЕТО (САМО ВЪПРОСИ БЕЗ ОТГОВОРИ) */}
-            <div className="space-y-4">
+            {/* 6. КАПСУЛА НА ВРЕМЕТО */}
+            <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">6. Въпроси за Капсулата на Времето</h2>
-                <button type="button" onClick={() => setCapsuleQuestions([...capsuleQuestions, ''])} className="text-xs font-sans text-[#1F1A17] font-semibold underline">
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">6. Въпроси за Капсулата на Времето</h2>
+                <button type="button" onClick={() => setCapsuleQuestions([...capsuleQuestions, ''])} className="text-xs font-sans text-[#958679] hover:text-white underline">
                   + Добави въпрос
                 </button>
               </div>
 
               {capsuleQuestions.map((q, idx) => (
-                <div key={idx} className="space-y-2 bg-[#FAF6EE] p-4 rounded-2xl">
+                <div key={idx} className="space-y-3 bg-black/40 p-4 rounded-2xl border border-white/10">
                   <div className="flex justify-between items-center">
                     <span className="text-[11px] font-sans font-semibold text-[#958679]">Въпрос #{idx + 1}</span>
                     {capsuleQuestions.length > 1 && (
-                      <button type="button" onClick={() => setCapsuleQuestions(capsuleQuestions.filter((_, i) => i !== idx))} className="text-xs text-red-500 font-sans">Изтрий</button>
+                      <button type="button" onClick={() => setCapsuleQuestions(capsuleQuestions.filter((_, i) => i !== idx))} className="text-xs text-red-400">Изтрий</button>
                     )}
                   </div>
                   <select 
@@ -313,9 +313,9 @@ export default function CreateCardPage() {
                       updated[idx] = e.target.value === "Напиши свой собствен въпрос..." ? "" : e.target.value;
                       setCapsuleQuestions(updated);
                     }}
-                    className="w-full bg-white border border-[#E5DFDE] p-2.5 rounded-xl text-xs font-sans"
+                    className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white"
                   >
-                    {CAPSULE_QUESTION_OPTIONS.map((opt, i) => <option key={i} value={opt}>{opt}</option>)}
+                    {CAPSULE_QUESTION_OPTIONS.map((opt, i) => <option key={i} value={opt} className="bg-[#1A1816]">{opt}</option>)}
                   </select>
 
                   {(!CAPSULE_QUESTION_OPTIONS.includes(q) || q === "") && (
@@ -328,88 +328,87 @@ export default function CreateCardPage() {
                         setCapsuleQuestions(updated);
                       }}
                       placeholder="Въведи своя въпрос тук..." 
-                      className="w-full bg-white border border-[#E5DFDE] p-2.5 rounded-xl text-xs font-sans"
+                      className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none"
                     />
                   )}
                 </div>
               ))}
             </div>
 
-            {/* 7. ПЕРСОНАЛИЗИРАНЕ НА КАРТИЧКА С ФОРМАТ, ОРИЕНТАЦИЯ И ДРАГ & ДРОП */}
-            <div className="space-y-6 pt-6 border-t border-[#E5DFDE]">
+            {/* 7. РЕДАКТОР НА КАРТИЧКА */}
+            <div className="space-y-6 pt-6 border-t border-white/10">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-widest font-sans font-semibold text-[#958679]">7. Редактор за Printable Картичка</h2>
-                <input type="checkbox" checked={includeCard} onChange={e => setIncludeCard(e.target.checked)} className="w-5 h-5 accent-[#1F1A17]" />
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">7. Редактор на Printable Картичка</h2>
+                <input type="checkbox" checked={includeCard} onChange={e => setIncludeCard(e.target.checked)} className="w-5 h-5 accent-[#FAF6EE]" />
               </div>
 
               {includeCard && (
-                <div className="space-y-6 bg-[#FAF6EE] p-6 sm:p-8 rounded-3xl">
+                <div className="space-y-6 bg-white/[0.02] p-6 sm:p-8 rounded-3xl border border-white/5">
                   
-                  {/* ИЗБОР НА ОРИЕНТАЦИЯ (ВЕРТИКАЛНА / ХОРИЗОНТАЛНА) */}
+                  {/* ОРИЕНТАЦИЯ */}
                   <div className="space-y-2">
-                    <label className="block text-[11px] uppercase font-sans text-[#635E57]">Формат / Ориентация</label>
+                    <label className="block text-[11px] uppercase font-sans text-white/60">Формат / Ориентация</label>
                     <div className="flex gap-4">
                       <button 
                         type="button" 
                         onClick={() => setCardOrientation('portrait')} 
-                        className={`px-4 py-2 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'portrait' ? 'bg-[#1F1A17] text-white' : 'bg-white text-[#1F1A17] border border-[#E5DFDE]'}`}
+                        className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'portrait' ? 'bg-[#FAF6EE] text-[#11100F]' : 'bg-black/40 text-white border border-white/10'}`}
                       >
                         Вертикална (Portrait)
                       </button>
                       <button 
                         type="button" 
                         onClick={() => setCardOrientation('landscape')} 
-                        className={`px-4 py-2 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'landscape' ? 'bg-[#1F1A17] text-white' : 'bg-white text-[#1F1A17] border border-[#E5DFDE]'}`}
+                        className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'landscape' ? 'bg-[#FAF6EE] text-[#11100F]' : 'bg-black/40 text-white border border-white/10'}`}
                       >
                         Хоризонтална (Landscape)
                       </button>
                     </div>
                   </div>
 
-                  {/* ИЗБОР НА ШАБЛОН ИЛИ СОБСТВЕНА СНИМКА */}
+                  {/* ШАБЛОНИ ИЛИ КАЧВАНЕ */}
                   <div className="space-y-3">
-                    <label className="block text-[11px] uppercase font-sans text-[#635E57]">Избери дизайн или качи своя картинка</label>
+                    <label className="block text-[11px] uppercase font-sans text-white/60">Избери дизайн или качи своя картинка</label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {CARD_TEMPLATES.map(card => (
-                        <button key={card.id} type="button" onClick={() => { setSelectedCardImg(card.img); setCustomCardBg(null); }} className={`border-2 p-1 rounded-2xl transition ${selectedCardImg === card.img && !customCardBg ? 'border-[#1F1A17]' : 'border-transparent'}`}>
+                        <button key={card.id} type="button" onClick={() => { setSelectedCardImg(card.img); setCustomCardBg(null); }} className={`border-2 p-1 rounded-2xl transition ${selectedCardImg === card.img && !customCardBg ? 'border-[#FAF6EE]' : 'border-transparent'}`}>
                           <img src={card.img} alt={card.name} className="w-full h-auto rounded-xl" />
                         </button>
                       ))}
                     </div>
                     <div className="pt-2">
                       <input type="file" accept="image/*" onChange={handleCustomCardUpload} id="custom-card-file" className="hidden" />
-                      <label htmlFor="custom-card-file" className="inline-block bg-white border border-[#E5DFDE] text-[#1F1A17] px-4 py-2.5 rounded-xl text-xs font-sans font-semibold cursor-pointer hover:bg-gray-50 transition">
+                      <label htmlFor="custom-card-file" className="inline-block bg-black/40 border border-white/10 text-white px-4 py-3 rounded-xl text-xs font-sans font-semibold cursor-pointer hover:bg-white/5 transition">
                         + Качи твоя снимка за картичка
                       </label>
                     </div>
                   </div>
 
-                  {/* КОНТРОЛЕРИ ЗА ЦВЕТОВЕ И ТЕКСТ */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Надпис</label>
-                      <input type="text" value={cardText} onChange={e => setCardText(e.target.value)} className="w-full bg-white border border-[#E5DFDE] p-3 rounded-xl text-xs font-sans focus:outline-none" />
+                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Надпис</label>
+                      <input type="text" value={cardText} onChange={e => setCardText(e.target.value)} className="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none" />
                     </div>
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Шрифт</label>
-                      <select value={selectedFont} onChange={e => setSelectedFont(e.target.value)} className="w-full bg-white border border-[#E5DFDE] p-3 rounded-xl text-xs font-sans focus:outline-none">
-                        {BULGARIAN_FONTS.map((f, i) => <option key={i} value={f.family}>{f.name}</option>)}
+                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Шрифт</label>
+                      <select value={selectedFont} onChange={e => setSelectedFont(e.target.value)} className="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none">
+                        {BULGARIAN_FONTS.map((f, i) => <option key={i} value={f.family} className="bg-[#1A1816]">{f.name}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Цвят на текста</label>
-                      <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-white border border-[#E5DFDE] p-1" />
+                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Цвят на текста</label>
+                      <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-black/40 border border-white/10 p-1" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Цвят на QR кода</label>
-                      <input type="color" value={qrColor} onChange={e => setQrColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-white border border-[#E5DFDE] p-1" />
+                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Цвят на QR кода</label>
+                      <input type="color" value={qrColor} onChange={e => setQrColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-black/40 border border-white/10 p-1" />
                     </div>
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-[#635E57] mb-1">Лични бележки</label>
-                      <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} placeholder="Допълнителен текст..." className="w-full bg-white border border-[#E5DFDE] p-3 rounded-xl text-xs font-sans focus:outline-none" />
+                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Лични бележки</label>
+                      <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} placeholder="Допълнителен текст..." className="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none" />
                     </div>
                   </div>
 
@@ -418,7 +417,7 @@ export default function CreateCardPage() {
                     <p className="text-[11px] uppercase font-sans font-semibold text-[#958679] mb-3">Хвани и плъзни елементите свободно върху картичката ↓</p>
                     <div 
                       ref={previewRef} 
-                      className={`relative mx-auto overflow-hidden bg-white rounded-3xl shadow-lg border border-[#E5DFDE] ${cardOrientation === 'portrait' ? 'w-full max-w-xs' : 'w-full max-w-md'}`}
+                      className={`relative mx-auto overflow-hidden bg-white rounded-3xl shadow-2xl border border-white/10 ${cardOrientation === 'portrait' ? 'w-full max-w-xs' : 'w-full max-w-md'}`}
                       style={{ aspectRatio: cardOrientation === 'portrait' ? '1/1.4' : '1.4/1' }}
                     >
                       <img src={customCardBg || selectedCardImg} alt="Card Preview" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
@@ -455,14 +454,14 @@ export default function CreateCardPage() {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button 
                 type="button" 
-                onClick={() => setShowPreviewModal(true)} 
-                className="flex-1 bg-white border border-[#1F1A17] text-[#1F1A17] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl hover:bg-[#FAF6EE] transition"
+                onClick={() => setShowLiveSimulator(true)} 
+                className="flex-1 bg-white/5 border border-white/10 text-[#FAF6EE] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl hover:bg-white/10 transition"
               >
-                Превю на преживяването 👀
+                Симулатор на преживяването 👀
               </button>
               <button 
                 type="submit" 
-                className="flex-1 bg-[#1F1A17] text-white py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-lg hover:bg-[#958679] transition"
+                className="flex-1 bg-[#FAF6EE] text-[#11100F] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-lg hover:bg-white transition"
               >
                 Запечатай & Вземи Линк ✨
               </button>
@@ -472,11 +471,11 @@ export default function CreateCardPage() {
         ) : (
           <div className="text-center space-y-6 py-10">
             <h2 className="text-3xl font-serif">Готово е!</h2>
-            <p className="text-xs text-[#635E57] uppercase font-sans tracking-widest">Линк за споделяне:</p>
-            <div className="bg-[#FAF6EE] p-4 rounded-2xl border border-[#E5DFDE] select-all font-sans text-xs font-bold">
+            <p className="text-xs text-[#958679] uppercase font-sans tracking-widest">Линк за споделяне:</p>
+            <div className="bg-black/40 p-4 rounded-2xl border border-white/10 select-all font-sans text-xs font-bold text-white">
               {createdLink}
             </div>
-            <a href={createdLink} target="_blank" rel="noreferrer" className="inline-block bg-[#1F1A17] text-white px-8 py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-md">
+            <a href={createdLink} target="_blank" rel="noreferrer" className="inline-block bg-[#FAF6EE] text-[#11100F] px-8 py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-md">
               Отвори дигиталния линк →
             </a>
           </div>
@@ -484,27 +483,72 @@ export default function CreateCardPage() {
 
       </div>
 
-      {/* МОДАЛ ЗА ПРЕВЮ НА ЦЯЛОТО ПРЕЖИВЯВАНЕ */}
-      {showPreviewModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-lg w-full p-8 rounded-3xl shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-[#E5DFDE] pb-4">
-              <h3 className="text-lg font-serif font-bold">Превю на преживяването</h3>
-              <button onClick={() => setShowPreviewModal(false)} className="text-xs font-sans font-semibold">Затвори ✕</button>
+      {/* ИСТИНСКИ СИМУЛАТОР НА ПРЕЖИВЯВАНЕТО (LIVE SIMULATOR MODAL) */}
+      {showLiveSimulator && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#1A1816] max-w-xl w-full p-8 rounded-[35px] border border-white/10 space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-white/10 pb-4">
+              <h3 className="text-sm font-sans uppercase tracking-widest text-[#958679]">Симулатор на преживяването (Стъпка {simulatorStep}/4)</h3>
+              <button onClick={() => setShowLiveSimulator(false)} className="text-xs font-sans text-white/60 hover:text-white">Затвори ✕</button>
             </div>
 
-            <div className="space-y-4 font-sans text-xs text-[#635E57]">
-              <p><strong>Получател:</strong> {recipient || 'Не е въведено'}</p>
-              <p><strong>Подател:</strong> {sender || 'Не е въведено'}</p>
-              <p><strong>Основно пожелание:</strong> {candleWish || 'Няма въведено'}</p>
-              <p><strong>Брой снимки:</strong> {photos.length}</p>
-              <p><strong>Брой А,Б,В въпроси:</strong> {quizList.length}</p>
-              <p><strong>Брой въпроси за капсулата:</strong> {capsuleQuestions.length}</p>
+            <div className="py-6 text-center space-y-6 min-h-[300px] flex flex-col justify-center items-center">
+              {simulatorStep === 1 && (
+                <div className="space-y-4">
+                  <span className="text-4xl">🕯️</span>
+                  <h4 className="text-2xl font-serif">Духване на свещта за {recipient || 'Получател'}</h4>
+                  <p className="text-xs font-sans text-white/70 max-w-md italic bg-black/30 p-4 rounded-2xl border border-white/5">
+                    "{candleWish || 'Тук ще се появи твоето основно пожелание...'}"
+                  </p>
+                </div>
+              )}
+
+              {simulatorStep === 2 && (
+                <div className="space-y-4">
+                  <span className="text-4xl">🤫</span>
+                  <h4 className="text-xl font-serif">Скреч тайна / Профил</h4>
+                  <p className="text-xs font-sans text-[#958679]">{statusText || 'Статут не е въведен'}</p>
+                  <div className="bg-black/40 p-4 rounded-2xl border border-white/10 text-xs font-sans">
+                    Скрити послания: {secretMessages.filter(Boolean).length || 0} добавени
+                  </div>
+                </div>
+              )}
+
+              {simulatorStep === 3 && (
+                <div className="space-y-4">
+                  <span className="text-4xl">📸</span>
+                  <h4 className="text-xl font-serif">Паметна стена (Спомени)</h4>
+                  <p className="text-xs font-sans text-white/70">Качени снимки: {photos.length} броя</p>
+                  <p className="text-xs font-sans text-white/70">А,Б,В игри: {quizList.length} въпроса</p>
+                </div>
+              )}
+
+              {simulatorStep === 4 && (
+                <div className="space-y-4">
+                  <span className="text-4xl">⏳</span>
+                  <h4 className="text-xl font-serif">Капсула на времето</h4>
+                  <p className="text-xs font-sans text-white/70">Брой въпроси за бъдещето: {capsuleQuestions.length}</p>
+                </div>
+              )}
             </div>
 
-            <button onClick={() => setShowPreviewModal(false)} className="w-full bg-[#1F1A17] text-white py-3 rounded-xl text-xs font-sans uppercase tracking-wider">
-              Обратно към редакция
-            </button>
+            <div className="flex justify-between items-center pt-4 border-t border-white/10">
+              <button 
+                disabled={simulatorStep === 1} 
+                onClick={() => setSimulatorStep(prev => prev - 1)} 
+                className="text-xs font-sans text-white/60 disabled:opacity-30"
+              >
+                ← Предишна стъпка
+              </button>
+              <span className="text-xs font-sans text-[#958679]">{simulatorStep} от 4</span>
+              <button 
+                disabled={simulatorStep === 4} 
+                onClick={() => setSimulatorStep(prev => prev - 1 + 2)} 
+                className="text-xs font-sans text-white bg-white/10 px-4 py-2 rounded-xl disabled:opacity-30"
+              >
+                Следваща стъпка →
+              </button>
+            </div>
           </div>
         </div>
       )}
