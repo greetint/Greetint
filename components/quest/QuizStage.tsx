@@ -31,6 +31,8 @@ const DEFAULT_QUIZZES: QuizItem[] = [
   }
 ];
 
+const OPTION_LETTERS = ['А', 'Б', 'В', 'Г'];
+
 export function QuizStage({ 
   recipient = "ВИКТОРИЯ", 
   quizzes = DEFAULT_QUIZZES,
@@ -40,8 +42,11 @@ export function QuizStage({
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showWrongMessage, setShowWrongMessage] = useState(false);
+  const [shakeIndex, setShakeIndex] = useState<number | null>(null);
 
   const currentQuiz = quizzes[currentIdx] || quizzes[0];
+  const totalQuizzes = quizzes.length;
+  const progressPercent = ((currentIdx + 1) / totalQuizzes) * 100;
 
   const handleSelect = (idx: number) => {
     setSelectedOption(idx);
@@ -50,8 +55,11 @@ export function QuizStage({
 
     if (correct) {
       setShowWrongMessage(false);
+      setShakeIndex(null);
     } else {
       setShowWrongMessage(true);
+      setShakeIndex(idx);
+      setTimeout(() => setShakeIndex(null), 500);
     }
   };
 
@@ -60,8 +68,9 @@ export function QuizStage({
     setSelectedOption(null);
     setIsCorrect(null);
     setShowWrongMessage(false);
+    setShakeIndex(null);
 
-    if (currentIdx < quizzes.length - 1) {
+    if (currentIdx < totalQuizzes - 1) {
       setCurrentIdx(prev => prev + 1);
     } else if (onComplete) {
       onComplete();
@@ -69,171 +78,129 @@ export function QuizStage({
   };
 
   return (
-    <div className="relative w-screen h-[100dvh] flex flex-col items-center justify-between overflow-hidden select-none px-4 pt-14 pb-6 sm:p-12">
-      {/* ФОН НА ЦЯЛ ЕКРАН - ХАРТИЕНА ТЕКСТУРА */}
-      <div 
-        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat scale-110"
-        style={{
-          backgroundImage: `url('/images/assets/envelope_paper.jpeg')`,
-        }}
-      />
-      
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(219,206,179,0.25)_0%,_rgba(58,50,45,0.2)_80%)] pointer-events-none z-0" />
+    <div className="relative w-screen h-[100dvh] flex flex-col items-center justify-between overflow-hidden select-none px-4 pt-12 pb-6 sm:p-12">
+      {/* ФОН НА �      {/* ФОН НА �      {/* ФОН НА �      {/*et-0 z-0 bg-cover bg-center bg-no-repeat scale-110" style={{ backgroundImage: `url('/images/assets/envelope_paper.jpeg')` }} />
+      <div className="absolute inset-0 bg-[radial-g      <div className="absolute inset-0 bg-[radial-g  gba(40,33,28,0.3)_85%)] pointer-events-none z-0" />
 
-      {/* ПЛАВАЩИ ЛУМИНИСЦЕНТНИ ПРАШИНКИ */}
+      {/* ПЛАВАЩИ ПРАШИНКИ */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute bg-[#DBCEB3] rounded-full blur-[1px]"
-            style={{
-              width: `${Math.random() * 4 + 2}px`,
-              height: `${Math.random() * 4 + 2}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -100, 0],
-              opacity: [0.2, 0.8, 0.2],
-              scale: [1, 1.3, 1],
-            }}
-            transition={{
-              duration: Math.random() * 5 + 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: Math.random() * 3,
-            }}
-          />
+            cla            cla         CEB3] rounded-full blur-[1px]"
+            style={{ width: `${Math.random() * 4 + 2}px`, height: `${Math.random() * 4 + 2}px`, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
+            animate={{ y: [0, -100, 0], opacity: [0.2, 0.8, 0.2], scale:             animate={{ y: [0, -100, 0], opacity: [0.2, 0.8, 0.2], scale:             animate={{ y: [0, -100, 0], opacity: [0.2, 0.8, 0.2], scale     />
         ))}
       </div>
 
-      {/* МАГИЧЕСКИ ЗВЕЗДИЧКИ И ИСКРИЦИ ПРИ ВЕРЕН ОТГОВОР */}
+      {/* ЗВЕЗДИЧКИ ПРИ ВЕРЕН ОТГОВОР */}
       <AnimatePresence>
         {isCorrect && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
-            {[...Array(16)].map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0, x: "50%", y: "50%" }}
-                animate={{ 
-                  opacity: [0, 1, 0], 
-                  scale: [0.5, 1.6, 0.8],
-                  x: `${Math.random() * 90 - 45}vw`,
-                  y: `${Math.random() * 90 - 45}vh`,
-                  rotate: Math.random() * 360
-                }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.8, ease: "easeOut" }}
-                className="absolute top-1/2 left-1/2 text-2xl sm:text-3xl text-[#DBCEB3] drop-shadow-[0_0_12px_rgba(219,206,179,0.9)]"
-              >
-                ✦
-              </motion.div>
-            ))}
+          <div className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center overflow-hidden">
+            {[...Array(16)].map((_, i) => {
+              const angle = (i / 16) * 360;
+              const dist = Math.random() * 150 + 50;
+              return (
+                <motion.div
+                  key={i}
+                                          cale:                                        im                                          cale:                  ath.PI) / 180) * dist, y: Math.sin((angle * Math.PI) / 180) * dist }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="absolute w-3 h-3 bg-[#D4AF37] rounded-full shadow-[0_0_10px_#D4AF37]"
+                />
+              );
+            })}
           </div>
         )}
       </AnimatePresence>
 
-      {/* ОСНОВЕН КОНТЕЙНЕР (ОПТИМИЗИРАН БЕЗ СКРОЛ) */}
-      <motion.div
-        key={currentIdx}
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ 
-          opacity: 1, 
-          scale: 1,
-          x: showWrongMessage ? [0, -8, 8, -6, 6, 0] : 0 
-        }}
-        transition={{ duration: showWrongMessage ? 0.4 : 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full h-full max-w-4xl flex flex-col justify-between items-center z-10 py-2 text-center"
-      >
-        {/* ГОРНА ЧАСТ - ЗАГЛАВИЕ */}
-        <div className="space-y-1 sm:space-y-2">
-          <span className="text-[10px] sm:text-xs uppercase tracking-[0.5em] text-[#958679] font-sans font-bold block">
-            ВЪПРОС {currentIdx + 1} ОТ {quizzes.length}
-          </span>
-          <h2 className="font-serif italic text-lg sm:text-3xl text-[#635E57] tracking-wide">
-            Помниш ли този момент?
-          </h2>
-          <div className="w-16 sm:w-20 h-[1px] bg-[#958679]/50 mx-auto mt-1" />
+      {/* ПРОГРЕС БАР */}
+      <div className="relative z-20 w-full max-w-xl flex flex-col items-center space-y-2 pt-2">
+        <div className="flex justify-between items-center w-full px-2">
+          <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#7A6C5E] font-bold">Въп          <span className="text-[10px] sm:}</span>
+          <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-[#7A6C5E] font-medium">{recipient}</span>
         </div>
+        <div className="w-full h-1.5 bg-[#E2DACF] rounded-full overflow-hidden shadow-inner">
+          <motion.div className="h-full bg-gradient-to-r from-[#C5A880] to-[#D4AF37]" initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 0.5 }} />
+        </div>
+      </div>
 
-        {/* ЦЕНТРАЛНА ЗОНА - ВЪПРОС И ОТГОВОРИ */}
-        <div className="relative w-full max-w-xl my-auto flex flex-col items-center justify-center space-y-4 px-2">
-          <div className="w-full">
-            <p className="font-serif italic text-sm sm:text-2xl text-[#1F1A17] leading-relaxed text-center drop-shadow-sm px-2">
-              "{currentQuiz.question}"
-            </p>
+      {/* ЦЕНТРАЛНА КАРТИЧКА */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIdx}
+          initial={{ opacity: 0, x: 30, scale: 0.98 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -30, scale: 0.98 }}
+          transition={{ duration: 0.4 }}
+          className="relative z-20 w-full max-w-xl my-auto bg-white/80 backdrop-blur-xl border border-white/90 rounded-[32px] p-6 sm:p-10 shadow-2xl flex flex-col items-center justify-between text-center space-y-6"
+        >
+          <div className="space-y-2">
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#958679] font-bold block">✦ Интерактивен тест ✦</span>
+            <h2 className="font-serif italic text-xl sm:text-3xl text-[#1F1A17] leading-relaxed px-2">"{currentQuiz.question}"</h2>
+            <div className="w-20 h-[1px] bg-[#958679]/30 mx-auto mt-2" />
           </div>
 
-          {/* БУТОНИ ЗА ОТГОВОРИ БЕЗ ТЕЖКИ БОРДЪРИ */}
-          <div className="space-y-2.5 w-full">
+          <div className="space-y-3 w-full">
             {currentQuiz.options.map((opt, idx) => {
               const isSelected = selectedOption === idx;
-              let btnStyle = 'bg-[#FEFEFD]/90 text-[#1F1A17] hover:bg-[#FEFEFD] shadow-sm';
+              const isShaking = shakeIndex === idx;
+
+              let cardStyle = 'bg-white/90 text-[#1F1A17] hover:bg-white hover:shadow-lg border border-[#E5DFDE]';
+              let monogramStyle = 'bg-[#FAF6EE] text-[#1F1A17] border border-[#DBCEB3]';
 
               if (isSelected) {
                 if (isCorrect) {
-                  btnStyle = 'bg-[#DBCEB3] text-[#1F1A17] shadow-md font-bold'; 
-                } else {
-                  btnStyle = 'bg-[#E5DFDE] text-[#635E57] shadow-sm'; 
+                  cardStyle = 'bg-[#DBCEB3]/90 text-[#1F1A17] shadow-xl border-[#D4AF37] font-bold';
+                  monogramStyle = 'bg-[#1F1A17] text-[#FEFEF                  monogramStyle = 'bg-[#1F1A17] text-[#FEFEF                  m[#7A6C5E] border-[#D8CFC4]';
+                  monogramStyle = 'bg-[#7A6C5E] text-[#FEFEFD]';
                 }
               }
 
               return (
-                <motion.button
-                  key={idx}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleSelect(idx)}
-                  className={`w-full py-3 sm:py-4 px-5 rounded-2xl text-xs sm:text-sm font-medium tracking-wide transition duration-300 font-sans backdrop-blur-sm ${btnStyle}`}
-                >
-                  {opt}
-                </motion.button>
+                <motion.div key={idx} animate={isShaking ? { x: [0, -10, 10, -8, 8, 0] } : { x: 0 }} transition={{ duration: 0.4 }}>
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={                    whileTap={                    whiledleSelect(idx)}
+                    className={`w-full p-4 rounded-2xl flex items-center space-x-4 transition duration-300 backdrop-blur-md shadow-sm ${cardStyle}`}
+                  >
+                    <span className={`w-9 h-9 rounded-xl font-serif font-bold text-xs sm:text-sm flex items-center justify-center flex-shrink-0 shadow-inner ${monogramStyle}`}>
+                      {OPTION_LETTERS[idx] || (idx + 1)}
+                    </span>
+                    <span className="font-sans text-xs sm:text-sm font-medium tracking-wide text-left flex-1">{opt}</span>
+                  </motion.button>
+                </motion.div>
               );
             })}
           </div>
 
-          {/* СЪОБЩЕНИЕ ПРИ ГРЕШЕН ОТГОВОР */}
           <AnimatePresence>
             {showWrongMessage && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-[#635E57] font-sans font-bold italic pt-1"
-              >
+              <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opac              <motion.div initi] sm:text-xs uppercase tracking-[0.2em] text-[#A35235] font-sans font-bold italic pt-1">
                 ✦ Не съвсем... Помисли отново и опитай пак ✦
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
 
-        {/* ДОЛНА ЧАСТ - БУТОН ЗА ПРОДЪЛЖЕНИЕ ВИДИМ ВИНАГИ */}
-        <div className="w-full max-w-sm space-y-2 pb-2">
-          <AnimatePresence>
-            {isCorrect ? (
-              <motion.div
-                initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-              >
-                <button
-                  onClick={handleNextQuiz}
-                  className="bg-[#1F1A17] text-[#FEFEFD] px-8 py-3.5 text-[11px] uppercase tracking-[0.3em] font-bold rounded-xl font-sans hover:bg-[#635E57] transition duration-300 w-full"
-                >
-                  {currentIdx < quizzes.length - 1 ? 'Следващ Въпрос ➔' : 'Към Спомените ➔'}
-                </button>
-              </motion.div>
-            ) : (
-              <motion.span 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-[#635E57] font-sans font-bold italic block pb-1"
-              >
-                ✦ Избери верния отговор за продължение ✦
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
+          <div className="w-full pt-2">
+            <AnimatePresence mode="wait">
+              {isCorrect ? (
+                <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.4 }} className="w-full">
+                  <button onClick={handleNextQuiz} class                  <button onClick={handleNextQuiz} class                  <button onClick={handleNextQuiz} class         [#635E57] transition shadow-lg">
+                    {currentIdx < totalQuizzes - 1 ? 'Следващ Въпрос ➔' : 'Към Споменит                           </button>
+                </motion.div>
+              ) : (
+                <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#958679] font-sans font-bold italic block">
+                  ✦ Избери верния отговор за продължение ✦
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      <div className="relative z-10 text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-[#958679] text-center pointer-events-none">
+        GREETING ARCHIVE © 2026
+      </div>
     </div>
   );
 }
