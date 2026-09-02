@@ -83,10 +83,67 @@ export default function CreateCardPage() {
   const [customCardBg, setCustomCardBg] = useState<string | null>(null);
   const [cardText, setCardText] = useState('');
   const [textSize, setTextSize] = useState(18);
+  const [qrSize, setQrSize] = useState(70);
+  const [photoScale, setPhotoScale] = useState(1);
   const [selectedFont, setSelectedFont] = useState(BULGARIAN_FONTS[0].family);
   const [qrColor, setQrColor] = useState('#1F1A17');
   const [textColor, setTextColor] = useState('#1F1A17');
   const [customNotes, setCustomNotes] = useState('');
+
+  // ФУНКЦИЯ ЗА СВАЛЯНЕ САМО НА КАРТИЧКАТА КАТО PDF
+  const handleDownloadCardPdf = () => {
+    const previewEl = previewRef.current;
+    if (!previewEl) return;
+
+    const printWindow = window.open('', '_blank', 'width=800,height=900');
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Интерактивна Картичка - Greetint</title>
+          <style>
+            @page { size: auto; margin: 10mm; }
+            body {
+              margin: 0;
+              padding: 20px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              min-height: 100vh;
+              background: #fdfbf7;
+              font-family: sans-serif;
+            }
+            .print-card-wrapper {
+              width: ${cardOrientation === 'portrait' ? '380px' : '540px'};
+              aspect-ratio: ${cardOrientation === 'portrait' ? '1 / 1.4' : '1.4 / 1'};
+              position: relative;
+              background: #fff;
+              border-radius: 24px;
+              overflow: hidden;
+              box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+              border: 1px solid #e0d8cc;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="print-card-wrapper">
+            ${previewEl.innerHTML}
+          </div>
+          <script>
+            window.onload = () => {
+              setTimeout(() => {
+                window.print();
+              }, 400);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
 
   // ДИНАМИЧНО ГЕНЕРИРАН ЛИНК И СИМУЛАТОР
   const [createdLink, setCreatedLink] = useState<string | null>(null);
@@ -499,15 +556,22 @@ export default function CreateCardPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Надпис</label>
-                      <input type="text" value={cardText} onChange={e => setCardText(e.target.value)} className="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none" />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Размер ({textSize}px)</label>
+                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Размер на текста ({textSize}px)</label>
                       <input type="range" min="12" max="36" value={textSize} onChange={e => setTextSize(Number(e.target.value))} className="w-full accent-white mt-3 cursor-pointer" />
                     </div>
+                    <div>
+                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Размер на QR кода ({qrSize}px)</label>
+                      <input type="range" min="50" max="120" value={qrSize} onChange={e => setQrSize(Number(e.target.value))} className="w-full accent-white mt-3 cursor-pointer" />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Мащаб на снимката ({photoScale.toFixed(1)}x)</label>
+                      <input type="range" min="1" max="2.5" step="0.1" value={photoScale} onChange={e => setPhotoScale(Number(e.target.value))} className="w-full accent-white mt-3 cursor-pointer" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Шрифт</label>
                       <select value={selectedFont} onChange={e => setSelectedFont(e.target.value)} className="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none">
@@ -518,28 +582,26 @@ export default function CreateCardPage() {
                       <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Цвят на текста</label>
                       <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-black/40 border border-white/10 p-1" />
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Цвят на QR кода</label>
                       <input type="color" value={qrColor} onChange={e => setQrColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-black/40 border border-white/10 p-1" />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Лични бележки</label>
-                      <input type="text" value={customNotes} onChange={e => setCustomNotes(e.target.value)} placeholder="Допълнителен текст..." className="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none" />
                     </div>
                   </div>
 
                   {/* ИНТЕРАКТИВНО ПРЕВЮ С ДРАГ & ДРОП И ДИНАМИЧЕН QR КОД */}
                   <div className="pt-4 text-center space-y-4">
-                    <p className="text-[11px] uppercase font-sans font-semibold text-[#958679]">Хвани и плъзни елементите свободно върху картичката ↓</p>
+                    <p className="text-[11px] uppercase font-sans font-semibold text-[#958679]">Хвани и плъзни текста и QR кода свободно върху картичката ↓</p>
                     <div 
                       ref={previewRef} 
                       className={`relative mx-auto overflow-hidden bg-white rounded-3xl shadow-2xl border border-white/10 ${cardOrientation === 'portrait' ? 'w-full max-w-xs' : 'w-full max-w-md'}`}
                       style={{ aspectRatio: cardOrientation === 'portrait' ? '1/1.4' : '1.4/1' }}
                     >
-                      <img src={customCardBg || selectedCardImg} alt="Card Preview" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+                      <img 
+                        src={customCardBg || selectedCardImg} 
+                        alt="Card Preview" 
+                        className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-200" 
+                        style={{ transform: `scale(${photoScale})` }}
+                      />
                       
                       {/* МЕСТЕЩ СЕ ТЕКСТ */}
                       <motion.div
@@ -558,20 +620,20 @@ export default function CreateCardPage() {
                         dragConstraints={previewRef}
                         dragMomentum={false}
                         className="absolute cursor-grab active:cursor-grabbing p-2 bg-white/95 rounded-2xl shadow-xl border border-black/5"
-                        style={{ top: '55%', left: '55%', width: '30%' }}
+                        style={{ top: '55%', left: '55%', width: `${qrSize}px` }}
                       >
-                        <QRCodeSVG value={activePreviewUrl} size={70} fgColor={qrColor} className="w-full h-auto pointer-events-none" />
+                        <QRCodeSVG value={activePreviewUrl} size={qrSize} fgColor={qrColor} className="w-full h-auto pointer-events-none" />
                       </motion.div>
                     </div>
 
-                    {/* ПРИНТ / PDF СВАЛЯНЕ НА КАРТИЧКАТА */}
+                    {/* СВАЛЯНЕ САМО НА КАРТИЧКАТА КАТО PDF */}
                     <div className="pt-2">
                       <button
                         type="button"
-                        onClick={() => window.print()}
-                        className="bg-white/10 hover:bg-white/20 text-[#FAF6EE] px-6 py-3 rounded-xl text-xs uppercase tracking-[0.2em] font-sans font-bold transition border border-white/10"
+                        onClick={handleDownloadCardPdf}
+                        className="bg-[#FAF6EE] text-[#11100F] hover:bg-white px-8 py-4 rounded-2xl text-xs uppercase tracking-[0.25em] font-sans font-bold shadow-lg transition border border-white/20"
                       >
-                        🖨️ Принтирай / Свали картичката с QR код като PDF
+                        🖨️ Свали само картичката с QR код като PDF
                       </button>
                     </div>
                   </div>
