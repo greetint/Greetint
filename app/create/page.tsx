@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
+import { CARD_STYLES } from './stylesConfig';
 
 // ИМПОРТ НА РЕАЛНИТЕ СТЕЙДЖОВЕ ОТ КУЕСТА
 import SealStage from '@/components/quest/SealStage';
@@ -51,6 +52,7 @@ interface QuizQuestion {
 
 export default function CreateCardPage() {
   const previewRef = useRef<HTMLDivElement | null>(null);
+  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
 
   // 1. Основни данни
   const [recipient, setRecipient] = useState('');
