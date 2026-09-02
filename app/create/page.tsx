@@ -286,8 +286,74 @@ export default function CreateCardPage() {
           <p className="text-xs text-[#958679] font-sans tracking-widest uppercase">Студио за създаване на интерактивен куест</p>
         </div>
 
-        {!createdLink ? (
-          <form onSubmit={handleSubmit} className="relative z-10 space-y-12">
+        {selectedStyle === null ? (
+          <div className="relative z-10 space-y-8">
+            <div className="text-center max-w-xl mx-auto space-y-3">
+              <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#958679] font-sans font-bold">Архитектура на стиловете</span>
+              <h2 className="text-2xl sm:text-4xl font-serif font-light">Избери Тематичен Стил за Куеста</h2>
+              <p className="text-xs text-[#FAF6EE]/70 font-sans leading-relaxed">
+                Всеки стил предлага различна визуална естетика, анимации и преживяване за получателя. Избери подходящия дизайн.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+              {CARD_STYLES.map((style) => (
+                <div
+                  key={style.id}
+                  className={`relative rounded-3xl p-6 sm:p-8 border flex flex-col justify-between space-y-6 bg-gradient-to-br from-[#FAF6EE] to-[#EAE2D6] text-[#11100F] shadow-xl ${
+                    style.isAvailable ? "border-[#FAF6EE]/25 cursor-pointer hover:scale-[1.01] transition" : "opacity-80 border-black/10"
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] uppercase tracking-[0.25em] font-sans font-bold px-3 py-1 rounded-full bg-black/10 text-[#11100F]">
+                      {style.badge}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-widest font-sans font-semibold opacity-60">
+                      {style.stagesCount} етапа
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-serif font-bold">{style.name}</h3>
+                    <p className="text-xs font-sans opacity-85 leading-relaxed">{style.description}</p>
+                  </div>
+
+                  <div className="pt-2">
+                    {style.isAvailable ? (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedStyle(style.id)}
+                        className="w-full bg-[#11100F] text-[#FAF6EE] py-3.5 rounded-2xl text-xs uppercase tracking-[0.25em] font-sans font-bold hover:bg-[#333] transition shadow-md"
+                      >
+                        Избери този стил ✨
+                      </button>
+                    ) : (
+                      <div className="w-full bg-black/10 text-[#11100F]/70 py-3.5 rounded-2xl text-xs uppercase tracking-[0.25em] font-sans font-bold text-center">
+                        🔒 Очаквайте скоро
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="relative z-10 space-y-8">
+            <div className="flex justify-between items-center bg-white/5 px-6 py-3 rounded-2xl border border-white/10">
+              <span className="text-xs font-sans uppercase tracking-widest text-[#958679]">
+                Избран стил: <strong className="text-white">Luxe Minimal (Basic)</strong>
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedStyle(null)}
+                className="text-xs font-sans uppercase tracking-widest text-white/70 hover:text-white transition"
+              >
+                ← Смени стила
+              </button>
+            </div>
+
+            {!createdLink ? (
+              <form onSubmit={handleSubmit} className="relative z-10 space-y-12">
             
             {/* 1. ОСНОВНИ ДАННИ */}
             <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
@@ -735,6 +801,8 @@ export default function CreateCardPage() {
             <a href={createdLink} target="_blank" rel="noreferrer" className="inline-block bg-[#FAF6EE] text-[#11100F] px-8 py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-md">
               Отвори дигиталния линк →
             </a>
+          </div>
+        )}
           </div>
         )}
 
