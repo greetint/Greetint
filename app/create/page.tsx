@@ -131,17 +131,74 @@ export default function CreateCardPage() {
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
     const generatedUrl = `${baseUrl}/card/${uniqueId}`;
     
+    const questPayload = {
+      recipient,
+      birthDate,
+      sender,
+      candleWish,
+      statusText,
+      secretMessages,
+      photos,
+      quizList,
+      capsuleQuestions,
+      includeCard,
+      cardOrientation,
+      selectedCardImg,
+      customCardBg,
+      cardText,
+      selectedFont,
+      qrColor,
+      textColor,
+      customNotes,
+    };
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`quest_${uniqueId}`, JSON.stringify(questPayload));
+      if (recipient) {
+        localStorage.setItem(`quest_${encodeURIComponent(recipient.toLowerCase())}`, JSON.stringify(questPayload));
+      }
+    }
+
     setCreatedLink(generatedUrl);
   };
 
-  // Списък със стейджовете за реалния симулатор на преживяването (с изчистени пропса без грешки)
+  // Списък със стейджовете за реалния симулатор на преживяването (с подадени реални данни от формата)
   const simulatorStages = [
-    <SealStage key="seal" recipient={recipient || 'Получател'} onComplete={() => setCurrentSimulatorStage(1)} onUnlock={() => {}} />,
-    <CakeStage key="cake" onComplete={() => setCurrentSimulatorStage(2)} />,
-    <ScratchStage key="scratch" onComplete={() => setCurrentSimulatorStage(3)} />,
-    <MemoryWallStage key="memory" onComplete={() => setCurrentSimulatorStage(4)} />,
-    <QuizStage key="quiz" onComplete={() => setCurrentSimulatorStage(5)} />,
-    <CapsuleStage key="capsule" onGeneratePdf={async () => {}} />
+    <SealStage 
+      key="seal" 
+      recipient={recipient || 'Получател'} 
+      onComplete={() => setCurrentSimulatorStage(1)} 
+      onUnlock={() => {}} 
+    />,
+    <ScratchStage 
+      key="scratch" 
+      recipient={recipient || 'Получател'}
+      scratchCards={secretMessages.filter(Boolean).length > 0 ? secretMessages.map((msg, idx) => ({ id: String(idx + 1), title: `Скрито послание #${idx + 1}`, secretText: msg })) : undefined}
+      onComplete={() => setCurrentSimulatorStage(2)} 
+    />,
+    <QuizStage 
+      key="quiz" 
+      recipient={recipient || 'Получател'}
+      quizzes={quizList.filter(q => q.question).length > 0 ? quizList.filter(q => q.question).map((q, idx) => ({ id: String(idx + 1), question: q.question, options: [q.optionA, q.optionB, q.optionC].filter(Boolean), correctAnswer: q.correct === 'A' ? 0 : q.correct === 'B' ? 1 : 2 })) : undefined}
+      onComplete={() => setCurrentSimulatorStage(3)} 
+    />,
+    <MemoryWallStage 
+      key="memory" 
+      recipient={recipient || 'Получател'}
+      memories={photos.length > 0 ? photos.map((p, idx) => ({ id: String(idx + 1), url: p.fileUrl, type: 'image' as const, questionOrCaption: p.question || 'Спомен', correctAnswer: p.answer || 'отговор' })) : undefined}
+      onComplete={() => setCurrentSimulatorStage(4)} 
+    />,
+    <CakeStage 
+      key="cake" 
+      recipient={recipient || 'Получател'}
+      senderWish={candleWish || 'Честит празник!'}
+      onComplete={() => setCurrentSimulatorStage(5)} 
+    />,
+    <CapsuleStage 
+      key="capsule" 
+      customQuestions={capsuleQuestions.filter(Boolean).length > 0 ? capsuleQuestions.filter(Boolean) : undefined}
+      onGeneratePdf={async () => {}} 
+    />
   ];
 
   return (

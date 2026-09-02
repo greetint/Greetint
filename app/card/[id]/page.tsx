@@ -32,14 +32,25 @@ export default function CardPage() {
     wishFromCandle: '',
     photos: [] as string[]
   });
+  const [questData, setQuestData] = useState<any>(null);
 
   // Зареждане на реалните данни, записани от подателя в localStorage
   useEffect(() => {
     if (rawId) {
-      const savedQuest = localStorage.getItem(`quest_${rawId}`);
+      const possibleKeys = [
+        `quest_${rawId}`,
+        `quest_${decodeURIComponent(rawId).toLowerCase()}`
+      ];
+      let savedQuest = null;
+      for (const key of possibleKeys) {
+        savedQuest = localStorage.getItem(key);
+        if (savedQuest) break;
+      }
+
       if (savedQuest) {
         try {
           const parsed = JSON.parse(savedQuest);
+          setQuestData(parsed);
           setCardData(prev => ({
             ...prev,
             sender: parsed.sender || 'Подаряващия',
@@ -123,6 +134,7 @@ export default function CardPage() {
       {currentStage === 'scratch' && (
         <ScratchStage
           recipient={uppercaseName}
+          scratchCards={questData?.secretMessages?.filter(Boolean).length > 0 ? questData.secretMessages.map((msg: string, idx: number) => ({ id: String(idx + 1), title: `Скрито послание #${idx + 1}`, secretText: msg })) : undefined}
           onComplete={() => setCurrentStage('quiz')}
         />
       )}
@@ -130,6 +142,7 @@ export default function CardPage() {
       {currentStage === 'quiz' && (
         <QuizStage
           recipient={uppercaseName}
+          quizzes={questData?.quizList?.filter((q: any) => q.question).length > 0 ? questData.quizList.filter((q: any) => q.question).map((q: any, idx: number) => ({ id: String(idx + 1), question: q.question, options: [q.optionA, q.optionB, q.optionC].filter(Boolean), correctAnswer: q.correct === 'A' ? 0 : q.correct === 'B' ? 1 : 2 })) : undefined}
           onComplete={() => setCurrentStage('memories')}
         />
       )}
@@ -137,6 +150,7 @@ export default function CardPage() {
       {currentStage === 'memories' && (
         <MemoryWallStage
           recipient={uppercaseName}
+          memories={questData?.photos?.length > 0 ? questData.photos.map((p: any, idx: number) => ({ id: String(idx + 1), url: p.fileUrl, type: 'image' as const, questionOrCaption: p.question || 'Спомен', correctAnswer: p.answer || 'отговор' })) : undefined}
           onComplete={() => {
             setCurrentStage('cake');
           }}
@@ -146,6 +160,7 @@ export default function CardPage() {
       {currentStage === 'cake' && (
         <CakeStage
           recipient={uppercaseName}
+          senderWish={questData?.candleWish || cardData.mainWish}
           onComplete={(wish) => {
             setCardData(prev => ({ ...prev, wishFromCandle: wish }));
             setCurrentStage('capsule');
@@ -155,6 +170,7 @@ export default function CardPage() {
 
       {currentStage === 'capsule' && (
         <CapsuleStage
+          customQuestions={questData?.capsuleQuestions?.filter(Boolean).length > 0 ? questData.capsuleQuestions.filter(Boolean) : undefined}
           onGeneratePdf={handleGeneratePdf}
         />
       )}
