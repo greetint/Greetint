@@ -23,14 +23,37 @@ export default function CardPage() {
   const formattedName = decodedName.charAt(0).toUpperCase() + decodedName.slice(1);
   const uppercaseName = formattedName.toUpperCase();
 
+  // Динамични данни от подателя
   const [cardData, setCardData] = useState({
     sender: 'Подаряващия',
     statusText: 'Посрещаме 2026 с нови мечти!',
-    secretJoke: 'Човекът, който пие 3 кафета на ден...',
+    secretJoke: 'Скрито послание...',
     mainWish: 'Нека тази година ти донесе здраве и вдъхновение!',
     wishFromCandle: '',
     photos: [] as string[]
   });
+
+  // Зареждане на реалните данни, записани от подателя в localStorage
+  useEffect(() => {
+    if (rawId) {
+      const savedQuest = localStorage.getItem(`quest_${rawId}`);
+      if (savedQuest) {
+        try {
+          const parsed = JSON.parse(savedQuest);
+          setCardData(prev => ({
+            ...prev,
+            sender: parsed.sender || 'Подаряващия',
+            statusText: parsed.statusText || prev.statusText,
+            secretJoke: parsed.secretMessages?.[0] || prev.secretJoke,
+            mainWish: parsed.candleWish || prev.mainWish,
+            photos: parsed.photos?.map((p: any) => p.fileUrl) || []
+          }));
+        } catch (e) {
+          console.error("Грешка при зареждане на данните за куеста:", e);
+        }
+      }
+    }
+  }, [rawId]);
 
   // Състояние за съхранение на отговорите от дневника/капсулата
   const [capsuleAnswers, setCapsuleAnswers] = useState<{ question: string; answer: string }[]>([]);
@@ -68,7 +91,6 @@ export default function CardPage() {
     }
   };
 
-  // Използваме вградения в браузъра перфектен Print/Save to PDF механизъм
   const handleGeneratePdf = async (answers: { question: string; answer: string }[]) => {
     setCapsuleAnswers(answers);
     setTimeout(() => {
@@ -82,7 +104,7 @@ export default function CardPage() {
       {/* ФОНОВ АУДИО ПЛЕЙЪР С LOOP */}
       <audio ref={audioRef} src="/audio/background-music.mp3" preload="auto" loop />
 
-      {/* МИНИМАЛИСТИЧНА КРЪГЛА ИКОНКА ЗА МУЗИКА (БЕЗ БОРДЪРИ) */}
+      {/* МИНИМАЛИСТИЧНА КРЪГЛА ИКОНКА ЗА МУЗИКА */}
       <button
         onClick={toggleMute}
         className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/40 backdrop-blur-md text-[#1F1A17] rounded-full shadow-md hover:bg-white/70 transition flex items-center justify-center text-base"
@@ -116,14 +138,6 @@ export default function CardPage() {
         <MemoryWallStage
           recipient={uppercaseName}
           onComplete={() => {
-            // Динамично зареждаме качените от потребителя спомени в масива за PDF-а
-            setCardData(prev => ({ 
-              ...prev, 
-              photos: [
-                '/images/assets/envelope_paper.jpeg', 
-                '/images/assets/pdf_background.jpg'
-              ] 
-            }));
             setCurrentStage('cake');
           }}
         />
