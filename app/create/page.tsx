@@ -123,7 +123,7 @@ export default function CreateCardPage() {
     }
   };
 
- const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const uniqueId = Math.random().toString(36).substring(2, 9);
     
@@ -134,14 +134,14 @@ export default function CreateCardPage() {
     setCreatedLink(generatedUrl);
   };
 
- // Списък със стейджовете за реалния симулатор на преживяването (с коректни пропса за TypeScript)
+  // Списък със стейджовете за реалния симулатор на преживяването (с изчистени пропса без грешки)
   const simulatorStages = [
     <SealStage key="seal" recipient={recipient || 'Получател'} onComplete={() => setCurrentSimulatorStage(1)} onUnlock={() => {}} />,
     <CakeStage key="cake" onComplete={() => setCurrentSimulatorStage(2)} />,
     <ScratchStage key="scratch" onComplete={() => setCurrentSimulatorStage(3)} />,
     <MemoryWallStage key="memory" onComplete={() => setCurrentSimulatorStage(4)} />,
     <QuizStage key="quiz" onComplete={() => setCurrentSimulatorStage(5)} />,
-    <CapsuleStage key="capsule" onComplete={() => setIsSimulating(false)} onGeneratePdf={async () => {}} />
+    <CapsuleStage key="capsule" onGeneratePdf={async () => {}} />
   ];
 
   return (
