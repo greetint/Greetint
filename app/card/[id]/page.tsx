@@ -20,9 +20,7 @@ export default function CardPage() {
 
   const rawId = params?.id ? String(params.id) : 'виктория';
   const decodedName = decodeURIComponent(rawId);
-  const formattedName = decodedName.charAt(0).toUpperCase() + decodedName.slice(1);
-  const uppercaseName = formattedName.toUpperCase();
-
+  
   // Динамични данни от подателя
   const [cardData, setCardData] = useState({
     sender: 'Подаряващия',
@@ -33,6 +31,10 @@ export default function CardPage() {
     photos: [] as string[]
   });
   const [questData, setQuestData] = useState<any>(null);
+
+  const recipientName = questData?.recipient || decodedName;
+  const formattedName = recipientName.charAt(0).toUpperCase() + recipientName.slice(1);
+  const uppercaseName = formattedName.toUpperCase();
 
   // Зареждане на реалните данни, записани от подателя в localStorage
   useEffect(() => {

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -17,6 +18,7 @@ const CARD_TEMPLATES = [
   { id: '2', name: 'Playful Celebration', img: '/images/cards/card-2.png' },
   { id: '3', name: 'Chic Pink Stripe', img: '/images/cards/card-3.png' },
   { id: '4', name: 'Modern Blue Stripe', img: '/images/cards/card-4.png' },
+  { id: 'blank', name: 'Чисто бял (Blank)', img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="140"><rect width="100%" height="100%" fill="%23FEFEFD"/></svg>' },
 ];
 
 const BULGARIAN_FONTS = [
@@ -80,6 +82,7 @@ export default function CreateCardPage() {
   const [selectedCardImg, setSelectedCardImg] = useState(CARD_TEMPLATES[0].img);
   const [customCardBg, setCustomCardBg] = useState<string | null>(null);
   const [cardText, setCardText] = useState('');
+  const [textSize, setTextSize] = useState(18);
   const [selectedFont, setSelectedFont] = useState(BULGARIAN_FONTS[0].family);
   const [qrColor, setQrColor] = useState('#1F1A17');
   const [textColor, setTextColor] = useState('#1F1A17');
@@ -206,10 +209,17 @@ export default function CreateCardPage() {
       <div className="max-w-4xl w-full bg-[#1A1816] p-8 sm:p-14 rounded-[40px] shadow-2xl border border-white/10 space-y-12 relative overflow-hidden">
         
         {/* ЛОГО И ЗАГЛАВИЕ */}
-        <div className="relative z-10 text-center space-y-4 border-b border-white/10 pb-8">
-          <div className="flex justify-center mb-2">
-            <img src="/images/logo/logo-horizontal.png" alt="Greetint Logo" className="h-10 object-contain filter invert opacity-90" />
+        <div className="relative z-10 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 pb-8 gap-4">
+          <Link href="/" className="flex items-center space-x-3 group">
+            <img src="/images/logo/logo-horizontal.png" alt="Greetint Logo" className="h-12 sm:h-16 object-contain filter invert opacity-95 group-hover:opacity-100 transition" />
+          </Link>
+          <div className="flex items-center space-x-3">
+            <Link href="/" className="bg-white/5 border border-white/10 hover:bg-white/10 text-white px-5 py-2.5 rounded-2xl text-xs font-sans uppercase tracking-widest transition">
+              ← Към началото
+            </Link>
           </div>
+        </div>
+        <div className="relative z-10 text-center space-y-3">
           <h1 className="text-4xl sm:text-5xl font-serif font-light tracking-wide">Режисирай Преживяването</h1>
           <p className="text-xs text-[#958679] font-sans tracking-widest uppercase">Студио за създаване на интерактивен куест</p>
         </div>
@@ -489,10 +499,14 @@ export default function CreateCardPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                     <div>
                       <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Надпис</label>
                       <input type="text" value={cardText} onChange={e => setCardText(e.target.value)} className="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none" />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Размер ({textSize}px)</label>
+                      <input type="range" min="12" max="36" value={textSize} onChange={e => setTextSize(Number(e.target.value))} className="w-full accent-white mt-3 cursor-pointer" />
                     </div>
                     <div>
                       <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Шрифт</label>
@@ -518,8 +532,8 @@ export default function CreateCardPage() {
                   </div>
 
                   {/* ИНТЕРАКТИВНО ПРЕВЮ С ДРАГ & ДРОП И ДИНАМИЧЕН QR КОД */}
-                  <div className="pt-4 text-center">
-                    <p className="text-[11px] uppercase font-sans font-semibold text-[#958679] mb-3">Хвани и плъзни елементите свободно върху картичката ↓</p>
+                  <div className="pt-4 text-center space-y-4">
+                    <p className="text-[11px] uppercase font-sans font-semibold text-[#958679]">Хвани и плъзни елементите свободно върху картичката ↓</p>
                     <div 
                       ref={previewRef} 
                       className={`relative mx-auto overflow-hidden bg-white rounded-3xl shadow-2xl border border-white/10 ${cardOrientation === 'portrait' ? 'w-full max-w-xs' : 'w-full max-w-md'}`}
@@ -533,7 +547,7 @@ export default function CreateCardPage() {
                         dragConstraints={previewRef}
                         dragMomentum={false}
                         className={`absolute cursor-grab active:cursor-grabbing p-2 ${selectedFont}`}
-                        style={{ top: '20%', left: '20%', color: textColor, fontSize: '18px', fontWeight: 'bold' }}
+                        style={{ top: '20%', left: '20%', color: textColor, fontSize: `${textSize}px`, fontWeight: 'bold' }}
                       >
                         {cardText || 'За получателя'}
                       </motion.div>
@@ -548,6 +562,17 @@ export default function CreateCardPage() {
                       >
                         <QRCodeSVG value={activePreviewUrl} size={70} fgColor={qrColor} className="w-full h-auto pointer-events-none" />
                       </motion.div>
+                    </div>
+
+                    {/* ПРИНТ / PDF СВАЛЯНЕ НА КАРТИЧКАТА */}
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => window.print()}
+                        className="bg-white/10 hover:bg-white/20 text-[#FAF6EE] px-6 py-3 rounded-xl text-xs uppercase tracking-[0.2em] font-sans font-bold transition border border-white/10"
+                      >
+                        🖨️ Принтирай / Свали картичката с QR код като PDF
+                      </button>
                     </div>
                   </div>
 
