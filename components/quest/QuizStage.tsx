@@ -19,22 +19,22 @@ interface QuizStageProps {
 const DEFAULT_QUIZZES: QuizItem[] = [
   {
     id: '1',
-    question: "Къде беше най-лудото ни пътуване заедно?",
-    options: ["На морето", "В планината", "В чужбина"],
+    question: "Kade beshe nai-ludoto ni putuvane zaedno?",
+    options: ["Na moreto", "V planinata", "V chuzhbina"],
     correctAnswer: 0
   },
   {
     id: '2',
-    question: "Коя е любимата ни част от деня, в която прекарваме време заедно?",
-    options: ["Сутрешното кафе", "ЗвездНАТА нощ", "Следобедната разходка"],
+    question: "Koya e lyubimata ni chast ot denya?",
+    options: ["Sutreshnoto kafe", "Zvezdnata nosht", "Sledobednata razhodka"],
     correctAnswer: 0
   }
 ];
 
-const OPTION_LETTERS = ['А', 'Б', 'В', 'Г'];
+const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
 
 export function QuizStage({ 
-  recipient = "ВИКТОРИЯ", 
+  recipient = "VIKTORIYA", 
   quizzes = DEFAULT_QUIZZES,
   onComplete 
 }: QuizStageProps) {
@@ -76,24 +76,23 @@ export function QuizStage({
       onComplete();
     }
   };
-
   return (
     <div className="relative w-screen h-[100dvh] flex flex-col items-center justify-between overflow-hidden select-none px-4 pt-12 pb-6 sm:p-12">
-      {/* ФОН НА �      {/* ФОН НА �      {/* ФОН НА �      {/*et-0 z-0 bg-cover bg-center bg-no-repeat scale-110" style={{ backgroundImage: `url('/images/assets/envelope_paper.jpeg')` }} />
-      <div className="absolute inset-0 bg-[radial-g      <div className="absolute inset-0 bg-[radial-g  gba(40,33,28,0.3)_85%)] pointer-events-none z-0" />
+      <div className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat scale-110" style={{ backgroundImage: 'url(/images/assets/envelope_paper.jpeg)' }} />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(219,206,179,0.3)_0%,_rgba(40,33,28,0.3)_85%)] pointer-events-none z-0" />
 
-      {/* ПЛАВАЩИ ПРАШИНКИ */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
-            cla            cla         CEB3] rounded-full blur-[1px]"
+            className="absolute bg-[#DBCEB3] rounded-full blur-[1px]"
             style={{ width: `${Math.random() * 4 + 2}px`, height: `${Math.random() * 4 + 2}px`, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
-            animate={{ y: [0, -100, 0], opacity: [0.2, 0.8, 0.2], scale:             animate={{ y: [0, -100, 0], opacity: [0.2, 0.8, 0.2], scale:             animate={{ y: [0, -100, 0], opacity: [0.2, 0.8, 0.2], scale     />
+            animate={{ y: [0, -100, 0], opacity: [0.2, 0.8, 0.2], scale: [1, 1.3, 1] }}
+            transition={{ duration: Math.random() * 5 + 4, repeat: Infinity, ease: "easeInOut", delay: Math.random() * 3 }}
+          />
         ))}
       </div>
 
-      {/* ЗВЕЗДИЧКИ ПРИ ВЕРЕН ОТГОВОР */}
       <AnimatePresence>
         {isCorrect && (
           <div className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center overflow-hidden">
@@ -103,7 +102,8 @@ export function QuizStage({
               return (
                 <motion.div
                   key={i}
-                                          cale:                                        im                                          cale:                  ath.PI) / 180) * dist, y: Math.sin((angle * Math.PI) / 180) * dist }}
+                  initial={{ opacity: 1, scale: 0.5, x: 0, y: 0 }}
+                  animate={{ opacity: 0, scale: [0.5, 1.4, 0.8], x: Math.cos((angle * Math.PI) / 180) * dist, y: Math.sin((angle * Math.PI) / 180) * dist }}
                   transition={{ duration: 1, ease: "easeOut" }}
                   className="absolute w-3 h-3 bg-[#D4AF37] rounded-full shadow-[0_0_10px_#D4AF37]"
                 />
@@ -113,18 +113,16 @@ export function QuizStage({
         )}
       </AnimatePresence>
 
-      {/* ПРОГРЕС БАР */}
       <div className="relative z-20 w-full max-w-xl flex flex-col items-center space-y-2 pt-2">
         <div className="flex justify-between items-center w-full px-2">
-          <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#7A6C5E] font-bold">Въп          <span className="text-[10px] sm:}</span>
+          <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#7A6C5E] font-bold">Vapros {currentIdx + 1} ot {totalQuizzes}</span>
           <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-[#7A6C5E] font-medium">{recipient}</span>
         </div>
         <div className="w-full h-1.5 bg-[#E2DACF] rounded-full overflow-hidden shadow-inner">
-          <motion.div className="h-full bg-gradient-to-r from-[#C5A880] to-[#D4AF37]" initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 0.5 }} />
+          <motion.div className="h-full bg-gradient-to-r from-[#C5A880] to-[#D4AF37]" initial={{ width: 0 }} animate={{ width: progressPercent + "%" }} transition={{ duration: 0.5 }} />
         </div>
       </div>
 
-      {/* ЦЕНТРАЛНА КАРТИЧКА */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIdx}
@@ -135,7 +133,7 @@ export function QuizStage({
           className="relative z-20 w-full max-w-xl my-auto bg-white/80 backdrop-blur-xl border border-white/90 rounded-[32px] p-6 sm:p-10 shadow-2xl flex flex-col items-center justify-between text-center space-y-6"
         >
           <div className="space-y-2">
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#958679] font-bold block">✦ Интерактивен тест ✦</span>
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#958679] font-bold block">✦ Interaktiven test ✦</span>
             <h2 className="font-serif italic text-xl sm:text-3xl text-[#1F1A17] leading-relaxed px-2">"{currentQuiz.question}"</h2>
             <div className="w-20 h-[1px] bg-[#958679]/30 mx-auto mt-2" />
           </div>
@@ -145,14 +143,16 @@ export function QuizStage({
               const isSelected = selectedOption === idx;
               const isShaking = shakeIndex === idx;
 
-              let cardStyle = 'bg-white/90 text-[#1F1A17] hover:bg-white hover:shadow-lg border border-[#E5DFDE]';
-              let monogramStyle = 'bg-[#FAF6EE] text-[#1F1A17] border border-[#DBCEB3]';
+              let cardStyle = "bg-white/90 text-[#1F1A17] hover:bg-white hover:shadow-lg border border-[#E5DFDE]";
+              let monogramStyle = "bg-[#FAF6EE] text-[#1F1A17] border border-[#DBCEB3]";
 
               if (isSelected) {
                 if (isCorrect) {
-                  cardStyle = 'bg-[#DBCEB3]/90 text-[#1F1A17] shadow-xl border-[#D4AF37] font-bold';
-                  monogramStyle = 'bg-[#1F1A17] text-[#FEFEF                  monogramStyle = 'bg-[#1F1A17] text-[#FEFEF                  m[#7A6C5E] border-[#D8CFC4]';
-                  monogramStyle = 'bg-[#7A6C5E] text-[#FEFEFD]';
+                  cardStyle = "bg-[#DBCEB3]/90 text-[#1F1A17] shadow-xl border-[#D4AF37] font-bold";
+                  monogramStyle = "bg-[#1F1A17] text-[#FEFEFD]";
+                } else {
+                  cardStyle = "bg-[#F2ECE9] text-[#7A6C5E] border-[#D8CFC4]";
+                  monogramStyle = "bg-[#7A6C5E] text-[#FEFEFD]";
                 }
               }
 
@@ -160,10 +160,11 @@ export function QuizStage({
                 <motion.div key={idx} animate={isShaking ? { x: [0, -10, 10, -8, 8, 0] } : { x: 0 }} transition={{ duration: 0.4 }}>
                   <motion.button
                     whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={                    whileTap={                    whiledleSelect(idx)}
-                    className={`w-full p-4 rounded-2xl flex items-center space-x-4 transition duration-300 backdrop-blur-md shadow-sm ${cardStyle}`}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleSelect(idx)}
+                    className={"w-full p-4 rounded-2xl flex items-center space-x-4 transition duration-300 backdrop-blur-md shadow-sm " + cardStyle}
                   >
-                    <span className={`w-9 h-9 rounded-xl font-serif font-bold text-xs sm:text-sm flex items-center justify-center flex-shrink-0 shadow-inner ${monogramStyle}`}>
+                    <span className={"w-9 h-9 rounded-xl font-serif font-bold text-xs sm:text-sm flex items-center justify-center flex-shrink-0 shadow-inner " + monogramStyle}>
                       {OPTION_LETTERS[idx] || (idx + 1)}
                     </span>
                     <span className="font-sans text-xs sm:text-sm font-medium tracking-wide text-left flex-1">{opt}</span>
@@ -175,8 +176,8 @@ export function QuizStage({
 
           <AnimatePresence>
             {showWrongMessage && (
-              <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opac              <motion.div initi] sm:text-xs uppercase tracking-[0.2em] text-[#A35235] font-sans font-bold italic pt-1">
-                ✦ Не съвсем... Помисли отново и опитай пак ✦
+              <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#A35235] font-sans font-bold italic pt-1">
+                ✦ Ne suvsem... Pomisli otnovo i opitay pak ✦
               </motion.div>
             )}
           </AnimatePresence>
@@ -185,12 +186,13 @@ export function QuizStage({
             <AnimatePresence mode="wait">
               {isCorrect ? (
                 <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.4 }} className="w-full">
-                  <button onClick={handleNextQuiz} class                  <button onClick={handleNextQuiz} class                  <button onClick={handleNextQuiz} class         [#635E57] transition shadow-lg">
-                    {currentIdx < totalQuizzes - 1 ? 'Следващ Въпрос ➔' : 'Към Споменит                           </button>
+                  <button onClick={handleNextQuiz} className="w-full bg-[#1F1A17] text-[#FEFEFD] py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl font-sans hover:bg-[#635E57] transition shadow-lg">
+                    {currentIdx < totalQuizzes - 1 ? "Sledvasht Vapros ➔" : "Kum Spomenite ➔"}
+                  </button>
                 </motion.div>
               ) : (
                 <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#958679] font-sans font-bold italic block">
-                  ✦ Избери верния отговор за продължение ✦
+                  ✦ Izberi verniya otgovor za prodalzhenie ✦
                 </motion.span>
               )}
             </AnimatePresence>
@@ -206,3 +208,4 @@ export function QuizStage({
 }
 
 export default QuizStage;
+
