@@ -95,7 +95,7 @@ export default function CreateCardPage() {
     const previewEl = previewRef.current;
     if (!previewEl) return;
 
-    const printWindow = window.open('', '_blank', 'width=800,height=900');
+    const printWindow = window.open('', '_blank', 'width=900,height=1000');
     if (!printWindow) return;
 
     printWindow.document.write(`
@@ -104,27 +104,29 @@ export default function CreateCardPage() {
         <head>
           <title>Интерактивна Картичка - Greetint</title>
           <style>
-            @page { size: auto; margin: 10mm; }
+            @page { size: ${cardOrientation === 'portrait' ? 'portrait' : 'landscape'}; margin: 0; }
             body {
               margin: 0;
-              padding: 20px;
+              padding: 0;
               display: flex;
-              flex-direction: column;
               align-items: center;
               justify-content: center;
-              min-height: 100vh;
-              background: #fdfbf7;
-              font-family: sans-serif;
+              width: 100vw;
+              height: 100vh;
+              background: #F7F4EF;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
             }
             .print-card-wrapper {
-              width: ${cardOrientation === 'portrait' ? '380px' : '540px'};
+              width: 100%;
+              max-width: ${cardOrientation === 'portrait' ? '420px' : '620px'};
               aspect-ratio: ${cardOrientation === 'portrait' ? '1 / 1.4' : '1.4 / 1'};
               position: relative;
               background: #fff;
-              border-radius: 24px;
+              border-radius: 28px;
               overflow: hidden;
-              box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-              border: 1px solid #e0d8cc;
+              box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+              border: 1px solid #d9d1cc;
             }
           </style>
         </head>
@@ -136,7 +138,8 @@ export default function CreateCardPage() {
             window.onload = () => {
               setTimeout(() => {
                 window.print();
-              }, 400);
+                window.close();
+              }, 500);
             };
           </script>
         </body>
@@ -540,18 +543,34 @@ export default function CreateCardPage() {
 
                   {/* ШАБЛОНИ ИЛИ КАЧВАНЕ */}
                   <div className="space-y-3">
-                    <label className="block text-[11px] uppercase font-sans text-white/60">Избери дизайн или качи своя картинка</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <label className="block text-[11px] uppercase font-sans text-white/60">Избери дизайн или плъзни снимка тук (Drag & Drop)</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                       {CARD_TEMPLATES.map(card => (
                         <button key={card.id} type="button" onClick={() => { setSelectedCardImg(card.img); setCustomCardBg(null); }} className={`border-2 p-1 rounded-2xl transition ${selectedCardImg === card.img && !customCardBg ? 'border-[#FAF6EE]' : 'border-transparent'}`}>
                           <img src={card.img} alt={card.name} className="w-full h-auto rounded-xl" />
                         </button>
                       ))}
                     </div>
-                    <div className="pt-2">
+                    
+                    <div 
+                      onDragOver={e => e.preventDefault()}
+                      onDrop={e => {
+                        e.preventDefault();
+                        const file = e.dataTransfer.files?.[0];
+                        if (file && file.type.startsWith('image/')) {
+                          const reader = new FileReader();
+                          reader.onload = ev => {
+                            if (ev.target?.result) setCustomCardBg(ev.target.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="mt-3 border-2 border-dashed border-white/20 hover:border-white/50 bg-black/20 p-5 rounded-2xl text-center transition cursor-pointer"
+                    >
                       <input type="file" accept="image/*" onChange={handleCustomCardUpload} id="custom-card-file" className="hidden" />
-                      <label htmlFor="custom-card-file" className="inline-block bg-black/40 border border-white/10 text-white px-4 py-3 rounded-xl text-xs font-sans font-semibold cursor-pointer hover:bg-white/5 transition">
-                        + Качи твоя снимка за картичка
+                      <label htmlFor="custom-card-file" className="cursor-pointer space-y-1 block">
+                        <span className="text-xs uppercase tracking-widest text-white/90 font-bold block">📂 Провлачни снимка тук или кликни</span>
+                        <span className="text-[10px] text-white/50 block">Поддържа PNG, JPG, WEBP</span>
                       </label>
                     </div>
                   </div>
@@ -590,7 +609,7 @@ export default function CreateCardPage() {
 
                   {/* ИНТЕРАКТИВНО ПРЕВЮ С ДРАГ & ДРОП И ДИНАМИЧЕН QR КОД */}
                   <div className="pt-4 text-center space-y-4">
-                    <p className="text-[11px] uppercase font-sans font-semibold text-[#958679]">Хвани и плъзни текста и QR кода свободно върху картичката ↓</p>
+                    <p className="text-[11px] uppercase font-sans font-semibold text-[#958679]">Хвани и плъзни текста и QR кода свободно (и използвай ↔ ъгълчето за преоразмеряване директно) ↓</p>
                     <div 
                       ref={previewRef} 
                       className={`relative mx-auto overflow-hidden bg-white rounded-3xl shadow-2xl border border-white/10 ${cardOrientation === 'portrait' ? 'w-full max-w-xs' : 'w-full max-w-md'}`}
@@ -603,26 +622,70 @@ export default function CreateCardPage() {
                         style={{ transform: `scale(${photoScale})` }}
                       />
                       
-                      {/* МЕСТЕЩ СЕ ТЕКСТ */}
+                      {/* МЕСТЕЩ СЕ И РЕХАЙЗИРУЕМ ТЕКСТ */}
                       <motion.div
                         drag
                         dragConstraints={previewRef}
                         dragMomentum={false}
-                        className={`absolute cursor-grab active:cursor-grabbing p-2 ${selectedFont}`}
+                        className={`absolute cursor-grab active:cursor-grabbing p-3 select-none group/text ${selectedFont}`}
                         style={{ top: '20%', left: '20%', color: textColor, fontSize: `${textSize}px`, fontWeight: 'bold' }}
                       >
-                        {cardText || 'За получателя'}
+                        <span>{cardText || 'За получателя'}</span>
+                        <div 
+                          className="absolute -bottom-2 -right-2 w-5 h-5 bg-[#1F1A17] text-[#F7F4EF] rounded-full text-[10px] flex items-center justify-center cursor-se-resize opacity-0 group-hover/text:opacity-100 transition shadow-md"
+                          title="Дръпни за преоразмеряване"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            const startY = e.clientY;
+                            const startSize = textSize;
+                            const onMouseMove = (moveEvent: MouseEvent) => {
+                              const delta = moveEvent.clientY - startY;
+                              const newSize = Math.max(12, Math.min(48, startSize + Math.round(delta / 2.5)));
+                              setTextSize(newSize);
+                            };
+                            const onMouseUp = () => {
+                              window.removeEventListener('mousemove', onMouseMove);
+                              window.removeEventListener('mouseup', onMouseUp);
+                            };
+                            window.addEventListener('mousemove', onMouseMove);
+                            window.addEventListener('mouseup', onMouseUp);
+                          }}
+                        >
+                          ↔
+                        </div>
                       </motion.div>
 
-                      {/* МЕСТЕЩ СЕ И ДИНАМИЧНО ГЕНЕРИРАН QR КОД */}
+                      {/* МЕСТЕЩ СЕ И РЕХАЙЗИРУЕМ QR КОД */}
                       <motion.div
                         drag
                         dragConstraints={previewRef}
                         dragMomentum={false}
-                        className="absolute cursor-grab active:cursor-grabbing p-2 bg-white/95 rounded-2xl shadow-xl border border-black/5"
+                        className="absolute cursor-grab active:cursor-grabbing p-2.5 bg-white/95 rounded-2xl shadow-xl border border-black/5 group/qr"
                         style={{ top: '55%', left: '55%', width: `${qrSize}px` }}
                       >
                         <QRCodeSVG value={activePreviewUrl} size={qrSize} fgColor={qrColor} className="w-full h-auto pointer-events-none" />
+                        <div 
+                          className="absolute -bottom-2 -right-2 w-5 h-5 bg-[#1F1A17] text-[#F7F4EF] rounded-full text-[10px] flex items-center justify-center cursor-se-resize opacity-0 group-hover/qr:opacity-100 transition shadow-md"
+                          title="Дръпни за преоразмеряване"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            const startX = e.clientX;
+                            const startSize = qrSize;
+                            const onMouseMove = (moveEvent: MouseEvent) => {
+                              const delta = moveEvent.clientX - startX;
+                              const newSize = Math.max(50, Math.min(150, startSize + Math.round(delta / 2)));
+                              setQrSize(newSize);
+                            };
+                            const onMouseUp = () => {
+                              window.removeEventListener('mousemove', onMouseMove);
+                              window.removeEventListener('mouseup', onMouseUp);
+                            };
+                            window.addEventListener('mousemove', onMouseMove);
+                            window.addEventListener('mouseup', onMouseUp);
+                          }}
+                        >
+                          ↔
+                        </div>
                       </motion.div>
                     </div>
 
