@@ -59,6 +59,9 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       audioRef.current.muted = newState;
       if (newState) {
         audioRef.current.pause();
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
       } else {
         audioRef.current.play().catch(() => {});
       }
@@ -70,6 +73,7 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       key="arrest" 
       recipient={recipient} 
       age={age} 
+      isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(1)} 
     />,
     <SuspectRecordStage 
@@ -77,11 +81,13 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       recipient={recipient} 
       age={age} 
       charges={charges} 
+      isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(2)} 
     />,
     <MagnifyingGlassStage 
       key="magnify" 
       secretMemory={redactedWish} 
+      isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(3)} 
     />,
     <EvidenceVaultStage 
@@ -89,11 +95,13 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       secretClue={secretClue} 
       secretAnswer={secretAnswer} 
       photos={photos} 
+      isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(4)} 
     />,
     <RedactedLetterStage 
       key="letter" 
       redactedWish={redactedWish} 
+      isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(5)} 
     />,
     <PrisonReleaseStage 
@@ -104,6 +112,7 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       charges={charges} 
       photos={photos} 
       redactedWish={redactedWish} 
+      isMuted={isMuted}
     />
   ];
 
@@ -113,7 +122,7 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       {/* Background Ambient Detective Audio */}
       <audio ref={audioRef} src="/audio/detective/detective-ambient.mp3" preload="auto" loop />
 
-      {/* Floating Audio Mute Button */}
+      {/* Floating Audio Mute Button controlling all audio and speech */}
       <button
         onClick={toggleMute}
         className="absolute top-4 right-4 z-55 w-10 h-10 bg-black/60 backdrop-blur-md text-white rounded-full shadow-lg hover:bg-black/90 transition flex items-center justify-center text-base border border-white/20 cursor-pointer"
@@ -128,4 +137,5 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
     </main>
   );
 }
+
 

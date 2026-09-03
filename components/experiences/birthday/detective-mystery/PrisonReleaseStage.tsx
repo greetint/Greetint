@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { speakBulgarian } from './utils/speech';
+import { speakBulgarian, playSoundEffect } from './utils/speech';
 
 interface PrisonReleaseProps {
   recipient: string;
@@ -10,9 +10,10 @@ interface PrisonReleaseProps {
   charges: string[];
   photos: { fileUrl: string }[];
   redactedWish: string;
+  isMuted?: boolean;
 }
 
-export function PrisonReleaseStage({ recipient, age, sender, charges, photos, redactedWish }: PrisonReleaseProps) {
+export function PrisonReleaseStage({ recipient, age, sender, charges, photos, redactedWish, isMuted = false }: PrisonReleaseProps) {
   const [answers, setAnswers] = useState<string[]>([
     '', '', '', '', '', '', ''
   ]);
@@ -29,19 +30,17 @@ export function PrisonReleaseStage({ recipient, age, sender, charges, photos, re
 
   useEffect(() => {
     // Play stamp sound from exact path /audio/detective/stamp.mp3
-    const audio = new Audio('/audio/detective/stamp.mp3');
-    audio.volume = 0.8;
-    audio.play().catch(() => {});
+    playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.8);
 
     const text = `Присъдата е изменена. Субектът е освободен предсрочно с пълни права за купон. Попълнете финалния протокол за следващата година.`;
-    speakBulgarian(text, 0.95, 1.0);
+    speakBulgarian(text, isMuted, 0.92, 1.0);
 
     return () => {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
-  }, []);
+  }, [isMuted]);
 
   const handlePrintDossier = () => {
     window.print();
@@ -98,4 +97,5 @@ export function PrisonReleaseStage({ recipient, age, sender, charges, photos, re
     </div>
   );
 }
+
 

@@ -1,32 +1,31 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { speakBulgarian } from './utils/speech';
+import { speakBulgarian, playSoundEffect } from './utils/speech';
 
 interface ArrestStageProps {
   recipient: string;
   age: string;
+  isMuted?: boolean;
   onComplete: () => void;
 }
 
-export function ArrestStage({ recipient, age, onComplete }: ArrestStageProps) {
+export function ArrestStage({ recipient, age, isMuted = false, onComplete }: ArrestStageProps) {
   // Voiceover & sound effects
   useEffect(() => {
     // Play door creak sound from exact path /audio/detective/door-creak.mp3
-    const audio = new Audio('/audio/detective/door-creak.mp3');
-    audio.volume = 0.6;
-    audio.play().catch(() => {});
+    playSoundEffect('/audio/detective/door-creak.mp3', isMuted, 0.6);
 
     // Optimized Bulgarian Web Speech API voiceover
     const text = `Внимание. Сигнал от Федералното Бюро. Локализиран е субект с име ${recipient}. Подозрение за максимално ниво на празнуване по случай навършване на ${age} години. Докоснете екрана, за да отворите секретното досие.`;
-    speakBulgarian(text, 0.95, 1.0);
+    speakBulgarian(text, isMuted, 0.92, 1.0);
 
     return () => {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
-  }, [recipient, age]);
+  }, [recipient, age, isMuted]);
 
   const handleUnlock = () => {
     onComplete();
@@ -73,4 +72,5 @@ export function ArrestStage({ recipient, age, onComplete }: ArrestStageProps) {
     </div>
   );
 }
+
 

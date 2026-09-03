@@ -1,14 +1,26 @@
-export function speakBulgarian(text: string, rate: number = 0.95, pitch: number = 1.0) {
+export function speakBulgarian(text: string, isMuted: boolean = false, rate: number = 0.92, pitch: number = 1.0) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
 
+  window.speechSynthesis.cancel();
+
+  if (isMuted) return;
+
   try {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
+    // Enhance text normalization and spacing for natural, clear Bulgarian pronunciation
+    const cleanedText = text
+      .replace(/FBI/g, 'Еф Би Ай')
+      .replace(/TOP SECRET/g, 'Топ сикрет')
+      .replace(/\/\//g, ', ')
+      .replace(/\./g, '. ')
+      .replace(/!/g, '! ');
+
+    const utterance = new SpeechSynthesisUtterance(cleanedText);
     utterance.lang = 'bg-BG';
-    utterance.rate = rate; // Optimized rate (0.95 - 1.0) for clarity and natural pacing
-    utterance.pitch = pitch; // Authoritative and clear tone
+    utterance.rate = rate; // Optimized rate (0.92) for natural phrasing and clarity in Bulgarian
+    utterance.pitch = pitch; // Authoritative tone
 
     const applyVoiceAndSpeak = () => {
+      if (isMuted) return;
       const voices = window.speechSynthesis.getVoices();
       const bgVoice = voices.find(v => 
         v.lang.toLowerCase().includes('bg') || 
@@ -29,9 +41,8 @@ export function speakBulgarian(text: string, rate: number = 0.95, pitch: number 
       window.speechSynthesis.onvoiceschanged = () => {
         applyVoiceAndSpeak();
       };
-      // Fallback timeout in case onvoiceschanged doesn't fire
       setTimeout(() => {
-        if (!window.speechSynthesis.speaking && !window.speechSynthesis.pending) {
+        if (!window.speechSynthesis.speaking && !window.speechSynthesis.pending && !isMuted) {
           applyVoiceAndSpeak();
         }
       }, 250);
@@ -40,3 +51,15 @@ export function speakBulgarian(text: string, rate: number = 0.95, pitch: number 
     console.error('Speech synthesis error:', e);
   }
 }
+
+export function playSoundEffect(path: string, isMuted: boolean = false, volume: number = 0.7) {
+  if (isMuted || typeof window === 'undefined') return;
+  try {
+    const audio = new Audio(path);
+    audio.volume = volume;
+    audio.play().catch(() => {});
+  } catch (e) {
+    console.error('Sound effect error:', e);
+  }
+}
+

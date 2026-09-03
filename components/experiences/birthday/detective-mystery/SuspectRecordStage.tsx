@@ -7,20 +7,21 @@ interface SuspectRecordProps {
   recipient: string;
   age: string;
   charges: string[];
+  isMuted?: boolean;
   onComplete: () => void;
 }
 
-export function SuspectRecordStage({ recipient, age, charges, onComplete }: SuspectRecordProps) {
+export function SuspectRecordStage({ recipient, age, charges, isMuted = false, onComplete }: SuspectRecordProps) {
   useEffect(() => {
     const text = `Заподозрян разпознат. Преглед на официалните обвинения и престъпления за изминалата година. Започнете разследване.`;
-    speakBulgarian(text, 0.95, 1.0);
+    speakBulgarian(text, isMuted, 0.92, 1.0);
 
     return () => {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
-  }, []);
+  }, [isMuted]);
 
   return (
     <div className="relative w-full h-full bg-[#11100F] text-[#F7F4EF] font-mono flex flex-col items-center justify-center p-6 select-none overflow-y-auto">
@@ -65,4 +66,5 @@ export function SuspectRecordStage({ recipient, age, charges, onComplete }: Susp
     </div>
   );
 }
+
 

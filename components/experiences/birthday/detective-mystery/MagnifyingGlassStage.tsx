@@ -5,23 +5,24 @@ import { speakBulgarian } from './utils/speech';
 
 interface MagnifyingGlassProps {
   secretMemory: string;
+  isMuted?: boolean;
   onComplete: () => void;
 }
 
-export function MagnifyingGlassStage({ secretMemory, onComplete }: MagnifyingGlassProps) {
+export function MagnifyingGlassStage({ secretMemory, isMuted = false, onComplete }: MagnifyingGlassProps) {
   const [mousePos, setMousePos] = useState({ x: 200, y: 200 });
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const text = `Използвайте дигиталната лупа, за да разкриете скритите доказателства и тайните послания на инспекторите.`;
-    speakBulgarian(text, 0.95, 1.0);
+    speakBulgarian(text, isMuted, 0.92, 1.0);
 
     return () => {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
-  }, []);
+  }, [isMuted]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
@@ -105,4 +106,5 @@ export function MagnifyingGlassStage({ secretMemory, onComplete }: MagnifyingGla
     </div>
   );
 }
+
 

@@ -1,16 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { speakBulgarian } from './utils/speech';
+import { speakBulgarian, playSoundEffect } from './utils/speech';
 
 interface EvidenceVaultProps {
   secretClue: string;
   secretAnswer: string;
   photos: { fileUrl: string }[];
+  isMuted?: boolean;
   onComplete: () => void;
 }
 
-export function EvidenceVaultStage({ secretClue, secretAnswer, photos, onComplete }: EvidenceVaultProps) {
+export function EvidenceVaultStage({ secretClue, secretAnswer, photos, isMuted = false, onComplete }: EvidenceVaultProps) {
   const [userInput, setUserInput] = useState('');
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [errorMsg, setErrorMsg] = useState(false);
@@ -18,22 +19,20 @@ export function EvidenceVaultStage({ secretClue, secretAnswer, photos, onComplet
 
   useEffect(() => {
     const text = `Доказателственият материал е заключен. Въведете верния отговор на секретната улика, за да разшифровате архива.`;
-    speakBulgarian(text, 0.95, 1.0);
+    speakBulgarian(text, isMuted, 0.92, 1.0);
 
     return () => {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
-  }, []);
+  }, [isMuted]);
 
   const handleUnlockCheck = (e: React.FormEvent) => {
     e.preventDefault();
     if (userInput.trim().toLowerCase() === (secretAnswer || 'кафе').trim().toLowerCase()) {
       // Play lock click sfx from exact path /audio/detective/lock-click.mp3
-      const audio = new Audio('/audio/detective/lock-click.mp3');
-      audio.volume = 0.8;
-      audio.play().catch(() => {});
+      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.8);
       setIsUnlocked(true);
       setErrorMsg(false);
     } else {
@@ -110,7 +109,7 @@ export function EvidenceVaultStage({ secretClue, secretAnswer, photos, onComplet
         <div onClick={() => setSelectedImage(null)} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
           <div className="relative max-w-2xl w-full bg-[#EFECE6] p-4 pb-10 rounded-2xl shadow-2xl border-4 border-black">
             <img src={selectedImage} alt="Enlarged" className="w-full h-auto max-h-[75vh] object-contain rounded" />
-            <span className="text-xs font-mono text-black mt-4 block text-center uppercase tracking-widest font-bold">ФЕДЕРАЛНО ДОКАЗАТЕЛСТВО // ЕВИДЕНЦИЯ</span>
+            <span className="text-xs font-mono text-black mt-4 block text-center uppercase tracking-widest font-bold">ФЕДЕРАЛНО ДОКАЗАТЕЛЬСТВО // ЕВИДЕНЦИЯ</span>
           </div>
         </div>
       )}
@@ -118,4 +117,5 @@ export function EvidenceVaultStage({ secretClue, secretAnswer, photos, onComplet
     </div>
   );
 }
+
 

@@ -74,8 +74,9 @@ export default function CardPage() {
   // Състояние за съхранение на отговорите от дневника/капсулата
   const [capsuleAnswers, setCapsuleAnswers] = useState<{ question: string; answer: string }[]>([]);
 
-  // Управление на фоновата музика с непрекъснат loop
+  // Управление на фоновата музика с непрекъснат loop (Само за basic стил)
   useEffect(() => {
+    if (styleId !== 'basic') return;
     const audio = audioRef.current;
     if (audio) {
       audio.volume = 0.35;
@@ -91,7 +92,7 @@ export default function CardPage() {
       window.addEventListener('click', playAudio, { once: true });
       return () => window.removeEventListener('click', playAudio);
     }
-  }, [isMuted]);
+  }, [isMuted, styleId]);
 
   const toggleMute = () => {
     const newMutedState = !isMuted;
@@ -121,17 +122,19 @@ export default function CardPage() {
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-[#ECE8E0] select-none">
       
-      {/* ФОНОВ АУДИО ПЛЕЙЪР С LOOP */}
-      <audio ref={audioRef} src="/audio/background-music.mp3" preload="auto" loop />
-
-      {/* МИНИМАЛИСТИЧНА КРЪГЛА ИКОНКА ЗА МУЗИКА */}
-      <button
-        onClick={toggleMute}
-        className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/40 backdrop-blur-md text-[#1F1A17] rounded-full shadow-md hover:bg-white/70 transition flex items-center justify-center text-base"
-        title={isMuted ? 'Включи музиката' : 'Спри музиката'}
-      >
-        <span>{isMuted ? '🔇' : '🔊'}</span>
-      </button>
+      {/* ФОНОВ АУДИО ПЛЕЙЪР С LOOP (Само за basic стил) */}
+      {styleId === 'basic' && (
+        <>
+          <audio ref={audioRef} src="/audio/background-music.mp3" preload="auto" loop />
+          <button
+            onClick={toggleMute}
+            className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/40 backdrop-blur-md text-[#1F1A17] rounded-full shadow-md hover:bg-white/70 transition flex items-center justify-center text-base"
+            title={isMuted ? 'Включи музиката' : 'Спри музиката'}
+          >
+            <span>{isMuted ? '🔇' : '🔊'}</span>
+          </button>
+        </>
+      )}
 
       {currentStage === 'seal' && (
         <SealStage
