@@ -15,8 +15,59 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
   const [isFlashing, setIsFlashing] = useState(false);
 
   useEffect(() => {
-    speakBulgarian(`Внимание. Затворническата клетка е затворена за субект ${recipient}. Започнете федерално разследване.`, isMuted, 0.92, 1.0);
-    return () => { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); };
+    if (isMuted) return;
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    window.speechSynthesis.cancel();
+
+    const warningText = `Внимание. Затворническата клетка е затворена за субект ${recipient}. Започнете федерално разследване.`;
+    const cleanedText = warningText
+      .replace(/FBI/g, 'Еф Би Ай')
+      .replace(/TOP SECRET/g, 'Топ сикрет')
+      .replace(/\/\//g, ', ')
+      .replace(/\./g, '. ')
+      .replace(/!/g, '! ');
+
+    const utterance = new SpeechSynthesisUtterance(cleanedText);
+    utterance.lang = 'bg-BG';
+    utterance.rate = 0.92;
+    utterance.pitch = 1.0;
+
+    const playVoice = () => {
+      if (isMuted) return;
+      const voices = window.speechSynthesis.getVoices();
+      const bgVoice = voices.find(v => 
+        v.lang.toLowerCase().includes('bg') || 
+        v.lang.toLowerCase().includes('bulgarian') || 
+        v.name.toLowerCase().includes('bg') || 
+        v.name.toLowerCase().includes('bulgarian') || 
+        v.name.toLowerCase().includes('български')
+      );
+      if (bgVoice) {
+        utterance.voice = bgVoice;
+      }
+      window.speechSynthesis.speak(utterance);
+    };
+
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length > 0) {
+      playVoice();
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => {
+        playVoice();
+      };
+      setTimeout(() => {
+        if (!window.speechSynthesis.speaking && !window.speechSynthesis.pending && !isMuted) {
+          playVoice();
+        }
+      }, 250);
+    }
+
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
   }, [recipient, isMuted]);
 
   const handleUnlock = () => {
@@ -26,7 +77,10 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
   };
 
   return (
-    <div className="relative w-full h-full bg-[#0a0a0a] text-[#F7F4EF] font-mono flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-hidden">
+    <div 
+      className="relative w-full h-full bg-[#0b0b0b] text-[#F7F4EF] font-mono flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-hidden"
+      style={{ backgroundColor: '#0b0b0b' }}
+    >
       <AnimatePresence>
         {isFlashing && (
           <motion.div 
