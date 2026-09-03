@@ -44,51 +44,69 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
         ))}
       </div>
 
-      {/* Yellow Police Tapes */}
-      <div className="absolute -top-4 -left-20 right-[-100px] h-10 bg-[#FACC15] text-black font-black uppercase tracking-[0.3em] flex items-center justify-around shadow-lg z-30 transform -rotate-6 border-y-2 border-black overflow-hidden pointer-events-none">
-        <span className="whitespace-nowrap px-6">CRIME SCENE // DO NOT CROSS</span>
+      {/* Red Police Tapes (Old Layout) */}
+      <div className="absolute top-4 left-0 right-0 h-8 sm:h-10 bg-red-600 text-black font-extrabold uppercase text-xs sm:text-sm tracking-[0.25em] flex items-center justify-center shadow-2xl z-30 transform -rotate-1 border-y-2 border-black">
+        DO NOT CROSS // FBI CAUTION // CLASSIFIED CRIME SCENE
       </div>
 
-      {/* Central "Manila Folder" Panel */}
+      <div className="absolute bottom-4 left-0 right-0 h-8 sm:h-10 bg-red-600 text-black font-extrabold uppercase text-xs sm:text-sm tracking-[0.25em] flex items-center justify-center shadow-2xl z-30 transform rotate-1 border-y-2 border-black">
+        RESTRICTED ZONE // POLICE LINE // DO NOT CROSS
+      </div>
+
+      <div className="absolute -top-6 -right-20 w-80 bg-red-600 text-black font-extrabold uppercase text-xs tracking-[0.25em] py-1.5 transform rotate-45 z-30 shadow-2xl border-y border-black text-center pointer-events-none opacity-90">
+        DO NOT CROSS // CRIME SCENE
+      </div>
+
+      <div className="absolute -bottom-6 -left-20 w-80 bg-red-600 text-black font-extrabold uppercase text-xs tracking-[0.25em] py-1.5 transform rotate-45 z-30 shadow-2xl border-y border-black text-center pointer-events-none opacity-90">
+        RESTRICTED AREA // DO NOT CROSS
+      </div>
+
+      {/* Central Panel (Old Layout, now Red) */}
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="max-w-xl w-full bg-[#2a2723] border-2 border-neutral-700 p-8 rounded-tr-3xl rounded-br-3xl rounded-bl-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-center space-y-6 relative z-40"
+        className="max-w-xl w-full bg-[#0d0c0b] border-2 border-red-600/60 p-6 sm:p-10 rounded-3xl shadow-[0_0_70px_rgba(220,38,38,0.3)] text-center space-y-6 sm:space-y-8 relative z-40 backdrop-blur-md"
       >
-        {/* Folder Tab */}
-        <div className="absolute -top-7 left-0 bg-[#3a3733] border-t border-l border-r border-neutral-700 px-6 py-2 rounded-t-lg text-red-500 text-xs font-bold tracking-[0.2em] uppercase shadow-md">
-          [ CLASSIFIED FILE ]
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-950/80 text-red-400 border border-red-500/40 text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+          [ СЕКРЕТНО ДОСИЕ // РАЗСЛЕДВАНЕ ]
         </div>
 
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-red-900/50 pb-4">
-          <div className="text-red-500 font-bold uppercase tracking-widest text-xs">TERMINAL: SECURE_NODE_01</div>
-          <div className="text-red-500 font-bold uppercase tracking-widest text-xs border border-red-500/50 px-2 py-0.5">TOP SECRET</div>
+        <div className="flex flex-col items-center justify-center space-y-3">
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-b from-neutral-900 to-black border-2 border-red-500/60 flex items-center justify-center shadow-[inset_0_0_20px_rgba(220,38,38,0.3)] relative">
+            <div className="absolute -top-2.5 w-8 h-5 rounded-t-full border-t-2 border-l-2 border-r-2 border-red-500/80" />
+            <span className="text-3xl filter drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">📁</span>
+          </div>
+          <div className="text-[10px] text-neutral-400 uppercase tracking-widest font-mono">
+            DIGITAL SECURE TERMINAL // ID: #{age}
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="bg-[#1f1d1a] p-6 rounded border border-red-900/30">
-          <p className="text-sm leading-relaxed text-[#F7F4EF] font-bold tracking-wide text-left uppercase">
-            {recipient.toUpperCase()} Е ОФИЦИАЛНО ОБЯВЕН ЗА ИЗДИРВАНЕ ПО ОБВИНЕНИЕ В ПОДОЗРИТЕЛНО ДОБРО НАСТРОЕНИЕ И ПРЕКАЛЕНО МНОГО ЧАР! РАЗСЛЕДВАНЕТО ЗАПОЧВА СЕГА! НАТИСНИ ЧЕРВЕНИЯ БУТОН ЗА ДА РАЗСЕКРЕТИШ ФАЙЛОВЕТЕ!
+        <div className="space-y-4 text-center bg-black/80 p-6 sm:p-8 rounded-2xl border border-red-900/40 shadow-inner relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(220,38,38,0.08),transparent_70%)] pointer-events-none" />
+          <div className="text-[10px] text-red-500 font-bold uppercase tracking-widest mb-2">
+            [ ФЕДЕРАЛНО УВЕДОМЛЕНИЕ ]
+          </div>
+          <p className="text-xs sm:text-sm leading-relaxed text-[#F7F4EF] font-mono tracking-wide">
+            СУБЕКТЪТ Е ОФИЦИАЛНО ОБЯВЕН ЗА ИЗДИРВАНЕ ПО ОБВИНЕНИЕ В ПОДОЗРИТЕЛНО ДОБРО НАСТРОЕНИЕ И ПРЕКАЛЕНО МНОГО ЧАР! РАЗСЛЕДВАНЕТО ЗАПОЧВА СЕГА.
           </p>
         </div>
 
-        {/* Info */}
-        <div className="flex items-center justify-center gap-4 text-xs text-red-500 font-bold uppercase">
-          <span>СУБЕКТ: {recipient.toUpperCase()}</span>
+        <div className="flex items-center justify-center gap-4 text-xs text-neutral-400">
+          <span>СУБЕКТ: <strong className="text-white font-bold">{recipient}</strong></span>
           <span>•</span>
-          <span>КЛАСИФИКАЦИЯ: RESTRICTED</span>
+          <span>НИВО: <strong className="text-red-400 font-bold">TOP SECRET</strong></span>
         </div>
 
-        {/* Action Button */}
         <motion.button 
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={handleUnlock}
-          className="w-full bg-red-800 hover:bg-red-700 text-white py-4 rounded-none uppercase tracking-[0.2em] font-black shadow-lg transition border-2 border-red-500"
+          className="w-full bg-gradient-to-r from-red-800 via-red-700 to-red-900 hover:from-red-700 hover:to-red-800 text-white py-4 sm:py-5 rounded-2xl text-xs sm:text-sm uppercase tracking-[0.25em] font-extrabold shadow-[0_10px_25px_rgba(185,28,28,0.5)] transition border-2 border-red-500/60 cursor-pointer flex items-center justify-center gap-3 relative overflow-hidden group"
         >
-          [ РАЗКРИЙ ДОСИЕТО ]
+          <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span>[ 🔓 РАЗКРИЙ ДОСИЕТО И ВЛЕЗ В ИГРИТЕ ]</span>
         </motion.button>
       </motion.div>
     </div>
