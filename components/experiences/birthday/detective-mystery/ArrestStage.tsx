@@ -46,72 +46,87 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,0,0,0.95),transparent_60%),radial-gradient(circle_at_top_right,rgba(0,0,0,0.95),transparent_60%),radial-gradient(circle_at_bottom_left,rgba(0,0,0,0.95),transparent_60%),radial-gradient(circle_at_bottom_right,rgba(0,0,0,0.95),transparent_60%)] pointer-events-none z-15" />
 
-      <div className="absolute inset-0 pointer-events-none z-20 flex justify-between px-2 sm:px-8 opacity-45">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="w-2 sm:w-4 h-full bg-gradient-to-r from-neutral-900 via-neutral-700 to-neutral-950 shadow-[0_0_15px_rgba(0,0,0,0.9)] border-x border-neutral-600/30" />
-        ))}
-      </div>
-      <div className="absolute top-4 left-0 right-0 h-8 sm:h-10 bg-amber-500 text-black font-extrabold uppercase text-xs sm:text-sm tracking-[0.25em] flex items-center justify-center shadow-2xl z-30 transform -rotate-1 border-y-2 border-black">
-        DO NOT CROSS // FBI CAUTION // CLASSIFIED CRIME SCENE
-      </div>
-
-      <div className="absolute bottom-4 left-0 right-0 h-8 sm:h-10 bg-amber-500 text-black font-extrabold uppercase text-xs sm:text-sm tracking-[0.25em] flex items-center justify-center shadow-2xl z-30 transform rotate-1 border-y-2 border-black">
-        RESTRICTED ZONE // POLICE LINE // DO NOT CROSS
+      {/* Authentic Yellow Police Tapes ("CRIME SCENE // DO NOT CROSS") */}
+      {/* Tape 1: Diagonal top */}
+      <div className="absolute -top-4 -left-20 right-[-100px] h-10 sm:h-12 bg-[#FACC15] text-black font-black uppercase text-xs sm:text-sm tracking-[0.3em] flex items-center justify-around shadow-[0_5px_25px_rgba(0,0,0,0.9)] z-30 transform -rotate-6 border-y-2 border-black overflow-hidden select-none pointer-events-none">
+        <span className="whitespace-nowrap px-6">CRIME SCENE // DO NOT CROSS</span>
+        <span className="whitespace-nowrap px-6">POLICE LINE // DO NOT CROSS</span>
+        <span className="whitespace-nowrap px-6">CRIME SCENE // DO NOT CROSS</span>
+        <span className="whitespace-nowrap px-6">POLICE LINE // DO NOT CROSS</span>
       </div>
 
-      <div className="absolute -top-6 -right-20 w-80 bg-amber-500 text-black font-extrabold uppercase text-xs tracking-[0.25em] py-1.5 transform rotate-45 z-30 shadow-2xl border-y border-black text-center pointer-events-none opacity-90">
-        DO NOT CROSS // CRIME SCENE
+      {/* Tape 2: Diagonal bottom */}
+      <div className="absolute bottom-12 -left-20 right-[-100px] h-10 sm:h-12 bg-[#FACC15] text-black font-black uppercase text-xs sm:text-sm tracking-[0.3em] flex items-center justify-around shadow-[0_5px_25px_rgba(0,0,0,0.9)] z-30 transform rotate-6 border-y-2 border-black overflow-hidden select-none pointer-events-none">
+        <span className="whitespace-nowrap px-6">RESTRICTED AREA // DO NOT CROSS</span>
+        <span className="whitespace-nowrap px-6">CRIME SCENE // DO NOT CROSS</span>
+        <span className="whitespace-nowrap px-6">RESTRICTED AREA // DO NOT CROSS</span>
+        <span className="whitespace-nowrap px-6">CRIME SCENE // DO NOT CROSS</span>
       </div>
 
-      <div className="absolute -bottom-6 -left-20 w-80 bg-amber-500 text-black font-extrabold uppercase text-xs tracking-[0.25em] py-1.5 transform rotate-45 z-30 shadow-2xl border-y border-black text-center pointer-events-none opacity-90">
-        RESTRICTED AREA // DO NOT CROSS
+      {/* Tape 3: Top-right corner diagonal */}
+      <div className="absolute -top-12 -right-32 w-[550px] bg-[#FACC15] text-black font-black uppercase text-xs tracking-[0.3em] py-2 transform rotate-45 z-30 shadow-[0_5px_25px_rgba(0,0,0,0.9)] border-y-2 border-black text-center pointer-events-none opacity-95 flex items-center justify-center gap-4">
+        <span>CRIME SCENE</span>
+        <span>//</span>
+        <span>DO NOT CROSS</span>
       </div>
 
+      {/* Tape 4: Bottom-left corner diagonal */}
+      <div className="absolute -bottom-12 -left-32 w-[550px] bg-[#FACC15] text-black font-black uppercase text-xs tracking-[0.3em] py-2 transform rotate-45 z-30 shadow-[0_5px_25px_rgba(0,0,0,0.9)] border-y-2 border-black text-center pointer-events-none opacity-95 flex items-center justify-center gap-4">
+        <span>RESTRICTED ZONE</span>
+        <span>//</span>
+        <span>DO NOT CROSS</span>
+      </div>
+
+      {/* Central Panel: "Secret File" / Dossier Style */}
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="max-w-xl w-full bg-[#0d0c0b] border-2 border-red-600/60 p-6 sm:p-10 rounded-3xl shadow-[0_0_70px_rgba(220,38,38,0.3)] text-center space-y-6 sm:space-y-8 relative z-40 backdrop-blur-md"
+        className="max-w-xl w-full bg-[#141311] border border-neutral-700/80 p-6 sm:p-10 rounded-2xl sm:rounded-r-2xl sm:rounded-bl-2xl shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.12)] text-center space-y-6 sm:space-y-8 relative z-40 backdrop-blur-md"
       >
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-950/80 text-red-400 border border-red-500/40 text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold">
-          <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-          [ СЕКРЕТНО ДОСИЕ // РАЗСЛЕДВАНЕ ]
+        {/* Official Secret Folder Tab protruding from the top */}
+        <div className="absolute -top-7 left-6 sm:left-10 bg-[#1c1a17] border-t border-l border-r border-neutral-700 px-5 py-1.5 rounded-t-xl text-amber-400 text-xs font-mono tracking-[0.25em] uppercase shadow-md flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+          <span>СЕКРЕТНО ДОСИЕ // REF #{age}</span>
         </div>
 
-        <div className="flex flex-col items-center justify-center space-y-3">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-b from-neutral-900 to-black border-2 border-red-500/60 flex items-center justify-center shadow-[inset_0_0_20px_rgba(220,38,38,0.3)] relative">
-            <div className="absolute -top-2.5 w-8 h-5 rounded-t-full border-t-2 border-l-2 border-r-2 border-red-500/80" />
-            <span className="text-3xl filter drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">🔐</span>
+        {/* Top Minimalist Digital Status Marker (No Padlock!) */}
+        <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
+          <div className="flex items-center gap-2 text-[11px] sm:text-xs text-neutral-400 uppercase tracking-widest font-mono">
+            <span className="text-amber-500 font-bold">TERMINAL:</span> SECURE_NODE_01
           </div>
-          <div className="text-[10px] text-neutral-400 uppercase tracking-widest font-mono">
-            DIGITAL SECURE TERMINAL // ID: #{age}
+          <div className="text-[10px] sm:text-xs px-3 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold uppercase tracking-[0.2em]">
+            TOP SECRET
           </div>
         </div>
 
-        <div className="space-y-4 text-center bg-black/80 p-6 sm:p-8 rounded-2xl border border-red-900/40 shadow-inner relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(220,38,38,0.08),transparent_70%)] pointer-events-none" />
-          <div className="text-[10px] text-red-500 font-bold uppercase tracking-widest mb-2">
-            [ ФЕДЕРАЛНО УВЕДОМЛЕНИЕ ]
+        {/* Investigation Report / Message Box */}
+        <div className="space-y-4 text-center bg-[#0d0c0b] p-6 sm:p-8 rounded-xl border border-neutral-800 shadow-inner relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(245,158,11,0.05),transparent_70%)] pointer-events-none" />
+          <div className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.25em] mb-2">
+            [ ФЕДЕРАЛНО УВЕДОМЛЕНИЕ ЗА РАЗСЛЕДВАНЕ ]
           </div>
           <p className="text-xs sm:text-sm leading-relaxed text-[#F7F4EF] font-mono tracking-wide">
             СУБЕКТЪТ Е ОФИЦИАЛНО ОБЯВЕН ЗА ИЗДИРВАНЕ ПО ОБВИНЕНИЕ В ПОДОЗРИТЕЛНО ДОБРО НАСТРОЕНИЕ И ПРЕКАЛЕНО МНОГО ЧАР! РАЗСЛЕДВАНЕТО ЗАПОЧВА СЕГА.
           </p>
         </div>
 
-        <div className="flex items-center justify-center gap-4 text-xs text-neutral-400">
+        {/* Subject Info */}
+        <div className="flex items-center justify-center gap-4 text-xs text-neutral-400 font-mono">
           <span>СУБЕКТ: <strong className="text-white font-bold">{recipient}</strong></span>
-          <span>•</span>
-          <span>НИВО: <strong className="text-red-400 font-bold">TOP SECRET</strong></span>
+          <span className="text-neutral-600">•</span>
+          <span>КЛАСИФИКАЦИЯ: <strong className="text-amber-400 font-bold">RESTRICTED</strong></span>
         </div>
 
+        {/* Action Button */}
         <motion.button 
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={handleUnlock}
-          className="w-full bg-gradient-to-r from-red-800 via-red-700 to-red-900 hover:from-red-700 hover:to-red-800 text-white py-4 sm:py-5 rounded-2xl text-xs sm:text-sm uppercase tracking-[0.25em] font-extrabold shadow-[0_10px_25px_rgba(185,28,28,0.5)] transition border-2 border-red-500/60 cursor-pointer flex items-center justify-center gap-3 relative overflow-hidden group"
+          className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-black py-4 sm:py-5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.25em] font-black shadow-[0_10px_25px_rgba(245,158,11,0.3)] transition border-2 border-amber-400/80 cursor-pointer flex items-center justify-center gap-3 relative overflow-hidden group"
         >
-          <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <span>[ 🔓 РАЗКРИЙ ДОСИЕТО И ВЛЕЗ В ИГРИТЕ ]</span>
+          <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span>[ РАЗКРИЙ ДОСИЕТО И ВЛЕЗ В ИГРИТЕ ]</span>
         </motion.button>
       </motion.div>
     </div>
