@@ -15,14 +15,15 @@ type QuestStage = 'seal' | 'scratch' | 'quiz' | 'memories' | 'cake' | 'capsule';
 
 export default function CardPage() {
   const params = useParams();
+  const rawId = params?.id ? String(params.id) : '';
+  const decodedName = decodeURIComponent(rawId);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [questData, setQuestData] = useState<any>(null);
   const [currentStage, setCurrentStage] = useState<QuestStage>('seal');
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const rawId = params?.id ? String(params.id) : 'виктория';
-  const decodedName = decodeURIComponent(rawId);
-  
-  // Динамични данни от подателя
   const [cardData, setCardData] = useState({
     sender: 'Подаряващия',
     statusText: 'Посрещаме 2026 с нови мечти!',
@@ -31,15 +32,9 @@ export default function CardPage() {
     wishFromCandle: '',
     photos: [] as string[]
   });
-  const [questData, setQuestData] = useState<any>(null);
 
-  const recipientName = questData?.recipient || decodedName;
-  const formattedName = recipientName.charAt(0).toUpperCase() + recipientName.slice(1);
-  const uppercaseName = formattedName.toUpperCase();
-  const occasion = questData?.occasion || 'birthday';
-  const styleId = questData?.styleId || 'basic';
+  const [capsuleAnswers, setCapsuleAnswers] = useState<{ question: string; answer: string }[]>([]);
 
-  // Зареждане на реалните данни, записани от подателя в localStorage
   useEffect(() => {
     if (rawId) {
       const possibleKeys = [
@@ -69,136 +64,102 @@ export default function CardPage() {
         }
       }
     }
+    setIsLoading(false);
   }, [rawId]);
 
-  // Състояние за съхранение на отговорите от дневника/капсулата
-  const [capsuleAnswers, setCapsuleAnswers] = useState<{ question: string; answer: string }[]>([]);
+  const recipientName = questData?.recipient || decodedName || 'Заподозрян';
+  const formattedName = recipientName ? recipientName.charAt(0).toUpperCase() + recipientName.slice(1) : 'Приятел';
+  const uppercaseName = formattedName.toUpperCase();
+  const occasion = questData?.occasion || 'birthday';
+  const styleId = questData?.styleId || 'basic';
 
-  // Управление на фоновата музика с непрекъснат loop (Само за basic стил)
   useEffect(() => {
-    if (styleId !== 'basic') return;
+    if (styleId !== 'basic' || isLoading) return;
     const audio = audioRef.current;
     if (audio) {
       audio.volume = 0.35;
       audio.loop = true;
-      
-      const playAudio = () => {
-        if (!isMuted) {
-          audio.play().catch(() => {});
-        }
-      };
-
+      const playAudio = () => { if (!isMuted) audio.play().catch(() => {}); };
       playAudio();
       window.addEventListener('click', playAudio, { once: true });
       return () => window.removeEventListener('click', playAudio);
     }
-  }, [isMuted, styleId]);
+  }, [isMuted, styleId, isLoading]);
 
   const toggleMute = () => {
     const newMutedState = !isMuted;
     setIsMuted(newMutedState);
-
     if (audioRef.current) {
       audioRef.current.muted = newMutedState;
-      if (newMutedState) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch(() => {});
-      }
+      if (newMutedState) audioRef.current.pause();
+      else audioRef.current.play().catch(() => {});
     }
   };
 
   const handleGeneratePdf = async (answers: { question: string; answer: string }[]) => {
     setCapsuleAnswers(answers);
-    setTimeout(() => {
-      window.print();
-    }, 300);
+    setTimeout(() => window.print(), 300);
   };
 
-  if (styleId === 'detective-mystery') {
-    return <DetectiveMysteryExperience data={questData || { recipient: decodedName, age: '30', sender: 'Инспектор', charges: [], secretClue: '', secretAnswer: '', redactedWish: '', photos: [] }} />;
+  if (isLoading) {
+    return (
+      <main className="relative w-screen h-screen overflow-hidden bg-[#0b0b0b] flex items-center justify-center text-white font-mono select-none">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+          <div className="text-xs uppercase tracking-[0.25em] text-neutral-400">Инициализиране...</div>
+        </div>
+      </main>
+    );
   }
 
-  return (
-    <main className="relative w-screen h-screen overflow-hidden bg-[#ECE8E0] select-none">
-      
-      {/* ФОНОВ АУДИО ПЛЕЙЪР С LOOP (Само за basic стил) */}
-      {styleId === 'basic' && (
-        <>
+  switch (styleId) {
+    case 'detective-mystery':
+      return <DetectiveMysteryExperience data={questData || { recipient: decodedName, age: '30', sender: 'Инспектор', charges: [], secretClue: '', secretAnswer: '', redactedWish: '', photos: [] }} />;
+
+    case 'basic':
+    case 'original-signature':
+    default:
+      return (
+        <main className="relative w-screen h-screen overflow-hidden bg-[#ECE8E0] select-none">
           <audio ref={audioRef} src="/audio/background-music.mp3" preload="auto" loop />
           <button
             onClick={toggleMute}
-            className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/40 backdrop-blur-md text-[#1F1A17] rounded-full shadow-md hover:bg-white/70 transition flex items-center justify-center text-base"
+            className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/40 backdrop-blur-md text-[#1F1A17] rounded-full shadow-md hover:bg-white/70 transition flex items-center justify-center text-base cursor-pointer"
             title={isMuted ? 'Включи музиката' : 'Спри музиката'}
           >
             <span>{isMuted ? '🔇' : '🔊'}</span>
           </button>
-        </>
-      )}
 
-      {currentStage === 'seal' && (
-        <SealStage
-          recipient={formattedName}
-          onComplete={() => setCurrentStage('scratch')}
-        />
-      )}
+          {currentStage === 'seal' && (
+            <SealStage recipient={formattedName} onComplete={() => setCurrentStage('scratch')} />
+          )}
+          {currentStage === 'scratch' && (
+            <ScratchStage recipient={uppercaseName} scratchCards={questData?.secretMessages?.filter(Boolean).length > 0 ? questData.secretMessages.map((msg: string, idx: number) => ({ id: String(idx + 1), title: `Скрито послание #${idx + 1}`, secretText: msg })) : undefined} onComplete={() => setCurrentStage('quiz')} />
+          )}
+          {currentStage === 'quiz' && (
+            <QuizStage recipient={uppercaseName} quizzes={questData?.quizList?.filter((q: any) => q.question).length > 0 ? questData.quizList.filter((q: any) => q.question).map((q: any, idx: number) => ({ id: String(idx + 1), question: q.question, options: [q.optionA, q.optionB, q.optionC].filter(Boolean), correctAnswer: q.correct === 'A' ? 0 : q.correct === 'B' ? 1 : 2 })) : undefined} onComplete={() => setCurrentStage('memories')} />
+          )}
+          {currentStage === 'memories' && (
+            <MemoryWallStage recipient={uppercaseName} memories={questData?.photos?.length > 0 ? questData.photos.map((p: any, idx: number) => ({ id: String(idx + 1), url: p.fileUrl, type: 'image' as const, questionOrCaption: p.question || 'Спомен', correctAnswer: p.answer || 'отговор' })) : undefined} onComplete={() => setCurrentStage('cake')} />
+          )}
+          {currentStage === 'cake' && (
+            <CakeStage recipient={uppercaseName} senderWish={questData?.candleWish || cardData.mainWish} onComplete={(wish) => { setCardData(prev => ({ ...prev, wishFromCandle: wish })); setCurrentStage('capsule'); }} />
+          )}
+          {currentStage === 'capsule' && (
+            <CapsuleStage customQuestions={questData?.capsuleQuestions?.filter(Boolean).length > 0 ? questData.capsuleQuestions.filter(Boolean) : undefined} onGeneratePdf={handleGeneratePdf} />
+          )}
 
-      {currentStage === 'scratch' && (
-        <ScratchStage
-          recipient={uppercaseName}
-          scratchCards={questData?.secretMessages?.filter(Boolean).length > 0 ? questData.secretMessages.map((msg: string, idx: number) => ({ id: String(idx + 1), title: `Скрито послание #${idx + 1}`, secretText: msg })) : undefined}
-          onComplete={() => setCurrentStage('quiz')}
-        />
-      )}
-
-      {currentStage === 'quiz' && (
-        <QuizStage
-          recipient={uppercaseName}
-          quizzes={questData?.quizList?.filter((q: any) => q.question).length > 0 ? questData.quizList.filter((q: any) => q.question).map((q: any, idx: number) => ({ id: String(idx + 1), question: q.question, options: [q.optionA, q.optionB, q.optionC].filter(Boolean), correctAnswer: q.correct === 'A' ? 0 : q.correct === 'B' ? 1 : 2 })) : undefined}
-          onComplete={() => setCurrentStage('memories')}
-        />
-      )}
-
-      {currentStage === 'memories' && (
-        <MemoryWallStage
-          recipient={uppercaseName}
-          memories={questData?.photos?.length > 0 ? questData.photos.map((p: any, idx: number) => ({ id: String(idx + 1), url: p.fileUrl, type: 'image' as const, questionOrCaption: p.question || 'Спомен', correctAnswer: p.answer || 'отговор' })) : undefined}
-          onComplete={() => {
-            setCurrentStage('cake');
-          }}
-        />
-      )}
-
-      {currentStage === 'cake' && (
-        <CakeStage
-          recipient={uppercaseName}
-          senderWish={questData?.candleWish || cardData.mainWish}
-          onComplete={(wish) => {
-            setCardData(prev => ({ ...prev, wishFromCandle: wish }));
-            setCurrentStage('capsule');
-          }}
-        />
-      )}
-
-      {currentStage === 'capsule' && (
-        <CapsuleStage
-          customQuestions={questData?.capsuleQuestions?.filter(Boolean).length > 0 ? questData.capsuleQuestions.filter(Boolean) : undefined}
-          onGeneratePdf={handleGeneratePdf}
-        />
-      )}
-
-      {/* СКРИТ КОНТЕЙНЕР ЗА ПРИНТ / PDF ИЗГЛЕД */}
-      <TimeCapsulePdf
-        recipient={formattedName}
-        sender={cardData.sender}
-        statusText={cardData.statusText}
-        mainWish={cardData.mainWish}
-        wishFromCandle={cardData.wishFromCandle}
-        secretJoke={cardData.secretJoke}
-        capsuleAnswers={capsuleAnswers}
-        photos={cardData.photos}
-      />
-
-    </main>
-  );
+          <TimeCapsulePdf
+            recipient={formattedName}
+            sender={cardData.sender}
+            statusText={cardData.statusText}
+            mainWish={cardData.mainWish}
+            wishFromCandle={cardData.wishFromCandle}
+            secretJoke={cardData.secretJoke}
+            capsuleAnswers={capsuleAnswers}
+            photos={cardData.photos}
+          />
+        </main>
+      );
+  }
 }
