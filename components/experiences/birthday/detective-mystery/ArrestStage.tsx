@@ -44,21 +44,27 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
         ))}
       </div>
 
-      {/* Red Police Tapes (Old Layout) */}
-      <div className="absolute top-4 left-0 right-0 h-8 sm:h-10 bg-red-600 text-black font-extrabold uppercase text-xs sm:text-sm tracking-[0.25em] flex items-center justify-center shadow-2xl z-30 transform -rotate-1 border-y-2 border-black">
-        DO NOT CROSS // FBI CAUTION // CLASSIFIED CRIME SCENE
+      {/* Multiple Yellow Police Tapes */}
+      <div className="absolute -top-4 -left-20 right-[-100px] h-10 bg-[#FACC15] text-black font-black uppercase tracking-[0.3em] flex items-center justify-around shadow-lg z-30 transform -rotate-6 border-y-2 border-black overflow-hidden pointer-events-none">
+        <span className="whitespace-nowrap px-6">CRIME SCENE // DO NOT CROSS</span>
+        <span className="whitespace-nowrap px-6">POLICE LINE // DO NOT CROSS</span>
       </div>
 
-      <div className="absolute bottom-4 left-0 right-0 h-8 sm:h-10 bg-red-600 text-black font-extrabold uppercase text-xs sm:text-sm tracking-[0.25em] flex items-center justify-center shadow-2xl z-30 transform rotate-1 border-y-2 border-black">
-        RESTRICTED ZONE // POLICE LINE // DO NOT CROSS
+      <div className="absolute bottom-12 -left-20 right-[-100px] h-10 bg-[#FACC15] text-black font-black uppercase tracking-[0.3em] flex items-center justify-around shadow-lg z-30 transform rotate-6 border-y-2 border-black overflow-hidden pointer-events-none">
+        <span className="whitespace-nowrap px-6">RESTRICTED AREA // DO NOT CROSS</span>
+        <span className="whitespace-nowrap px-6">CRIME SCENE // DO NOT CROSS</span>
       </div>
 
-      <div className="absolute -top-6 -right-20 w-80 bg-red-600 text-black font-extrabold uppercase text-xs tracking-[0.25em] py-1.5 transform rotate-45 z-30 shadow-2xl border-y border-black text-center pointer-events-none opacity-90">
-        DO NOT CROSS // CRIME SCENE
+      <div className="absolute -top-12 -right-32 w-[550px] bg-[#FACC15] text-black font-black uppercase tracking-[0.3em] py-2 transform rotate-45 z-30 shadow-lg border-y-2 border-black text-center pointer-events-none opacity-95 flex items-center justify-center gap-4">
+        <span>CRIME SCENE</span>
+        <span>//</span>
+        <span>DO NOT CROSS</span>
       </div>
 
-      <div className="absolute -bottom-6 -left-20 w-80 bg-red-600 text-black font-extrabold uppercase text-xs tracking-[0.25em] py-1.5 transform rotate-45 z-30 shadow-2xl border-y border-black text-center pointer-events-none opacity-90">
-        RESTRICTED AREA // DO NOT CROSS
+      <div className="absolute -bottom-12 -left-32 w-[550px] bg-[#FACC15] text-black font-black uppercase tracking-[0.3em] py-2 transform rotate-45 z-30 shadow-lg border-y-2 border-black text-center pointer-events-none opacity-95 flex items-center justify-center gap-4">
+        <span>RESTRICTED ZONE</span>
+        <span>//</span>
+        <span>DO NOT CROSS</span>
       </div>
 
       {/* Central Panel (Old Layout, now Red) */}
