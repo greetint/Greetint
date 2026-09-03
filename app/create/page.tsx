@@ -273,10 +273,10 @@ export default function CreateCardPage() {
         {/* ЛОГО И ЗАГЛАВИЕ */}
         <div className="relative z-10 flex flex-col sm:flex-row justify-between items-center border-b border-[#958679]/20 pb-8 gap-4">
           <Link href="/" className="flex items-center space-x-3 group">
-            <img src="/images/logo/logo-horizontal.png" alt="Greetint Logo" className="h-12 sm:h-16 object-contain opacity-95 group-hover:opacity-100 transition" />
+            <img src="/images/logo/logo-horizontal.png" alt="Greetint Logo" className="h-20 sm:h-28 object-contain opacity-95 group-hover:opacity-100 transition" />
           </Link>
           <div className="flex items-center space-x-3">
-            <Link href="/" className="bg-[#1F1A17] border border-[#1F1A17] hover:bg-[#958679] text-[#F7F4EF] px-5 py-2.5 rounded-2xl text-xs font-sans uppercase tracking-widest transition shadow-md">
+            <Link href="/" className="bg-[#FAF6EE] border border-[#958679]/30 hover:bg-white text-[#11100F] px-5 py-2.5 rounded-2xl text-xs font-sans uppercase tracking-widest transition shadow-sm font-semibold">
               ← Към началото
             </Link>
           </div>
@@ -323,7 +323,7 @@ export default function CreateCardPage() {
                       <button
                         type="button"
                         onClick={() => setSelectedStyle(style.id)}
-                        className="w-full bg-[#11100F] text-[#FAF6EE] py-3.5 rounded-2xl text-xs uppercase tracking-[0.25em] font-sans font-bold hover:bg-[#958679] transition shadow-md"
+                        className="w-full bg-[#FAF6EE] text-[#11100F] border border-[#958679]/30 py-3.5 rounded-2xl text-xs uppercase tracking-[0.25em] font-sans font-bold hover:bg-white transition shadow-md"
                       >
                         Избери този стил ✨
                       </button>
@@ -435,7 +435,7 @@ export default function CreateCardPage() {
               <div className="flex justify-between items-center">
                 <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">4. Спомени & Снимки (До 5 броя)</h2>
                 <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} id="photo-input" className="hidden" />
-                <label htmlFor="photo-input" className="text-xs font-sans font-semibold bg-[#1F1A17] text-[#FAF6EE] px-4 py-2.5 rounded-xl cursor-pointer hover:bg-[#958679] transition shadow-md">Избери файлове</label>
+                <label htmlFor="photo-input" className="text-xs font-sans font-semibold bg-[#FAF6EE] text-[#11100F] border border-[#958679]/30 px-4 py-2.5 rounded-xl cursor-pointer hover:bg-white transition shadow-sm">Избери файлове</label>
               </div>
 
               <div 
@@ -778,13 +778,13 @@ export default function CreateCardPage() {
               <button 
                 type="button" 
                 onClick={() => { setCurrentSimulatorStage(0); setIsSimulating(true); }} 
-                className="flex-1 bg-white/5 border border-white/10 text-[#FAF6EE] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl hover:bg-white/10 transition"
+                className="flex-1 bg-[#EFECE6] border border-[#958679]/30 text-[#11100F] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl hover:bg-[#FAF6EE] transition shadow-sm"
               >
                 Симулатор на преживяването 👀
               </button>
               <button 
                 type="submit" 
-                className="flex-1 bg-[#958679] text-[#958679] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-lg hover:bg-white transition"
+                className="flex-1 bg-[#FAF6EE] border border-[#958679]/30 text-[#11100F] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-lg hover:bg-white transition"
               >
                 Запечатай & Вземи Линк ✨
               </button>
@@ -793,12 +793,12 @@ export default function CreateCardPage() {
           </form>
         ) : (
           <div className="text-center space-y-6 py-10">
-            <h2 className="text-3xl font-serif">Готово е!</h2>
+            <h2 className="text-3xl font-serif text-[#11100F]">Готово е!</h2>
             <p className="text-xs text-[#958679] uppercase font-sans tracking-widest">Линк за споделяне:</p>
-            <div className="bg-black/40 p-4 rounded-2xl border border-white/10 select-all font-sans text-xs font-bold text-white">
+            <div className="bg-[#F7F4EF] p-4 rounded-2xl border border-[#958679]/30 select-all font-sans text-xs font-bold text-[#11100F]">
               {createdLink}
             </div>
-            <a href={createdLink} target="_blank" rel="noreferrer" className="inline-block bg-[#FAF6EE] text-[#11100F] px-8 py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-md">
+            <a href={createdLink} target="_blank" rel="noreferrer" className="inline-block bg-[#FAF6EE] text-[#11100F] border border-[#958679]/30 px-8 py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-md hover:bg-white transition">
               Отвори дигиталния линк →
             </a>
           </div>
