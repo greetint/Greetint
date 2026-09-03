@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { speakBulgarian } from './utils/speech';
 
 interface EvidenceVaultProps {
   secretClue: string;
@@ -16,19 +17,20 @@ export function EvidenceVaultStage({ secretClue, secretAnswer, photos, onComplet
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const text = `Доказателственият материал е заключен. Въведете верния отговор на секретната улика, за да разшифровате архива.`;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'bg-BG';
-      window.speechSynthesis.speak(utterance);
-    }
+    const text = `Доказателственият материал е заключен. Въведете верния отговор на секретната улика, за да разшифровате архива.`;
+    speakBulgarian(text, 0.95, 1.0);
+
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
   }, []);
 
   const handleUnlockCheck = (e: React.FormEvent) => {
     e.preventDefault();
     if (userInput.trim().toLowerCase() === (secretAnswer || 'кафе').trim().toLowerCase()) {
-      // Play lock click sfx
+      // Play lock click sfx from exact path /audio/detective/lock-click.mp3
       const audio = new Audio('/audio/detective/lock-click.mp3');
       audio.volume = 0.8;
       audio.play().catch(() => {});
@@ -116,3 +118,4 @@ export function EvidenceVaultStage({ secretClue, secretAnswer, photos, onComplet
     </div>
   );
 }
+

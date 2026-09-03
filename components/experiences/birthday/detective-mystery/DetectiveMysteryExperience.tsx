@@ -35,7 +35,7 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
   const redactedWish = data?.redactedWish || 'Честит рожден ден! Бъди все така неуловим.';
   const photos = data?.photos || [];
 
-  // Background Noir Jazz Audio Loop
+  // Background Ambient Detective Audio Loop strictly from /audio/detective/detective-ambient.mp3
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -57,6 +57,11 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
     setIsMuted(newState);
     if (audioRef.current) {
       audioRef.current.muted = newState;
+      if (newState) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(() => {});
+      }
     }
   };
 
@@ -105,8 +110,8 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-[#11100F] select-none">
       
-      {/* Background Noir Audio */}
-      <audio ref={audioRef} src="/audio/detective/detective-bg.mp3" preload="auto" loop />
+      {/* Background Ambient Detective Audio */}
+      <audio ref={audioRef} src="/audio/detective/detective-ambient.mp3" preload="auto" loop />
 
       {/* Floating Audio Mute Button */}
       <button
@@ -123,3 +128,4 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
     </main>
   );
 }
+

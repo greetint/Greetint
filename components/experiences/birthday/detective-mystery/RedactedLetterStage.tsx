@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { speakBulgarian } from './utils/speech';
 
 interface RedactedLetterProps {
   redactedWish: string;
@@ -11,16 +12,18 @@ export function RedactedLetterStage({ redactedWish, onComplete }: RedactedLetter
   const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const text = `Разсекретяване на личния доклад. Премахнете цензурата, за да прочетете официалното послание.`;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'bg-BG';
-      window.speechSynthesis.speak(utterance);
-    }
+    const text = `Разсекретяване на личния доклад. Премахнете цензурата, за да прочетете официалното послание.`;
+    speakBulgarian(text, 0.95, 1.0);
+
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
   }, []);
 
   const handleReveal = () => {
+    // Play typewriter sound from exact path /audio/detective/typewriter.mp3
     const audio = new Audio('/audio/detective/typewriter.mp3');
     audio.volume = 0.7;
     audio.play().catch(() => {});
@@ -68,3 +71,4 @@ export function RedactedLetterStage({ redactedWish, onComplete }: RedactedLetter
     </div>
   );
 }
+

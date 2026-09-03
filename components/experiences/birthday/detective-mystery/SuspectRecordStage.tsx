@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { speakBulgarian } from './utils/speech';
 
 interface SuspectRecordProps {
   recipient: string;
@@ -11,13 +12,14 @@ interface SuspectRecordProps {
 
 export function SuspectRecordStage({ recipient, age, charges, onComplete }: SuspectRecordProps) {
   useEffect(() => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const text = `Заподозрян разпознат. Преглед на официалните обвинения и престъпления за изминалата година. Започнете разследване.`;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'bg-BG';
-      window.speechSynthesis.speak(utterance);
-    }
+    const text = `Заподозрян разпознат. Преглед на официалните обвинения и престъпления за изминалата година. Започнете разследване.`;
+    speakBulgarian(text, 0.95, 1.0);
+
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
   }, []);
 
   return (
@@ -63,3 +65,4 @@ export function SuspectRecordStage({ recipient, age, charges, onComplete }: Susp
     </div>
   );
 }
+

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { speakBulgarian } from './utils/speech';
 
 interface MagnifyingGlassProps {
   secretMemory: string;
@@ -12,13 +13,14 @@ export function MagnifyingGlassStage({ secretMemory, onComplete }: MagnifyingGla
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const text = `Използвайте дигиталната лупа, за да разкриете скритите доказателства и тайните послания на инспекторите.`;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'bg-BG';
-      window.speechSynthesis.speak(utterance);
-    }
+    const text = `Използвайте дигиталната лупа, за да разкриете скритите доказателства и тайните послания на инспекторите.`;
+    speakBulgarian(text, 0.95, 1.0);
+
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -103,3 +105,4 @@ export function MagnifyingGlassStage({ secretMemory, onComplete }: MagnifyingGla
     </div>
   );
 }
+
