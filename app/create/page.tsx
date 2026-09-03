@@ -784,7 +784,7 @@ export default function CreateCardPage() {
               </button>
               <button 
                 type="submit" 
-                className="flex-1 bg-[#FAF6EE] text-[#11100F] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-lg hover:bg-white transition"
+                className="flex-1 bg-[#FAF6EE] text-[#958679] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-lg hover:bg-white transition"
               >
                 Запечатай & Вземи Линк ✨
               </button>
