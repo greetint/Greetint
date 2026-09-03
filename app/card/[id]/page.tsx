@@ -9,6 +9,7 @@ import { QuizStage } from '@/components/experiences/birthday/basic/QuizStage';
 import { CakeStage } from '@/components/experiences/birthday/basic/CakeStage';
 import { CapsuleStage } from '@/components/experiences/birthday/basic/CapsuleStage';
 import { TimeCapsulePdf } from '@/components/experiences/birthday/basic/TimeCapsulePdf'; 
+import { DetectiveMysteryExperience } from '@/components/experiences/birthday/detective-mystery/DetectiveMysteryExperience';
 
 type QuestStage = 'seal' | 'scratch' | 'quiz' | 'memories' | 'cake' | 'capsule';
 
@@ -112,6 +113,10 @@ export default function CardPage() {
       window.print();
     }, 300);
   };
+
+  if (styleId === 'detective-mystery') {
+    return <DetectiveMysteryExperience data={questData || { recipient: decodedName, age: '30', sender: 'Инспектор', charges: [], secretClue: '', secretAnswer: '', redactedWish: '', photos: [] }} />;
+  }
 
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-[#ECE8E0] select-none">
