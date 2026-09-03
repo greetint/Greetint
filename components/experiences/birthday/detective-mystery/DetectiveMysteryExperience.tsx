@@ -3,9 +3,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrestStage } from './ArrestStage';
 import { SuspectRecordStage } from './SuspectRecordStage';
+import { LieDetectorStage } from './LieDetectorStage';
 import { MagnifyingGlassStage } from './MagnifyingGlassStage';
 import { EvidenceVaultStage } from './EvidenceVaultStage';
-import { RedactedLetterStage } from './RedactedLetterStage';
 import { PrisonReleaseStage } from './PrisonReleaseStage';
 
 interface DetectiveMysteryExperienceProps {
@@ -84,23 +84,23 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(2)} 
     />,
+    <LieDetectorStage 
+      key="liedetector" 
+      recipient={recipient} 
+      isMuted={isMuted}
+      onComplete={() => setCurrentStageIndex(3)} 
+    />,
     <MagnifyingGlassStage 
       key="magnify" 
       secretMemory={redactedWish} 
       isMuted={isMuted}
-      onComplete={() => setCurrentStageIndex(3)} 
+      onComplete={() => setCurrentStageIndex(4)} 
     />,
     <EvidenceVaultStage 
       key="vault" 
       secretClue={secretClue} 
       secretAnswer={secretAnswer} 
       photos={photos} 
-      isMuted={isMuted}
-      onComplete={() => setCurrentStageIndex(4)} 
-    />,
-    <RedactedLetterStage 
-      key="letter" 
-      redactedWish={redactedWish} 
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(5)} 
     />,
@@ -137,5 +137,6 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
     </main>
   );
 }
+
 
 

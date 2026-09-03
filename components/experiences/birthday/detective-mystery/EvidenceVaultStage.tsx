@@ -98,7 +98,7 @@ export function EvidenceVaultStage({ secretClue, secretAnswer, photos, isMuted =
               onClick={onComplete}
               className="bg-red-700 hover:bg-red-600 text-white px-10 py-4 rounded-2xl text-xs uppercase tracking-[0.25em] font-bold shadow-xl transition border border-red-500/50 cursor-pointer"
             >
-              Към секретното писмо (Redacted) →
+              Към финалния протокол за освобождаване →
             </button>
           </div>
         </div>
