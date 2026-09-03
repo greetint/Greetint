@@ -2,13 +2,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { SealStage } from '@/components/quest/SealStage';
-import { ScratchStage } from '@/components/quest/ScratchStage';
-import { MemoryWallStage } from '@/components/quest/MemoryWallStage';
-import { QuizStage } from '@/components/quest/QuizStage';
-import { CakeStage } from '@/components/quest/CakeStage';
-import { CapsuleStage } from '@/components/quest/CapsuleStage';
-import { TimeCapsulePdf } from '@/components/TimeCapsulePdf'; 
+import { SealStage } from '@/components/experiences/birthday/basic/SealStage';
+import { ScratchStage } from '@/components/experiences/birthday/basic/ScratchStage';
+import { MemoryWallStage } from '@/components/experiences/birthday/basic/MemoryWallStage';
+import { QuizStage } from '@/components/experiences/birthday/basic/QuizStage';
+import { CakeStage } from '@/components/experiences/birthday/basic/CakeStage';
+import { CapsuleStage } from '@/components/experiences/birthday/basic/CapsuleStage';
+import { TimeCapsulePdf } from '@/components/experiences/birthday/basic/TimeCapsulePdf'; 
 
 type QuestStage = 'seal' | 'scratch' | 'quiz' | 'memories' | 'cake' | 'capsule';
 
@@ -35,6 +35,8 @@ export default function CardPage() {
   const recipientName = questData?.recipient || decodedName;
   const formattedName = recipientName.charAt(0).toUpperCase() + recipientName.slice(1);
   const uppercaseName = formattedName.toUpperCase();
+  const occasion = questData?.occasion || 'birthday';
+  const styleId = questData?.styleId || 'basic';
 
   // Зареждане на реалните данни, записани от подателя в localStorage
   useEffect(() => {

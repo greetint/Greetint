@@ -7,18 +7,20 @@ export interface CardStyleConfig {
   previewImg: string;
   isAvailable: boolean;
   stagesCount: number;
+  route: string;
 }
 
 export const CARD_STYLES: CardStyleConfig[] = [
   {
-    id: 'luxe',
-    name: 'Luxe Minimal',
+    id: 'basic',
+    name: 'Luxe Minimal (Basic)',
     badge: 'Възрастни / Лукс',
     description: 'Елегантен редакционен стил с восъчен печат, скреч тайни, викторина, духане на свещ и времева капсула.',
     bgGradient: 'from-[#FAF6EE] to-[#EAE2D6]',
     previewImg: '/images/cards/card-1.png',
     isAvailable: true,
     stagesCount: 6,
+    route: '/create/birthday/basic',
   },
   {
     id: 'kids-fairytale',
@@ -27,8 +29,9 @@ export const CARD_STYLES: CardStyleConfig[] = [
     description: 'Приказен свят с магически анимации, детски гатанки, сладки животинки и весели изненади.',
     bgGradient: 'from-[#FFF0F5] to-[#FFE4E1]',
     previewImg: '/images/cards/card-2.png',
-    isAvailable: false, // Подготовка за следващ промпт
+    isAvailable: true,
     stagesCount: 5,
+    route: '/create/birthday/kids-fairytale',
   },
   {
     id: 'teen-aesthetic',
@@ -37,8 +40,9 @@ export const CARD_STYLES: CardStyleConfig[] = [
     description: 'Модерен vibe с polaroid снимки, музикални плейлисти, moodboard визия и тайни послания.',
     bgGradient: 'from-[#F0F8FF] to-[#E6E6FA]',
     previewImg: '/images/cards/card-3.png',
-    isAvailable: false, // Подготовка за следващ промпт
+    isAvailable: true,
     stagesCount: 5,
+    route: '/create/birthday/teen-aesthetic',
   },
   {
     id: 'cyber-game',
@@ -47,8 +51,9 @@ export const CARD_STYLES: CardStyleConfig[] = [
     description: 'Неонови светлини, retro arcade мини игри, код за отключване и дигитален киберпънк куест.',
     bgGradient: 'from-[#1A1A2E] to-[#16213E]',
     previewImg: '/images/cards/card-4.png',
-    isAvailable: false, // Подготовка за следващ промпт
+    isAvailable: false,
     stagesCount: 6,
+    route: '/create/birthday/cyber-game',
   },
   {
     id: 'escape-room',
@@ -57,7 +62,8 @@ export const CARD_STYLES: CardStyleConfig[] = [
     description: 'Пъзели, логически загадки, тайни шифри и забавно бягство от стаята с времеви лимит.',
     bgGradient: 'from-[#2C2622] to-[#141210]',
     previewImg: '/images/cards/card-1.png',
-    isAvailable: false, // Подготовка за следващ промпт
+    isAvailable: false,
     stagesCount: 6,
+    route: '/create/birthday/escape-room',
   },
 ];
