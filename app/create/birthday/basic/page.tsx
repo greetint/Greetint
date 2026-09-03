@@ -15,11 +15,11 @@ import QuizStage from '@/components/experiences/birthday/basic/QuizStage';
 import CapsuleStage from '@/components/experiences/birthday/basic/CapsuleStage';
 
 const CARD_TEMPLATES = [
+  { id: 'blank', name: 'Чисто бял (Blank)', img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="140"><rect width="100%" height="100%" fill="%23FEFEFD"/></svg>' },
   { id: '1', name: 'Signature Luxe', img: '/images/cards/card-1.png' },
   { id: '2', name: 'Playful Celebration', img: '/images/cards/card-2.png' },
   { id: '3', name: 'Chic Pink Stripe', img: '/images/cards/card-3.png' },
   { id: '4', name: 'Modern Blue Stripe', img: '/images/cards/card-4.png' },
-  { id: 'blank', name: 'Чисто бял (Blank)', img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="140"><rect width="100%" height="100%" fill="%23FEFEFD"/></svg>' },
 ];
 
 const BULGARIAN_FONTS = [
@@ -417,38 +417,37 @@ export default function CreateCardPage() {
               </div>
             </div>
 
-            {/* 5. А, Б, В ИГРИ С ИЗБОР НА ВЕРЕН ОТГОВОР */}
-            <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
+            {/* 4. ЗАБАВНИ ВЪПРОСИ / ВИКТОРИНА (преди 5. Снимки) */}
+            <div className="space-y-4 bg-[#F7F4EF]/60 p-6 rounded-3xl border border-[#958679]/20 shadow-sm">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">5. Забавни Въпроси (А, Б, В - До 10)</h2>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">4. Забавни Въпроси / Викторина (До 10)</h2>
                 {quizList.length < 10 && (
-                  <button type="button" onClick={() => setQuizList([...quizList, { question: '', optionA: '', optionB: '', optionC: '', correct: 'A' }])} className="text-xs font-sans text-[#958679] hover:text-white underline">
+                  <button type="button" onClick={() => setQuizList([...quizList, { question: '', optionA: '', optionB: '', optionC: '', correct: 'A' }])} className="text-xs font-sans text-[#11100F] hover:text-[#958679] underline font-semibold">
                     + Добави въпрос
                   </button>
                 )}
               </div>
 
               {quizList.map((q, idx) => (
-                <div key={idx} className="bg-black/40 p-5 rounded-2xl border border-white/10 space-y-3">
+                <div key={idx} className="bg-white p-5 rounded-2xl border border-[#958679]/20 shadow-sm space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-[11px] font-sans font-semibold text-[#958679]">Въпрос #{idx + 1}</span>
+                    <span className="text-[11px] font-sans font-semibold text-[#11100F]">Въпрос #{idx + 1}</span>
                     {quizList.length > 1 && (
-                      <button type="button" onClick={() => setQuizList(quizList.filter((_, i) => i !== idx))} className="text-xs text-red-400">Изтрий</button>
+                      <button type="button" onClick={() => setQuizList(quizList.filter((_, i) => i !== idx))} className="text-xs text-red-600 font-semibold">Изтрий</button>
                     )}
                   </div>
-                  <input type="text" value={q.question} onChange={e => { const u = [...quizList]; u[idx].question = e.target.value; setQuizList(u); }} placeholder="Въведи въпрос..." className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none" />
+                  <input type="text" value={q.question} onChange={e => { const u = [...quizList]; u[idx].question = e.target.value; setQuizList(u); }} placeholder="Въведи въпрос..." className="w-full bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F]" />
                   
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <input type="text" value={q.optionA} onChange={e => { const u = [...quizList]; u[idx].optionA = e.target.value; setQuizList(u); }} placeholder="Опция А" className="bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white" />
-                    <input type="text" value={q.optionB} onChange={e => { const u = [...quizList]; u[idx].optionB = e.target.value; setQuizList(u); }} placeholder="Опция Б" className="bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white" />
-                    <input type="text" value={q.optionC} onChange={e => { const u = [...quizList]; u[idx].optionC = e.target.value; setQuizList(u); }} placeholder="Опция В" className="bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white" />
+                    <input type="text" value={q.optionA} onChange={e => { const u = [...quizList]; u[idx].optionA = e.target.value; setQuizList(u); }} placeholder="Опция А" className="bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F]" />
+                    <input type="text" value={q.optionB} onChange={e => { const u = [...quizList]; u[idx].optionB = e.target.value; setQuizList(u); }} placeholder="Опция Б" className="bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F]" />
+                    <input type="text" value={q.optionC} onChange={e => { const u = [...quizList]; u[idx].optionC = e.target.value; setQuizList(u); }} placeholder="Опция В" className="bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F]" />
                   </div>
 
-                  {/* ИЗБОР НА ВЕРЕН ОТГОВОР */}
-                  <div className="flex items-center gap-4 pt-2 border-t border-white/10">
-                    <span className="text-[11px] uppercase font-sans text-white/60 font-semibold">Верен отговор:</span>
+                  <div className="flex items-center gap-4 pt-2 border-t border-[#958679]/15">
+                    <span className="text-[11px] uppercase font-sans text-[#11100F]/70 font-semibold">Верен отговор:</span>
                     {(['A', 'B', 'C'] as const).map(letter => (
-                      <label key={letter} className="flex items-center gap-1.5 cursor-pointer font-sans text-xs text-white">
+                      <label key={letter} className="flex items-center gap-1.5 cursor-pointer font-sans text-xs text-[#11100F]">
                         <input 
                           type="radio" 
                           name={`correct-ans-${idx}`} 
@@ -458,7 +457,7 @@ export default function CreateCardPage() {
                             u[idx].correct = letter;
                             setQuizList(u);
                           }}
-                          className="accent-[#FAF6EE]"
+                          className="accent-[#11100F]"
                         />
                         <span className="font-bold">{letter}</span>
                       </label>
@@ -469,76 +468,78 @@ export default function CreateCardPage() {
             </div>
 
             {/* 6. КАПСУЛА НА ВРЕМЕТО (САМО ВЪПРОСИ) */}
-            <div className="space-y-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
+            <div className="space-y-4 bg-[#F7F4EF]/60 p-6 rounded-3xl border border-[#958679]/20 shadow-sm">
               <div className="flex justify-between items-center">
                 <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">6. Въпроси за Капсулата на Времето</h2>
-                <button type="button" onClick={() => setCapsuleQuestions([...capsuleQuestions, ''])} className="text-xs font-sans text-[#958679] hover:text-white underline">
+                <button type="button" onClick={() => setCapsuleQuestions([...capsuleQuestions, ''])} className="text-xs font-sans text-[#11100F] hover:text-[#958679] underline font-semibold">
                   + Добави въпрос
                 </button>
               </div>
 
               {capsuleQuestions.map((q, idx) => (
-                <div key={idx} className="space-y-3 bg-black/40 p-4 rounded-2xl border border-white/10">
+                <div key={idx} className="space-y-3 bg-white p-4 rounded-2xl border border-[#958679]/20 shadow-sm">
                   <div className="flex justify-between items-center">
-                    <span className="text-[11px] font-sans font-semibold text-[#958679]">Въпрос #{idx + 1}</span>
+                    <span className="text-[11px] font-sans font-semibold text-[#11100F]">Въпрос #{idx + 1}</span>
                     {capsuleQuestions.length > 1 && (
-                      <button type="button" onClick={() => setCapsuleQuestions(capsuleQuestions.filter((_, i) => i !== idx))} className="text-xs text-red-400">Изтрий</button>
+                      <button type="button" onClick={() => setCapsuleQuestions(capsuleQuestions.filter((_, i) => i !== idx))} className="text-xs text-red-600 font-semibold">Изтрий</button>
                     )}
                   </div>
-                  <select 
-                    value={CAPSULE_QUESTION_OPTIONS.includes(q) ? q : "Напиши свой собствен въпрос..."} 
+                  <input 
+                    type="text" 
+                    value={q} 
                     onChange={e => {
                       const updated = [...capsuleQuestions];
-                      updated[idx] = e.target.value === "Напиши свой собствен въпрос..." ? "" : e.target.value;
+                      updated[idx] = e.target.value;
                       setCapsuleQuestions(updated);
                     }}
-                    className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white"
-                  >
-                    {CAPSULE_QUESTION_OPTIONS.map((opt, i) => <option key={i} value={opt} className="bg-[#1A1816]">{opt}</option>)}
-                  </select>
-
-                  {(!CAPSULE_QUESTION_OPTIONS.includes(q) || q === "") && (
-                    <input 
-                      type="text" 
-                      value={q} 
+                    placeholder="Въведи собствен въпрос тук..." 
+                    className="w-full bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F]"
+                  />
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className="text-[10px] uppercase font-sans text-[#11100F]/60">Или избери готов:</span>
+                    <select 
                       onChange={e => {
-                        const updated = [...capsuleQuestions];
-                        updated[idx] = e.target.value;
-                        setCapsuleQuestions(updated);
+                        if (e.target.value && e.target.value !== "Избери готов въпрос...") {
+                          const updated = [...capsuleQuestions];
+                          updated[idx] = e.target.value;
+                          setCapsuleQuestions(updated);
+                        }
                       }}
-                      placeholder="Въведи своя въпрос тук..." 
-                      className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none"
-                    />
-                  )}
+                      className="flex-1 bg-[#F7F4EF] border border-[#958679]/30 p-2 rounded-xl text-xs font-sans text-[#11100F]"
+                    >
+                      <option value="">Избери готов въпрос...</option>
+                      {CAPSULE_QUESTION_OPTIONS.map((opt, i) => <option key={i} value={opt}>{opt}</option>)}
+                    </select>
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* 7. РЕДАКТОР НА КАРТИЧКА С ДИНАМИЧЕН QR КОД */}
-            <div className="space-y-6 pt-6 border-t border-white/10">
+            <div className="space-y-6 pt-6 border-t border-[#958679]/20">
               <div className="flex justify-between items-center">
                 <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">7. Редактор на Printable Картичка</h2>
-                <input type="checkbox" checked={includeCard} onChange={e => setIncludeCard(e.target.checked)} className="w-5 h-5 accent-[#FAF6EE]" />
+                <input type="checkbox" checked={includeCard} onChange={e => setIncludeCard(e.target.checked)} className="w-5 h-5 accent-[#11100F]" />
               </div>
 
               {includeCard && (
-                <div className="space-y-6 bg-white/[0.02] p-6 sm:p-8 rounded-3xl border border-white/5">
+                <div className="space-y-6 bg-[#F7F4EF]/60 p-6 sm:p-8 rounded-3xl border border-[#958679]/20 text-[#11100F] shadow-sm">
                   
                   {/* ОРИЕНТАЦИЯ */}
                   <div className="space-y-2">
-                    <label className="block text-[11px] uppercase font-sans text-white/60">Формат / Ориентация</label>
+                    <label className="block text-[11px] uppercase font-sans text-[#11100F]/70">Формат / Ориентация</label>
                     <div className="flex gap-4">
                       <button 
                         type="button" 
                         onClick={() => setCardOrientation('portrait')} 
-                        className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'portrait' ? 'bg-[#FAF6EE] text-[#11100F]' : 'bg-black/40 text-white border border-white/10'}`}
+                        className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'portrait' ? 'bg-[#11100F] text-[#FAF6EE]' : 'bg-white text-[#11100F] border border-[#958679]/30'}`}
                       >
                         Вертикална (Portrait)
                       </button>
                       <button 
                         type="button" 
                         onClick={() => setCardOrientation('landscape')} 
-                        className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'landscape' ? 'bg-[#FAF6EE] text-[#11100F]' : 'bg-black/40 text-white border border-white/10'}`}
+                        className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'landscape' ? 'bg-[#11100F] text-[#FAF6EE]' : 'bg-white text-[#11100F] border border-[#958679]/30'}`}
                       >
                         Хоризонтална (Landscape)
                       </button>
@@ -547,10 +548,10 @@ export default function CreateCardPage() {
 
                   {/* ШАБЛОНИ ИЛИ КАЧВАНЕ */}
                   <div className="space-y-3">
-                    <label className="block text-[11px] uppercase font-sans text-white/60">Избери дизайн или плъзни снимка тук (Drag & Drop)</label>
+                    <label className="block text-[11px] uppercase font-sans text-[#11100F]/70">Избери дизайн или плъзни снимка тук (Drag & Drop)</label>
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                       {CARD_TEMPLATES.map(card => (
-                        <button key={card.id} type="button" onClick={() => { setSelectedCardImg(card.img); setCustomCardBg(null); }} className={`border-2 p-1 rounded-2xl transition ${selectedCardImg === card.img && !customCardBg ? 'border-[#FAF6EE]' : 'border-transparent'}`}>
+                        <button key={card.id} type="button" onClick={() => { setSelectedCardImg(card.img); setCustomCardBg(null); }} className={`border-2 p-1 rounded-2xl transition ${selectedCardImg === card.img && !customCardBg ? 'border-[#11100F]' : 'border-transparent'}`}>
                           <img src={card.img} alt={card.name} className="w-full h-auto rounded-xl" />
                         </button>
                       ))}
@@ -569,45 +570,30 @@ export default function CreateCardPage() {
                           reader.readAsDataURL(file);
                         }
                       }}
-                      className="mt-3 border-2 border-dashed border-white/20 hover:border-white/50 bg-black/20 p-5 rounded-2xl text-center transition cursor-pointer"
+                      className="mt-3 border-2 border-dashed border-[#958679]/40 hover:border-[#11100F] bg-white p-5 rounded-2xl text-center transition cursor-pointer shadow-sm"
                     >
                       <input type="file" accept="image/*" onChange={handleCustomCardUpload} id="custom-card-file" className="hidden" />
                       <label htmlFor="custom-card-file" className="cursor-pointer space-y-1 block">
-                        <span className="text-xs uppercase tracking-widest text-white/90 font-bold block">📂 Провлачни снимка тук или кликни</span>
-                        <span className="text-[10px] text-white/50 block">Поддържа PNG, JPG, WEBP</span>
+                        <span className="text-xs uppercase tracking-widest text-[#11100F] font-bold block">📂 Провлачни снимка тук или кликни</span>
+                        <span className="text-[10px] text-[#958679] block">Поддържа PNG, JPG, WEBP</span>
                       </label>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Размер на текста ({textSize}px)</label>
-                      <input type="range" min="12" max="36" value={textSize} onChange={e => setTextSize(Number(e.target.value))} className="w-full accent-white mt-3 cursor-pointer" />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Размер на QR кода ({qrSize}px)</label>
-                      <input type="range" min="50" max="120" value={qrSize} onChange={e => setQrSize(Number(e.target.value))} className="w-full accent-white mt-3 cursor-pointer" />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Мащаб на снимката ({photoScale.toFixed(1)}x)</label>
-                      <input type="range" min="1" max="2.5" step="0.1" value={photoScale} onChange={e => setPhotoScale(Number(e.target.value))} className="w-full accent-white mt-3 cursor-pointer" />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Шрифт</label>
-                      <select value={selectedFont} onChange={e => setSelectedFont(e.target.value)} className="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-xs font-sans text-white focus:outline-none">
-                        {BULGARIAN_FONTS.map((f, i) => <option key={i} value={f.family} className="bg-[#1A1816]">{f.name}</option>)}
+                      <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-1">Шрифт</label>
+                      <select value={selectedFont} onChange={e => setSelectedFont(e.target.value)} className="w-full bg-white border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F] focus:outline-none">
+                        {BULGARIAN_FONTS.map((f, i) => <option key={i} value={f.family}>{f.name}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Цвят на текста</label>
-                      <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-black/40 border border-white/10 p-1" />
+                      <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-1">Цвят на текста</label>
+                      <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-white border border-[#958679]/30 p-1" />
                     </div>
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-white/60 mb-1">Цвят на QR кода</label>
-                      <input type="color" value={qrColor} onChange={e => setQrColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-black/40 border border-white/10 p-1" />
+                      <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-1">Цвят на QR кода</label>
+                      <input type="color" value={qrColor} onChange={e => setQrColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-white border border-[#958679]/30 p-1" />
                     </div>
                   </div>
 
