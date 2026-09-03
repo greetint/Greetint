@@ -52,7 +52,6 @@ interface QuizQuestion {
 
 export default function CreateCardPage() {
   const previewRef = useRef<HTMLDivElement | null>(null);
-  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
 
   // 1. Основни данни
   const [recipient, setRecipient] = useState('');
@@ -285,77 +284,12 @@ export default function CreateCardPage() {
         </div>
         <div className="relative z-10 text-center space-y-3">
           <h1 className="text-4xl sm:text-5xl font-serif font-light tracking-wide text-[#11100F]">Режисирай Преживяването</h1>
-          <p className="text-xs text-[#958679] font-sans tracking-widest uppercase">Студио за създаване на интерактивен куест</p>
+          <p className="text-xs text-[#958679] font-sans tracking-widest uppercase">Студио за създаване на интерактивен куест (Luxe Minimal / Basic)</p>
         </div>
 
-        {selectedStyle === null ? (
-          <div className="relative z-10 space-y-8">
-            <div className="text-center max-w-xl mx-auto space-y-3">
-              <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#958679] font-sans font-bold">Архитектура на стиловете</span>
-              <h2 className="text-2xl sm:text-4xl font-serif font-light text-[#11100F]">Избери Тематичен Стил за Куеста</h2>
-              <p className="text-xs text-[#11100F]/70 font-sans leading-relaxed">
-                Всеки стил предлага различна визуална естетика, анимации и преживяване за получателя. Избери подходящия дизайн.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-              {CARD_STYLES.map((style) => (
-                <div
-                  key={style.id}
-                  className={`relative rounded-3xl p-6 sm:p-8 border flex flex-col justify-between space-y-6 bg-gradient-to-br from-[#FAF6EE] to-[#EAE2D6] text-[#11100F] shadow-xl ${
-                    style.isAvailable ? "border-[#958679]/30 cursor-pointer hover:scale-[1.01] transition" : "opacity-80 border-black/10"
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <span className="text-[10px] uppercase tracking-[0.25em] font-sans font-bold px-3 py-1 rounded-full bg-[#11100F] text-[#FAF6EE]">
-                      {style.badge}
-                    </span>
-                    <span className="text-[10px] uppercase tracking-widest font-sans font-semibold opacity-60">
-                      {style.stagesCount} етапа
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-2xl font-serif font-bold">{style.name}</h3>
-                    <p className="text-xs font-sans opacity-85 leading-relaxed">{style.description}</p>
-                  </div>
-
-                  <div className="pt-2">
-                    {style.isAvailable ? (
-                      <button
-                        type="button"
-                        onClick={() => setSelectedStyle(style.id)}
-                        className="w-full bg-[#FAF6EE] text-[#11100F] border border-[#958679]/30 py-3.5 rounded-2xl text-xs uppercase tracking-[0.25em] font-sans font-bold hover:bg-white transition shadow-md"
-                      >
-                        Избери този стил ✨
-                      </button>
-                    ) : (
-                      <div className="w-full bg-black/10 text-[#11100F]/70 py-3.5 rounded-2xl text-xs uppercase tracking-[0.25em] font-sans font-bold text-center">
-                        🔒 Очаквайте скоро
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="relative z-10 space-y-8">
-            <div className="flex justify-between items-center bg-[#F7F4EF] px-6 py-3 rounded-2xl border border-[#958679]/20">
-              <span className="text-xs font-sans uppercase tracking-widest text-[#958679]">
-                Избран стил: <strong className="text-[#11100F]">Luxe Minimal (Basic)</strong>
-              </span>
-              <button
-                type="button"
-                onClick={() => setSelectedStyle(null)}
-                className="text-xs font-sans uppercase tracking-widest text-[#11100F]/70 hover:text-[#11100F] transition"
-              >
-                ← Смени стила
-              </button>
-            </div>
-
-            {!createdLink ? (
-              <form onSubmit={handleSubmit} className="relative z-10 space-y-12">
+        <div className="relative z-10 space-y-8">
+          {!createdLink ? (
+            <form onSubmit={handleSubmit} className="relative z-10 space-y-12">
             
             {/* 1. ОСНОВНИ ДАННИ */}
             <div className="space-y-4 bg-[#F7F4EF]/60 p-6 rounded-3xl border border-[#958679]/20 shadow-sm">
@@ -805,8 +739,7 @@ export default function CreateCardPage() {
             </a>
           </div>
         )}
-          </div>
-        )}
+        </div>
 
       </div>
 
