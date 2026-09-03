@@ -102,12 +102,12 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
 
         {/* Investigation Report / Message Box */}
         <div className="space-y-4 text-center bg-[#0d0c0b] p-6 sm:p-8 rounded-xl border border-neutral-800 shadow-inner relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(245,158,11,0.05),transparent_70%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(202, 42, 2, 0.05),transparent_70%)] pointer-events-none" />
           <div className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.25em] mb-2">
             [ ФЕДЕРАЛНО УВЕДОМЛЕНИЕ ЗА РАЗСЛЕДВАНЕ ]
           </div>
           <p className="text-xs sm:text-sm leading-relaxed text-[#F7F4EF] font-mono tracking-wide">
-            СУБЕКТЪТ Е ОФИЦИАЛНО ОБЯВЕН ЗА ИЗДИРВАНЕ ПО ОБВИНЕНИЕ В ПОДОЗРИТЕЛНО ДОБРО НАСТРОЕНИЕ И ПРЕКАЛЕНО МНОГО ЧАР! РАЗСЛЕДВАНЕТО ЗАПОЧВА СЕГА.
+            Рожденик е официално обявен за издирване по обвинение в подозрително добро настроение и прекалено много чар! Разследването започва сега! Натисни червения бутон за да разсекретиш файловете!
           </p>
         </div>
 
