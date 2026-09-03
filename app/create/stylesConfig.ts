@@ -34,7 +34,7 @@ export const CARD_STYLES: CardStyleConfig[] = [
     isLocked: true,
     isAvailable: false,
     stagesCount: 6,
-    route: '#',
+    route: '/create/birthday/detective-mystery',
   },
   {
     id: 'escape-room',
@@ -46,7 +46,7 @@ export const CARD_STYLES: CardStyleConfig[] = [
     isLocked: true,
     isAvailable: false,
     stagesCount: 6,
-    route: '#',
+    route: '/create/birthday/escape-room',
   },
   {
     id: 'editorial-magazine',
@@ -58,7 +58,7 @@ export const CARD_STYLES: CardStyleConfig[] = [
     isLocked: true,
     isAvailable: false,
     stagesCount: 5,
-    route: '#',
+    route: '/create/birthday/editorial-magazine',
   },
   {
     id: 'retro-arcade',
@@ -70,7 +70,7 @@ export const CARD_STYLES: CardStyleConfig[] = [
     isLocked: true,
     isAvailable: false,
     stagesCount: 6,
-    route: '#',
+    route: '/create/birthday/retro-arcade',
   },
   {
     id: 'boarding-pass',
@@ -82,7 +82,7 @@ export const CARD_STYLES: CardStyleConfig[] = [
     isLocked: true,
     isAvailable: false,
     stagesCount: 5,
-    route: '#',
+    route: '/create/birthday/boarding-pass',
   },
   {
     id: 'kids-fairytale',
@@ -94,7 +94,7 @@ export const CARD_STYLES: CardStyleConfig[] = [
     isLocked: true,
     isAvailable: false,
     stagesCount: 5,
-    route: '#',
+    route: '/create/birthday/kids-fairytale',
   },
   {
     id: 'secret-diary',
@@ -106,7 +106,7 @@ export const CARD_STYLES: CardStyleConfig[] = [
     isLocked: true,
     isAvailable: false,
     stagesCount: 5,
-    route: '#',
+    route: '/create/birthday/secret-diary',
   },
   {
     id: 'agent-heist',
@@ -118,7 +118,7 @@ export const CARD_STYLES: CardStyleConfig[] = [
     isLocked: true,
     isAvailable: false,
     stagesCount: 6,
-    route: '#',
+    route: '/create/birthday/agent-heist',
   },
   {
     id: 'aesthetic-dump',
@@ -130,7 +130,7 @@ export const CARD_STYLES: CardStyleConfig[] = [
     isLocked: true,
     isAvailable: false,
     stagesCount: 5,
-    route: '#',
+    route: '/create/birthday/aesthetic-dump',
   },
   {
     id: 'level-up-cyber',
@@ -142,7 +142,7 @@ export const CARD_STYLES: CardStyleConfig[] = [
     isLocked: true,
     isAvailable: false,
     stagesCount: 6,
-    route: '#',
+    route: '/create/birthday/level-up-cyber',
   },
 ];
 
