@@ -70,7 +70,7 @@ export function MagnifyingGlassStage({ secretMemory, secretPassword = 'кафе'
             <div className="bg-black/40 border border-red-900/40 rounded-xl p-3 mt-3">
               <span className="text-[10px] text-red-400 font-bold block mb-1">💡 ПОДСКАЗКА ОТ ИНСПЕКТОРА:</span>
               <p className="text-xs text-white italic">
-                &quot;Търси секретната дума от досието (паролата, зададена от подателя).&quot;
+                &quot;Търси секретната дума от досието в Стейдж 2 (паролата, зададена от подателя).&quot;
               </p>
             </div>
           </div>
