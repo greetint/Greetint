@@ -67,42 +67,43 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
         <span>DO NOT CROSS</span>
       </div>
 
-      {/* Central Panel: Police Mugshot ID Board Style */}
+      {/* Central Panel: Black Prison Mugshot Board Style */}
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative z-40 max-w-xl w-full bg-[#e3ded1] text-black border-4 border-black p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.9)] text-center space-y-6 font-mono relative overflow-hidden"
+        className="relative z-40 max-w-xl w-full bg-[#121212] text-white border-4 border-black p-6 sm:p-8 shadow-[0_30px_70px_rgba(0,0,0,0.95)] text-center space-y-6 font-mono relative overflow-hidden"
       >
-        {/* Vintage Paper Texture Overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px] opacity-5 pointer-events-none" />
-
-        {/* Top Mugshot Header */}
-        <div className="bg-black text-[#e3ded1] py-2 px-4 flex items-center justify-between text-xs font-black tracking-[0.25em] uppercase border-b-2 border-black">
-          <span>POLICE DEPT. // MUGSHOT ID</span>
-          <span>CASE #{age}</span>
+        {/* Top Header: POLICE DEPT. & NAME */}
+        <div className="border-b-4 border-white pb-4 text-left">
+          <div className="text-2xl sm:text-3xl font-black tracking-[0.2em] uppercase text-white">
+            POLICE DEPT.
+          </div>
+          <div className="text-xs sm:text-sm font-bold tracking-widest text-neutral-400 mt-1 uppercase">
+            NAME: <span className="text-white font-extrabold">{recipient.toUpperCase()}</span>
+          </div>
         </div>
 
-        {/* Serial Number & Status Bar */}
-        <div className="flex items-center justify-between text-[11px] font-bold border-b border-black/30 pb-3">
-          <span className="bg-black text-white px-2 py-0.5 uppercase">ID: {recipient}</span>
-          <span className="tracking-widest">DATE: 2026.03.09</span>
-          <span className="bg-black text-white px-2 py-0.5">STATUS: WANTED</span>
-        </div>
-
-        {/* Main Mugshot Text Box */}
-        <div className="bg-[#f2efe9] border-2 border-black p-5 text-left shadow-inner">
-          <p className="text-xs sm:text-sm leading-relaxed text-black font-mono font-black tracking-wide uppercase">
+        {/* Middle Text Section (All Caps, clean text) */}
+        <div className="bg-neutral-900 border-2 border-neutral-700 p-5 text-left shadow-inner">
+          <p className="text-xs sm:text-sm leading-relaxed text-[#F7F4EF] font-mono font-bold tracking-wide uppercase">
             {recipient.toUpperCase()} Е ОФИЦИАЛНО ОБЯВЕН ЗА ИЗДИРВАНЕ ПО ОБВИНЕНИЕ В ПОДОЗРИТЕЛНО ДОБРО НАСТРОЕНИЕ И ПРЕКАЛЕНО МНОГО ЧАР! РАЗСЛЕДВАНЕТО ЗАПОЧВА СЕГА. НАТИСНИ ЧЕРВЕНИЯ БУТОН ЗА ДА РАЗСЕКРЕТИШ ФАЙЛОВЕТЕ!
           </p>
         </div>
 
-        {/* Subject Info footer */}
-        <div className="text-xs font-bold tracking-widest text-black/80 uppercase">
-          SUSPECT: <strong className="underline">{recipient}</strong> // CHARGE: MAXIMUM CHARM
+        {/* Bottom Section: Two White Boxes (ID NO. and DATE) */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white text-black p-3 text-center border-2 border-black font-black uppercase text-xs sm:text-sm tracking-widest shadow">
+            <div className="text-[9px] text-neutral-600 font-bold">ID NO.</div>
+            <div>[ {age} ] {recipient.toUpperCase()}</div>
+          </div>
+          <div className="bg-white text-black p-3 text-center border-2 border-black font-black uppercase text-xs sm:text-sm tracking-widest shadow">
+            <div className="text-[9px] text-neutral-600 font-bold">DATE</div>
+            <div>2026.03.09</div>
+          </div>
         </div>
 
-        {/* Red Vintage Mugshot Action Button */}
+        {/* Action Button embedded in board */}
         <motion.button 
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
