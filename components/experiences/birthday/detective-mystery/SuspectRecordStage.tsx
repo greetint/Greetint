@@ -7,16 +7,39 @@ import { motion } from 'framer-motion';
 interface SuspectRecordProps {
   recipient: string;
   age: string;
-  charges: string[];
+  suspectProfile?: {
+    alias: string;
+    mainCrime: string;
+    distinguishingMark: string;
+    lastSeen: string;
+    specialSkill: string;
+  };
+  charges?: string[];
   isMuted?: boolean;
   onComplete: () => void;
 }
 
-export function SuspectRecordStage({ recipient, age, charges, isMuted = false, onComplete }: SuspectRecordProps) {
+export function SuspectRecordStage({ recipient, age, suspectProfile, charges, isMuted = false, onComplete }: SuspectRecordProps) {
   const [mouseScreen, setMouseScreen] = useState({ x: -1000, y: -1000 });
   const [mouseLocal, setMouseLocal] = useState({ x: -1000, y: -1000 });
   const [isInside, setIsInside] = useState(false);
   const chargesRef = useRef<HTMLDivElement>(null);
+
+  const profile = suspectProfile || {
+    alias: 'Шеф на купона',
+    mainCrime: charges?.[0] || 'Превишена скорост на празнуване',
+    distinguishingMark: charges?.[1] || 'Заразно добро настроение',
+    lastSeen: 'На дансинга в петък вечер',
+    specialSkill: charges?.[2] || 'Неоторизирано ядене на торта'
+  };
+
+  const profileFields = [
+    { label: '[ КОДОВО ИМЕ ]', value: profile.alias },
+    { label: '[ ГЛАВНО ПРЕСТЪПЛЕНИЕ ]', value: profile.mainCrime },
+    { label: '[ ОТЛИЧИТЕЛЕН БЕЛЕГ ]', value: profile.distinguishingMark },
+    { label: '[ ПОСЛЕДНО ЗАБЕЛЯЗАН ]', value: profile.lastSeen },
+    { label: '[ СПЕЦИАЛНО УМЕНИЕ ]', value: profile.specialSkill },
+  ];
 
   useEffect(() => {
     const text = `Заподозрян разпознат. Преглед на официалните обвинения и престъпления за изминалата година. Започнете разследване с лазерния фенер.`;
@@ -127,13 +150,13 @@ export function SuspectRecordStage({ recipient, age, charges, isMuted = false, o
           <div ref={chargesRef} className="relative rounded-lg overflow-hidden border-2 border-black bg-black p-3 space-y-2.5">
             {/* The underlying secret text lines (each separate, visible through flashlight) */}
             <ul className="space-y-2.5 relative z-10">
-              {charges.map((charge, idx) => (
+              {profileFields.map((field, idx) => (
                 <li 
                   key={idx} 
                   className="bg-[#f2efe9] p-3.5 rounded border border-black text-xs text-black font-mono font-bold flex items-start gap-3 shadow-inner"
                 >
-                  <span className="text-red-700 font-black">АКТ #{idx + 1}:</span>
-                  <span className="flex-1 tracking-wide uppercase">{charge}</span>
+                  <span className="text-red-700 font-black">{field.label}:</span>
+                  <span className="flex-1 tracking-wide uppercase">{field.value}</span>
                 </li>
               ))}
             </ul>

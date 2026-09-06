@@ -13,7 +13,14 @@ interface DetectiveMysteryExperienceProps {
     recipient: string;
     age: string;
     sender: string;
-    charges: string[];
+    charges?: string[];
+    suspectProfile?: {
+      alias: string;
+      mainCrime: string;
+      distinguishingMark: string;
+      lastSeen: string;
+      specialSkill: string;
+    };
     secretClue: string;
     secretAnswer: string;
     redactedWish: string;
@@ -29,7 +36,13 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
   const recipient = data?.recipient || 'Заподозрян';
   const age = data?.age || '30';
   const sender = data?.sender || 'Инспектор';
-  const charges = data?.charges || ['Превишена скорост на празнуване', 'Липса на алиби в петък вечер', 'Неоторизирано ядене на торта'];
+  const suspectProfile = data?.suspectProfile || {
+    alias: 'Шеф на купона',
+    mainCrime: data?.charges?.[0] || 'Превишена скорост на празнуване',
+    distinguishingMark: data?.charges?.[1] || 'Заразно добро настроение',
+    lastSeen: 'На дансинга в петък вечер',
+    specialSkill: data?.charges?.[2] || 'Неоторизирано ядене на торта'
+  };
   const secretClue = data?.secretClue || 'Къде се крием?';
   const secretAnswer = data?.secretAnswer || 'кафе';
   const redactedWish = data?.redactedWish || 'Честит рожден ден! Бъди все така неуловим.';
@@ -80,7 +93,7 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       key="record" 
       recipient={recipient} 
       age={age} 
-      charges={charges} 
+      suspectProfile={suspectProfile} 
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(2)} 
     />,
