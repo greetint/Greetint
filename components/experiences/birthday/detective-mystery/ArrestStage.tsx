@@ -74,13 +74,18 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
         transition={{ duration: 0.5 }}
         className="relative z-40 max-w-xl w-full bg-[#121212] text-white border-4 border-black p-6 sm:p-8 shadow-[0_30px_70px_rgba(0,0,0,0.95)] text-center space-y-6 font-mono relative overflow-hidden"
       >
-        {/* Top Header: POLICE DEPT. & NAME */}
-        <div className="border-b-4 border-white pb-4 text-left">
-          <div className="text-2xl sm:text-3xl font-black tracking-[0.2em] uppercase text-white">
-            POLICE DEPT.
+        {/* Top Header: Realistic Police Dept Mugshot Header */}
+        <div className="bg-black border-2 border-white p-3 text-left relative shadow">
+          <div className="flex items-center justify-between border-b-2 border-white pb-2 mb-2">
+            <span className="text-lg sm:text-xl font-black tracking-[0.25em] uppercase text-white">
+              POLICE DEPT. // CITY OF MYSTERY
+            </span>
+            <span className="text-[10px] bg-white text-black font-extrabold px-2 py-0.5 uppercase tracking-widest">
+              BOOKING #{age}026
+            </span>
           </div>
-          <div className="text-xs sm:text-sm font-bold tracking-widest text-neutral-400 mt-1 uppercase">
-            NAME: <span className="text-white font-extrabold">{recipient.toUpperCase()}</span>
+          <div className="text-xs font-mono tracking-widest text-neutral-300 uppercase">
+            SUSPECT NAME: <span className="text-white font-extrabold">{recipient.toUpperCase()}</span>
           </div>
         </div>
 
@@ -103,14 +108,14 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
           </div>
         </div>
 
-        {/* Action Button embedded in board */}
+        {/* Action Button embedded in board (smaller size & font) */}
         <motion.button 
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleUnlock}
-          className="w-full bg-red-700 hover:bg-red-800 text-white py-4 sm:py-5 uppercase tracking-[0.25em] font-black shadow-[0_4px_0_#000] transition border-2 border-black cursor-pointer flex items-center justify-center gap-3 relative overflow-hidden group"
+          className="w-full max-w-sm mx-auto bg-red-700 hover:bg-red-800 text-white py-2.5 sm:py-3 px-4 uppercase tracking-[0.15em] text-[10px] sm:text-xs font-black shadow-[0_3px_0_#000] transition border-2 border-black cursor-pointer flex items-center justify-center gap-2 relative overflow-hidden group"
         >
-          <span>[ 🔓 РАЗКРИЙ ДОСИЕТО И ВЛЕЗ В ИГРИТЕ ]</span>
+          <span>[ 🔓 РАЗКРИЙ ДОСИЕТО ]</span>
         </motion.button>
       </motion.div>
     </div>
