@@ -14,9 +14,12 @@ export default function DetectiveMysteryCreatePage() {
     lastSeen: '',
     specialSkill: ''
   });
-  const [secretClue, setSecretClue] = useState('');
-  const [secretAnswer, setSecretAnswer] = useState('');
+  const [secretPassword, setSecretPassword] = useState('');
   const [redactedWish, setRedactedWish] = useState('');
+  
+  const [evidenceClues, setEvidenceClues] = useState<string[]>([
+    '', '', '', '', ''
+  ]);
   const [lieDetectorQuestions, setLieDetectorQuestions] = useState<
     { question: string; options: [string, string, string]; correctAnswer: number }[]
   >([
@@ -73,9 +76,9 @@ export default function DetectiveMysteryCreatePage() {
         lastSeen: suspectProfile.lastSeen || 'На дансинга в петък вечер',
         specialSkill: suspectProfile.specialSkill || 'Неоторизирано ядене на торта'
       },
-      secretClue: secretClue || 'Любимо място?',
-      secretAnswer: secretAnswer || 'кафе',
-      redactedWish: redactedWish || 'Честит рожден ден!',
+      secretPassword: secretPassword || 'кафе',
+      redactedWish: redactedWish || 'Честит рожден ден! Бъди все така неуловим.',
+      evidenceClues: evidenceClues.filter(c => c.trim() !== ''),
       photos: photos.map(p => ({ fileUrl: p.fileUrl })),
       lieDetectorQuestions: lieDetectorQuestions.filter(q => q.question.trim() !== '')
     };
@@ -223,18 +226,8 @@ export default function DetectiveMysteryCreatePage() {
 
             <div className="space-y-4">
               <h3 className="text-xs font-black uppercase tracking-widest text-red-800 border-b border-black/20 pb-2">
-                4. Допълнителни улики и послание
+                5. Финални настройки и послание
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 block mb-1">Секретна улика / Въпрос:</label>
-                  <input type="text" required value={secretClue} onChange={e => setSecretClue(e.target.value)} placeholder="напр. Къде празнуваме?" className="w-full bg-transparent border-b border-black/50 py-2 text-sm text-black placeholder:text-black/30 font-mono focus:outline-none" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 block mb-1">Отговор (Парола):</label>
-                  <input type="text" required value={secretAnswer} onChange={e => setSecretAnswer(e.target.value)} placeholder="напр. кафе" className="w-full bg-transparent border-b border-black/50 py-2 text-sm text-black placeholder:text-black/30 font-mono focus:outline-none" />
-                </div>
-              </div>
 
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 block mb-1">Послание под цензура (Redacted Wish):</label>

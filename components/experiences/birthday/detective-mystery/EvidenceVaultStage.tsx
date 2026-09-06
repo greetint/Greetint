@@ -1,119 +1,88 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { speakBulgarian, playSoundEffect } from './utils/speech';
 
 interface EvidenceVaultProps {
-  secretClue: string;
-  secretAnswer: string;
   photos: { fileUrl: string }[];
+  evidenceClues?: string[];
+  suspectProfile?: { alias: string; mainCrime: string; distinguishingMark: string; lastSeen: string; specialSkill: string };
   isMuted?: boolean;
   onComplete: () => void;
 }
 
-export function EvidenceVaultStage({ secretClue, secretAnswer, photos, isMuted = false, onComplete }: EvidenceVaultProps) {
-  const [userInput, setUserInput] = useState('');
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMuted = false, onComplete }: EvidenceVaultProps) {
+  const profile = suspectProfile || { alias: 'Шеф на купона', mainCrime: 'Превишена скорост', distinguishingMark: 'Усмивка', lastSeen: 'Дансинга', specialSkill: 'Ядене на торта' };
+  const facts = [profile.alias, profile.mainCrime, profile.distinguishingMark, profile.lastSeen, profile.specialSkill];
+  const clues = evidenceClues?.length ? evidenceClues : ["Улика 1", "Улика 2", "Улика 3", "Улика 4", "Улика 5"];
+  const evPhotos = photos.length ? photos : [{ fileUrl: '/images/cards/card-1.png' }];
+
+  const [selectedAnswers, setSelectedAnswers] = useState<string[]>(Array(evPhotos.length).fill(''));
+  const [unlocked, setUnlocked] = useState<boolean[]>(Array(evPhotos.length).fill(false));
+  const [selectedImg, setSelectedImg] = useState<string | null>(null);
 
   useEffect(() => {
-    const text = `Доказателственият материал е заключен. Въведете верния отговор на секретната улика, за да разшифровате архива.`;
-    speakBulgarian(text, isMuted, 0.92, 1.0);
-
-    return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
+    speakBulgarian("Детективско табло с доказателства. Свържете всяка снимка с правилния факт от досието.", isMuted, 0.92, 1.0);
+    return () => { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); };
   }, [isMuted]);
 
-  const handleUnlockCheck = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (userInput.trim().toLowerCase() === (secretAnswer || 'кафе').trim().toLowerCase()) {
-      // Play lock click sfx from exact path /audio/detective/lock-click.mp3
-      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.8);
-      setIsUnlocked(true);
-      setErrorMsg(false);
-    } else {
-      setErrorMsg(true);
+  const handleMatch = (idx: number, val: string) => {
+    const u = [...selectedAnswers]; u[idx] = val; setSelectedAnswers(u);
+    if (facts.some(f => f.toLowerCase() === val.toLowerCase())) {
+      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.7);
+      const unl = [...unlocked]; unl[idx] = true; setUnlocked(unl);
+    } else if (val !== '') {
+      playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.8);
+      if (navigator.vibrate) try { navigator.vibrate([100, 50, 100]); } catch (e) {}
     }
   };
 
   return (
-    <div className="relative w-full h-full bg-[#11100F] text-[#F7F4EF] font-mono flex flex-col items-center justify-center p-6 select-none overflow-y-auto">
-      
-      {!isUnlocked ? (
-        <div className="max-w-md w-full bg-[#1A1816] p-8 sm:p-10 rounded-3xl border-2 border-yellow-600/50 shadow-2xl text-center space-y-6">
-          <div className="inline-block p-3 rounded-full bg-yellow-950 text-yellow-500 text-xl font-bold border border-yellow-600/30">
-            🔐
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-xl font-serif font-bold text-white uppercase">Сейф с Доказателства</h2>
-            <p className="text-xs text-[#958679] leading-relaxed">
-              Загадка: <strong className="text-yellow-400">{secretClue || 'Коя е любимата ни напитка?'}</strong>
-            </p>
-          </div>
-
-          <form onSubmit={handleUnlockCheck} className="space-y-4">
-            <input 
-              type="text" 
-              value={userInput} 
-              onChange={e => setUserInput(e.target.value)} 
-              placeholder="Въведи парола / отговор..." 
-              className="w-full bg-black/60 border border-white/20 rounded-xl p-3.5 text-xs text-white text-center focus:outline-none focus:border-yellow-500"
-            />
-            {errorMsg && <p className="text-[11px] text-red-500">Грешен отговор! Опитайте отново.</p>}
-            <button type="submit" className="w-full bg-yellow-600 hover:bg-yellow-500 text-black py-3.5 rounded-xl text-xs uppercase tracking-[0.25em] font-bold shadow-lg transition cursor-pointer">
-              Отвори сейфа 🔓
-            </button>
-          </form>
+    <div className="relative w-full h-full bg-[#161311] text-[#F7F4EF] font-mono flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-y-auto">
+      <div className="absolute inset-0 bg-[#241c17] opacity-90 pointer-events-none bg-[radial-gradient(#3a2e25_1px,transparent_1px)] [background-size:16px_16px]" />
+      <div className="relative z-20 max-w-4xl w-full space-y-6 my-auto text-center py-6">
+        <div className="space-y-2">
+          <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold block">ФЕДЕРАЛНО ДЕТЕКТИВСКО ТАБЛО</span>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white uppercase">Доказателства с конци</h2>
+          <p className="text-xs text-[#958679]">Свържете уликите под снимките с фактите от досието</p>
         </div>
-      ) : (
-        <div className="max-w-3xl w-full space-y-8 text-center animate-fade-in py-10">
-          <div className="space-y-2">
-            <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold block">Сейфът е отворен</span>
-            <h2 className="text-3xl font-serif font-bold text-white">Веществени Доказателства (Снимки)</h2>
-            <p className="text-xs text-[#958679]">Кликни върху снимка за детайлен преглед</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4">
-            {photos.length > 0 ? photos.map((p, idx) => (
-              <div 
-                key={idx} 
-                onClick={() => setSelectedImage(p.fileUrl)}
-                className="bg-[#EFECE6] p-4 pb-8 rounded-xl shadow-2xl border border-black/20 transform hover:-translate-y-2 transition cursor-pointer group relative"
-              >
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-4 bg-slate-400 rounded-t-full border border-slate-600 shadow" />
-                <img src={p.fileUrl} alt="Evidence" className="w-full aspect-square object-cover rounded shadow-inner" />
-                <span className="text-[10px] font-mono text-black/60 mt-3 block uppercase tracking-widest">Доказателство №{idx + 1}</span>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
+          {evPhotos.map((p, idx) => (
+            <div key={idx} className="bg-[#EFECE6] text-black p-4 pb-6 rounded-xl shadow-2xl border-2 border-black/30 relative flex flex-col justify-between group">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-red-600 border border-red-900 shadow-md z-30" />
+              <div className="absolute -top-6 left-1/2 w-0.5 h-6 bg-red-700 z-20 pointer-events-none" />
+              <div onClick={() => setSelectedImg(p.fileUrl)} className="cursor-pointer overflow-hidden rounded border border-black/20 relative">
+                <img src={p.fileUrl} alt="Evidence" className="w-full aspect-square object-cover" />
+                {unlocked[idx] && (
+                  <div className="absolute inset-0 bg-green-950/70 flex items-center justify-center">
+                    <span className="border-2 border-green-500 text-green-300 font-black px-3 py-1 rounded text-xs uppercase tracking-widest">[ РАЗСЕКРЕТЕНО ✓ ]</span>
+                  </div>
+                )}
               </div>
-            )) : (
-              <p className="col-span-3 text-xs text-[#958679]">Няма качени снимки от инспектора.</p>
-            )}
-          </div>
-
-          <div className="pt-6">
-            <button 
-              onClick={onComplete}
-              className="bg-red-700 hover:bg-red-600 text-white px-10 py-4 rounded-2xl text-xs uppercase tracking-[0.25em] font-bold shadow-xl transition border border-red-500/50 cursor-pointer"
-            >
-              Към финалния протокол за освобождаване →
-            </button>
-          </div>
+              <div className="space-y-3 pt-3 text-left">
+                <div className="text-[11px] font-bold text-red-800 uppercase">📌 {clues[idx % clues.length] || 'Улика'}</div>
+                <select value={selectedAnswers[idx] || ''} onChange={e => handleMatch(idx, e.target.value)} className="w-full bg-white border border-black/40 rounded p-2 text-xs font-mono text-black focus:outline-none">
+                  <option value="">-- Избери факт --</option>
+                  {facts.map((f, fIdx) => <option key={fIdx} value={f}>{f}</option>)}
+                </select>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
-
-      {/* Lightbox Modal */}
-      {selectedImage && (
-        <div onClick={() => setSelectedImage(null)} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+        <div className="pt-6">
+          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onComplete} className="w-full max-w-md mx-auto bg-red-700 hover:bg-red-600 text-white py-4 rounded-2xl text-xs uppercase tracking-[0.25em] font-black shadow-xl transition cursor-pointer">
+            [ ПРЕМИН КЪМ РАЗПИТА НА СВИДЕТЕЛЯ → ]
+          </motion.button>
+        </div>
+      </div>
+      {selectedImg && (
+        <div onClick={() => setSelectedImg(null)} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
           <div className="relative max-w-2xl w-full bg-[#EFECE6] p-4 pb-10 rounded-2xl shadow-2xl border-4 border-black">
-            <img src={selectedImage} alt="Enlarged" className="w-full h-auto max-h-[75vh] object-contain rounded" />
-            <span className="text-xs font-mono text-black mt-4 block text-center uppercase tracking-widest font-bold">ФЕДЕРАЛНО ДОКАЗАТЕЛЬСТВО // ЕВИДЕНЦИЯ</span>
+            <img src={selectedImg} alt="Enlarged" className="w-full h-auto max-h-[75vh] object-contain rounded" />
           </div>
         </div>
       )}
-
     </div>
   );
 }

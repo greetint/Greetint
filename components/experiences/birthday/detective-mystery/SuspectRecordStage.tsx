@@ -187,7 +187,7 @@ export function SuspectRecordStage({ recipient, age, suspectProfile, charges, is
           onClick={onComplete}
           className="w-full bg-[#1a1816] hover:bg-black text-[#F7F4EF] py-4 rounded-xl text-xs uppercase tracking-[0.25em] font-black shadow-lg transition cursor-pointer border border-neutral-700 flex items-center justify-center gap-2"
         >
-          <span>[ ПРЕДИМИ КЪМ ДЕТЕКТОРА НА ЛЪЖАТА ]</span>
+          <span>[ ПРЕМИН КЪМ ДЕТЕКТОРА НА ЛЪЖАТА ]</span>
           <span>→</span>
         </motion.button>
       </motion.div>

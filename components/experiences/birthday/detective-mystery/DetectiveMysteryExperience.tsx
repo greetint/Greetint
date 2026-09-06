@@ -23,8 +23,10 @@ interface DetectiveMysteryExperienceProps {
     };
     secretClue: string;
     secretAnswer: string;
+    secretPassword?: string;
     redactedWish: string;
     photos: { fileUrl: string }[];
+    evidenceClues?: string[];
     lieDetectorQuestions?: {
       question: string;
       options: string[];
@@ -117,14 +119,15 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
     <MagnifyingGlassStage 
       key="magnify" 
       secretMemory={redactedWish} 
+      secretPassword={data?.secretPassword}
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(4)} 
     />,
     <EvidenceVaultStage 
       key="vault" 
-      secretClue={secretClue} 
-      secretAnswer={secretAnswer} 
       photos={photos} 
+      evidenceClues={data?.evidenceClues}
+      suspectProfile={suspectProfile}
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(5)} 
     />,
@@ -136,6 +139,7 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       charges={charges} 
       photos={photos} 
       redactedWish={redactedWish} 
+      suspectProfile={suspectProfile}
       isMuted={isMuted}
     />
   ];
