@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { speakBulgarian } from './utils/speech';
 import { motion } from 'framer-motion';
 
@@ -15,10 +15,10 @@ interface SuspectRecordProps {
 export function SuspectRecordStage({ recipient, age, charges, isMuted = false, onComplete }: SuspectRecordProps) {
   const [mousePos, setMousePos] = useState({ x: -500, y: -500 });
   const [isInside, setIsInside] = useState(false);
-  const [revealedItems, setRevealedItems] = useState<{ [key: number]: boolean }>({});
+  const chargesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const text = `Заподозрян разпознат. Преглед на официалните обвинения и престъпления за изминалата година. Започнете разследване.`;
+    const text = `Заподозрян разпознат. Преглед на официалните обвинения и престъпления за изминалата година. Започнете разследване с лазерния фенер.`;
     speakBulgarian(text, isMuted, 0.92, 1.0);
 
     return () => {
@@ -29,27 +29,25 @@ export function SuspectRecordStage({ recipient, age, charges, isMuted = false, o
   }, [isMuted]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
+    if (chargesRef.current) {
+      const rect = chargesRef.current.getBoundingClientRect();
+      setMousePos({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    }
     setIsInside(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches[0]) {
-      const rect = e.currentTarget.getBoundingClientRect();
+    if (e.touches[0] && chargesRef.current) {
+      const rect = chargesRef.current.getBoundingClientRect();
       setMousePos({
         x: e.touches[0].clientX - rect.left,
         y: e.touches[0].clientY - rect.top,
       });
       setIsInside(true);
     }
-  };
-
-  const toggleReveal = (idx: number) => {
-    setRevealedItems(prev => ({ ...prev, [idx]: !prev[idx] }));
   };
 
   return (
@@ -120,7 +118,7 @@ export function SuspectRecordStage({ recipient, age, charges, isMuted = false, o
             <span className="text-[10px] text-red-700">(Осветете с лазерния фенер за разсекретяване)</span>
           </h3>
 
-          <div className="relative">
+          <div ref={chargesRef} className="relative rounded-lg overflow-hidden border-2 border-black/30">
             {/* The underlying secret text (always rendered, but covered by blackout mask) */}
             <ul className="space-y-2.5">
               {charges.map((charge, idx) => (
