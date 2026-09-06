@@ -113,36 +113,37 @@ export function SuspectRecordStage({ recipient, age, charges, isMuted = false, o
           </div>
         </div>
 
-        {/* Charges List with Redaction / Laser reveal effect */}
+        {/* Charges List with Flashlight Mask Declassification Effect */}
         <div className="space-y-3">
           <h3 className="text-xs uppercase font-extrabold tracking-widest text-black/80 flex items-center justify-between">
             <span>РЕГИСТРИРАНИ ПРЕСТЪПЛЕНИЯ:</span>
-            <span className="text-[10px] text-red-700">(Мини с лазера / кликни за разсекретяване)</span>
+            <span className="text-[10px] text-red-700">(Осветете с лазерния фенер за разсекретяване)</span>
           </h3>
-          <ul className="space-y-2.5">
-            {charges.map((charge, idx) => {
-              const isRevealed = revealedItems[idx];
-              return (
+
+          <div className="relative">
+            {/* The underlying secret text (always rendered, but covered by blackout mask) */}
+            <ul className="space-y-2.5">
+              {charges.map((charge, idx) => (
                 <li 
                   key={idx} 
-                  onClick={() => toggleReveal(idx)}
-                  className="bg-[#c3b087]/60 hover:bg-[#c3b087] p-3.5 rounded-lg border border-black/20 text-xs text-black flex items-start gap-3 shadow-inner cursor-pointer transition group relative overflow-hidden"
+                  className="bg-[#c3b087] p-3.5 rounded-lg border border-black/20 text-xs text-red-950 font-bold flex items-start gap-3 shadow-inner"
                 >
                   <span className="text-red-700 font-black">#{idx + 1}</span>
-                  <div className="flex-1 font-mono font-bold">
-                    <span className={`${isRevealed ? 'text-black' : 'text-black/90'}`}>
-                      {charge}
-                    </span>
-                    {!isRevealed && (
-                      <span className="ml-2 inline-block bg-black text-black px-1.5 py-0.5 rounded text-[10px] group-hover:bg-red-700 group-hover:text-white transition-colors">
-                        [ЦЕНЗУРИРАНО]
-                      </span>
-                    )}
-                  </div>
+                  <span className="flex-1 font-mono">{charge}</span>
                 </li>
-              );
-            })}
-          </ul>
+              ))}
+            </ul>
+
+            {/* Flashlight Mask Overlay (Blackout layer with transparent hole where mouse is) */}
+            <div 
+              className="absolute inset-0 bg-black pointer-events-none rounded-lg"
+              style={{
+                maskImage: isInside ? `radial-gradient(circle 90px at ${mousePos.x}px ${mousePos.y}px, transparent 0%, black 100%)` : 'none',
+                WebkitMaskImage: isInside ? `radial-gradient(circle 90px at ${mousePos.x}px ${mousePos.y}px, transparent 0%, black 100%)` : 'none',
+                opacity: 0.96
+              }}
+            />
+          </div>
         </div>
 
         {/* Verdict Box */}
