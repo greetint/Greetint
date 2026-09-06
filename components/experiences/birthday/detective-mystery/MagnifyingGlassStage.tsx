@@ -65,6 +65,14 @@ export function MagnifyingGlassStage({ secretMemory, secretPassword = 'кафе'
             <p className="text-xs text-[#958679] leading-relaxed">
               Въведете ключовата дума или парола, която научихте при прегледа на досието в Стейдж 2 с лазерния фенер:
             </p>
+            
+            {/* Тук добавяме видима подсказка за шифъра */}
+            <div className="bg-black/40 border border-red-900/40 rounded-xl p-3 mt-3">
+              <span className="text-[10px] text-red-400 font-bold block mb-1">💡 ПОДСКАЗКА ОТ ИНСПЕКТОРА:</span>
+              <p className="text-xs text-white italic">
+                &quot;Търси секретната дума от досието (паролата, зададена от подателя).&quot;
+              </p>
+            </div>
           </div>
 
           <form onSubmit={handleVerify} className="space-y-4 pt-2">
@@ -119,5 +127,3 @@ export function MagnifyingGlassStage({ secretMemory, secretPassword = 'кафе'
     </div>
   );
 }
-
-
