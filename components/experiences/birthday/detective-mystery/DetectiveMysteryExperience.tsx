@@ -43,6 +43,11 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
     lastSeen: 'На дансинга в петък вечер',
     specialSkill: data?.charges?.[2] || 'Неоторизирано ядене на торта'
   };
+  const charges = data?.charges || [
+    suspectProfile.mainCrime,
+    suspectProfile.distinguishingMark,
+    suspectProfile.specialSkill
+  ];
   const secretClue = data?.secretClue || 'Къде се крием?';
   const secretAnswer = data?.secretAnswer || 'кафе';
   const redactedWish = data?.redactedWish || 'Честит рожден ден! Бъди все така неуловим.';
