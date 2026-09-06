@@ -124,29 +124,31 @@ export function SuspectRecordStage({ recipient, age, charges, isMuted = false, o
             <span className="text-[10px] text-red-700">(Осветете с лазерния фенер за разсекретяване)</span>
           </h3>
 
-          <div ref={chargesRef} className="relative rounded-lg overflow-hidden border-2 border-black/30">
-            {/* The underlying secret text (always rendered, but covered by blackout mask) */}
-            <ul className="space-y-2.5">
+          <div ref={chargesRef} className="relative rounded-lg overflow-hidden border-2 border-black bg-black p-3 space-y-2.5">
+            {/* The underlying secret text lines (each separate, visible through flashlight) */}
+            <ul className="space-y-2.5 relative z-10">
               {charges.map((charge, idx) => (
                 <li 
                   key={idx} 
-                  className="bg-[#c3b087] p-3.5 rounded-lg border border-black/20 text-xs text-red-950 font-bold flex items-start gap-3 shadow-inner"
+                  className="bg-[#f2efe9] p-3.5 rounded border border-black text-xs text-black font-mono font-bold flex items-start gap-3 shadow-inner"
                 >
-                  <span className="text-red-700 font-black">#{idx + 1}</span>
-                  <span className="flex-1 font-mono">{charge}</span>
+                  <span className="text-red-700 font-black">АКТ #{idx + 1}:</span>
+                  <span className="flex-1 tracking-wide uppercase">{charge}</span>
                 </li>
               ))}
             </ul>
 
             {/* Flashlight Mask Overlay (Blackout layer with transparent hole where mouse is) */}
             <div 
-              className="absolute inset-0 bg-black pointer-events-none rounded-lg"
+              className="absolute inset-0 bg-black pointer-events-none rounded-lg z-20 flex items-center justify-center text-neutral-500 text-xs font-bold tracking-widest"
               style={{
-                maskImage: isInside ? `radial-gradient(circle 90px at ${mouseLocal.x}px ${mouseLocal.y}px, transparent 0%, black 100%)` : 'none',
-                WebkitMaskImage: isInside ? `radial-gradient(circle 90px at ${mouseLocal.x}px ${mouseLocal.y}px, transparent 0%, black 100%)` : 'none',
-                opacity: 0.96
+                maskImage: isInside ? `radial-gradient(circle 95px at ${mouseLocal.x}px ${mouseLocal.y}px, transparent 0%, black 100%)` : 'black',
+                WebkitMaskImage: isInside ? `radial-gradient(circle 95px at ${mouseLocal.x}px ${mouseLocal.y}px, transparent 0%, black 100%)` : 'black',
+                opacity: 0.98
               }}
-            />
+            >
+              {!isInside && <span className="text-neutral-400 text-xs uppercase tracking-[0.25em]">[ CLASSIFIED REDACTED LINES - USE LASER ]</span>}
+            </div>
           </div>
         </div>
 
