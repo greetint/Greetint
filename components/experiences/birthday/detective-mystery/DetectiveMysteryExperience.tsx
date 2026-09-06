@@ -25,6 +25,11 @@ interface DetectiveMysteryExperienceProps {
     secretAnswer: string;
     redactedWish: string;
     photos: { fileUrl: string }[];
+    lieDetectorQuestions?: {
+      question: string;
+      options: string[];
+      correctAnswer: number;
+    }[];
   };
 }
 
@@ -105,6 +110,7 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
     <LieDetectorStage 
       key="liedetector" 
       recipient={recipient} 
+      questions={data?.lieDetectorQuestions}
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(3)} 
     />,

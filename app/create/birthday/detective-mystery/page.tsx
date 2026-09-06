@@ -17,8 +17,37 @@ export default function DetectiveMysteryCreatePage() {
   const [secretClue, setSecretClue] = useState('');
   const [secretAnswer, setSecretAnswer] = useState('');
   const [redactedWish, setRedactedWish] = useState('');
+  const [lieDetectorQuestions, setLieDetectorQuestions] = useState<
+    { question: string; options: [string, string, string]; correctAnswer: number }[]
+  >([
+    {
+      question: 'Колко силен е купонът тази вечер за субекта?',
+      options: ['Обикновен семеен събор', 'Максимално федерално ниво на шума', 'Легендарен рожден ден без право на алиби'],
+      correctAnswer: 2
+    },
+    {
+      question: 'Кой носи основната вина за прекаленото забавление?',
+      options: ['Рожденикът с неограничена харизма', 'Инспекторът по купона', 'Всички присъстващи съучастници'],
+      correctAnswer: 0
+    }
+  ]);
   const [photos, setPhotos] = useState<{fileUrl: string}[]>([]);
   const [createdLink, setCreatedLink] = useState<string | null>(null);
+
+  const handleAddQuestion = () => {
+    if (lieDetectorQuestions.length < 10) {
+      setLieDetectorQuestions([
+        ...lieDetectorQuestions,
+        { question: '', options: ['', '', ''], correctAnswer: 0 }
+      ]);
+    }
+  };
+
+  const handleRemoveQuestion = (index: number) => {
+    if (lieDetectorQuestions.length > 1) {
+      setLieDetectorQuestions(lieDetectorQuestions.filter((_, idx) => idx !== index));
+    }
+  };
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -47,7 +76,8 @@ export default function DetectiveMysteryCreatePage() {
       secretClue: secretClue || 'Любимо място?',
       secretAnswer: secretAnswer || 'кафе',
       redactedWish: redactedWish || 'Честит рожден ден!',
-      photos: photos.map(p => ({ fileUrl: p.fileUrl }))
+      photos: photos.map(p => ({ fileUrl: p.fileUrl })),
+      lieDetectorQuestions: lieDetectorQuestions.filter(q => q.question.trim() !== '')
     };
     localStorage.setItem(`quest_${id}`, JSON.stringify(payload));
     if (recipient) localStorage.setItem(`quest_${encodeURIComponent(recipient.toLowerCase())}`, JSON.stringify(payload));
@@ -118,8 +148,82 @@ export default function DetectiveMysteryCreatePage() {
             </div>
 
             <div className="space-y-4">
+              <div className="flex justify-between items-center border-b border-black/20 pb-2">
+                <h3 className="text-xs font-black uppercase tracking-widest text-red-800">
+                  3. Детектор на лъжата (до 10 въпроса)
+                </h3>
+                {lieDetectorQuestions.length < 10 && (
+                  <button
+                    type="button"
+                    onClick={handleAddQuestion}
+                    className="text-[10px] bg-black/10 hover:bg-black/20 text-black px-2.5 py-1 rounded font-bold uppercase transition cursor-pointer"
+                  >
+                    + Добави
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2">
+                {lieDetectorQuestions.map((q, qIdx) => (
+                  <div key={qIdx} className="bg-white/60 p-3 rounded-xl border border-black/20 space-y-2.5">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] uppercase font-bold text-red-700">Въпрос #{qIdx + 1}</span>
+                      {lieDetectorQuestions.length > 1 && (
+                        <button type="button" onClick={() => handleRemoveQuestion(qIdx)} className="text-[10px] text-red-600 font-bold uppercase cursor-pointer">
+                          Премахни
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      value={q.question}
+                      onChange={e => {
+                        const u = [...lieDetectorQuestions];
+                        u[qIdx].question = e.target.value;
+                        setLieDetectorQuestions(u);
+                      }}
+                      placeholder="Текст на въпроса..."
+                      className="w-full bg-transparent border-b border-black/40 py-1 text-xs text-black font-mono focus:outline-none"
+                    />
+                    <div className="grid grid-cols-3 gap-2">
+                      {[0, 1, 2].map(optIdx => (
+                        <input
+                          key={optIdx}
+                          type="text"
+                          required
+                          value={q.options[optIdx]}
+                          onChange={e => {
+                            const u = [...lieDetectorQuestions];
+                            u[qIdx].options[optIdx] = e.target.value;
+                            setLieDetectorQuestions(u);
+                          }}
+                          placeholder={`Вариант ${optIdx === 0 ? 'А' : optIdx === 1 ? 'Б' : 'В'}`}
+                          className="bg-transparent border-b border-black/40 py-1 text-[11px] text-black font-mono focus:outline-none"
+                        />
+                      ))}
+                    </div>
+                    <select
+                      value={q.correctAnswer}
+                      onChange={e => {
+                        const u = [...lieDetectorQuestions];
+                        u[qIdx].correctAnswer = Number(e.target.value);
+                        setLieDetectorQuestions(u);
+                      }}
+                      className="w-full bg-white border border-black/30 rounded p-1 text-[11px] text-black font-mono focus:outline-none"
+                    >
+                      <option value={0}>Верен: Вариант А</option>
+                      <option value={1}>Верен: Вариант Б</option>
+                      <option value={2}>Верен: Вариант В</option>
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
               <h3 className="text-xs font-black uppercase tracking-widest text-red-800 border-b border-black/20 pb-2">
-                3. Допълнителни улики и послание
+                4. Допълнителни улики и послание
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
