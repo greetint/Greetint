@@ -13,7 +13,8 @@ interface SuspectRecordProps {
 }
 
 export function SuspectRecordStage({ recipient, age, charges, isMuted = false, onComplete }: SuspectRecordProps) {
-  const [mousePos, setMousePos] = useState({ x: -500, y: -500 });
+  const [mouseScreen, setMouseScreen] = useState({ x: -1000, y: -1000 });
+  const [mouseLocal, setMouseLocal] = useState({ x: -1000, y: -1000 });
   const [isInside, setIsInside] = useState(false);
   const chargesRef = useRef<HTMLDivElement>(null);
 
@@ -29,9 +30,10 @@ export function SuspectRecordStage({ recipient, age, charges, isMuted = false, o
   }, [isMuted]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    setMouseScreen({ x: e.clientX, y: e.clientY });
     if (chargesRef.current) {
       const rect = chargesRef.current.getBoundingClientRect();
-      setMousePos({
+      setMouseLocal({
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
       });
@@ -40,12 +42,16 @@ export function SuspectRecordStage({ recipient, age, charges, isMuted = false, o
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches[0] && chargesRef.current) {
-      const rect = chargesRef.current.getBoundingClientRect();
-      setMousePos({
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top,
-      });
+    if (e.touches[0]) {
+      const touch = e.touches[0];
+      setMouseScreen({ x: touch.clientX, y: touch.clientY });
+      if (chargesRef.current) {
+        const rect = chargesRef.current.getBoundingClientRect();
+        setMouseLocal({
+          x: touch.clientX - rect.left,
+          y: touch.clientY - rect.top,
+        });
+      }
       setIsInside(true);
     }
   };
@@ -58,22 +64,22 @@ export function SuspectRecordStage({ recipient, age, charges, isMuted = false, o
       onMouseLeave={() => setIsInside(false)}
       className="relative w-full h-full bg-[#0b0b0b] text-[#F7F4EF] font-mono flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-y-auto cursor-crosshair"
     >
-      {/* Laser / Flashlight Spotlight beam */}
+      {/* Laser / Flashlight Spotlight beam following cursor globally */}
       {isInside && (
         <>
           <div 
-            className="absolute pointer-events-none w-96 h-96 rounded-full blur-2xl bg-red-600/15 z-30 transition-all duration-75 ease-out mix-blend-screen"
+            className="pointer-events-none w-48 h-48 rounded-full blur-xl bg-red-600/30 z-50 fixed -translate-x-1/2 -translate-y-1/2 transition-all duration-75 ease-out mix-blend-screen"
             style={{
-              left: mousePos.x - 192,
-              top: mousePos.y - 192,
-              boxShadow: '0 0 80px 30px rgba(220, 38, 38, 0.25)'
+              left: mouseScreen.x,
+              top: mouseScreen.y,
+              boxShadow: '0 0 70px 30px rgba(220, 38, 38, 0.4)'
             }}
           />
           <div 
-            className="absolute pointer-events-none w-3 h-3 rounded-full bg-red-500 shadow-[0_0_25px_12px_rgba(239,68,68,0.9)] z-40"
+            className="pointer-events-none w-3 h-3 rounded-full bg-red-500 shadow-[0_0_25px_12px_rgba(239,68,68,0.9)] z-50 fixed -translate-x-1/2 -translate-y-1/2"
             style={{
-              left: mousePos.x - 6,
-              top: mousePos.y - 6,
+              left: mouseScreen.x,
+              top: mouseScreen.y,
             }}
           />
         </>
@@ -136,8 +142,8 @@ export function SuspectRecordStage({ recipient, age, charges, isMuted = false, o
             <div 
               className="absolute inset-0 bg-black pointer-events-none rounded-lg"
               style={{
-                maskImage: isInside ? `radial-gradient(circle 90px at ${mousePos.x}px ${mousePos.y}px, transparent 0%, black 100%)` : 'none',
-                WebkitMaskImage: isInside ? `radial-gradient(circle 90px at ${mousePos.x}px ${mousePos.y}px, transparent 0%, black 100%)` : 'none',
+                maskImage: isInside ? `radial-gradient(circle 90px at ${mouseLocal.x}px ${mouseLocal.y}px, transparent 0%, black 100%)` : 'none',
+                WebkitMaskImage: isInside ? `radial-gradient(circle 90px at ${mouseLocal.x}px ${mouseLocal.y}px, transparent 0%, black 100%)` : 'none',
                 opacity: 0.96
               }}
             />
