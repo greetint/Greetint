@@ -28,7 +28,8 @@ export function MagnifyingGlassStage({ secretMemory, secretPassword = 'кафе'
     e.preventDefault();
     if (inputCode.trim().toLowerCase() === (secretPassword || 'кафе').trim().toLowerCase()) {
       playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85);
-      setIsUnlocked(true); setHasError(false);
+      setIsUnlocked(true); 
+      setHasError(false);
       speakBulgarian("Кодът е верен! Личното послание е разсекретено.", isMuted, 0.92, 1.0);
     } else {
       setHasError(true);
@@ -36,6 +37,8 @@ export function MagnifyingGlassStage({ secretMemory, secretPassword = 'кафе'
       if (navigator.vibrate) try { navigator.vibrate([100, 50, 100]); } catch (e) {}
     }
   };
+
+  const finalMemory = secretMemory || 'Честит рожден ден! Бъди все така неуловим и успешен.';
 
   return (
     <div 
@@ -61,19 +64,29 @@ export function MagnifyingGlassStage({ secretMemory, secretPassword = 'кафе'
             <div className="text-xs text-amber-400 font-bold">💡 Улика под лупата: Върни се към досието (Стейдж 2) и въведи секретната дума.</div>
           </div>
           <form onSubmit={handleVerify} className="bg-[#1A1816] p-6 rounded-3xl border-2 border-red-700/60 shadow-2xl space-y-4 text-center">
-            <input type="text" value={inputCode} onChange={e => setInputCode(e.target.value)} placeholder="Въведи секретен код..." className="w-full bg-black/70 border border-white/20 rounded-xl p-3.5 text-xs text-white text-center tracking-widest uppercase focus:outline-none focus:border-red-600 font-mono" />
+            <input 
+              type="text" 
+              value={inputCode} 
+              onChange={e => setInputCode(e.target.value)} 
+              placeholder="Въведи секретен код..." 
+              className="w-full bg-black/70 border border-white/20 rounded-xl p-3.5 text-xs text-white text-center tracking-widest uppercase focus:outline-none focus:border-red-600 font-mono" 
+            />
             {hasError && <p className="text-[11px] text-red-500 font-bold">[ ГРЕШЕН КОД // ПРОВЕРЕТЕ ДОСИЕТО ]</p>}
-            <button type="submit" className="w-full bg-red-700 hover:bg-red-600 text-white py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer">[ ДЕШИФРИРАЙ ПОСЛАНИЕТО 🔓 ]</button>
+            <button type="submit" className="w-full bg-red-700 hover:bg-red-600 text-white py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">
+              [ ДЕШИФРИРАЙ ПОСЛАНИЕТО 🔓 ]
+            </button>
           </form>
         </div>
       ) : (
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative z-20 max-w-xl w-full bg-[#1A1816] p-8 sm:p-12 rounded-3xl border-4 border-green-600 shadow-2xl text-center space-y-8 my-auto">
           <div className="absolute top-6 right-6 border-4 border-green-500 text-green-400 px-3 py-1 font-black text-xs uppercase tracking-widest transform rotate-12 bg-green-950/50">[ DECLASSIFIED // ИСТИНА ]</div>
-          <div className="space-y-3 pt-4">
+          <div className="space-y-4 pt-4">
             <span className="text-[10px] uppercase tracking-widest text-green-400 font-bold block">ЛИЧНО ПОСЛАНИЕ ОТ ИНСПЕКТОРА</span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white">&quot;{secretMemory}&quot;</h2>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white leading-relaxed">&quot;{finalMemory}&quot;</h2>
           </div>
-          <button onClick={onComplete} className="w-full bg-green-600 hover:bg-green-500 text-black py-4 rounded-2xl text-xs uppercase tracking-widest font-black cursor-pointer border-2 border-green-400">[ ПРЕМИН КЪМ ДЕТЕКТИВСКОТО ТАБЛО → ]</button>
+          <button onClick={onComplete} className="w-full bg-green-600 hover:bg-green-500 text-black py-4 rounded-2xl text-xs uppercase tracking-widest font-black cursor-pointer border-2 border-green-400 shadow">
+            [ ПРЕМИН КЪМ ДЕТЕКТИВСКОТО ТАБЛО → ]
+          </button>
         </motion.div>
       )}
 
