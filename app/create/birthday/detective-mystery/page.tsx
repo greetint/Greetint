@@ -17,9 +17,22 @@ export default function DetectiveMysteryCreatePage() {
   const [secretPassword, setSecretPassword] = useState('');
   const [redactedWish, setRedactedWish] = useState('');
   
-  const [evidenceClues, setEvidenceClues] = useState<string[]>([
-    '', '', '', '', ''
+  const defaultClues = [
+    'Кой пие най-много кафе по време на разследването?',
+    'Къде бе засечен субектът на дълга разходка?',
+    'Кой направи най-скандалното селфи в архива?',
+    'Какво е работното престъпление на агента?',
+    'Коя е следващата детективска дестинация?'
+  ];
+
+  const [evidenceItems, setEvidenceItems] = useState<Array<{ fileUrl: string; clue: string }>>([
+    { fileUrl: '', clue: defaultClues[0] },
+    { fileUrl: '', clue: defaultClues[1] },
+    { fileUrl: '', clue: defaultClues[2] },
+    { fileUrl: '', clue: defaultClues[3] },
+    { fileUrl: '', clue: defaultClues[4] },
   ]);
+
   const [lieDetectorQuestions, setLieDetectorQuestions] = useState<
     { question: string; options: [string, string, string]; correctAnswer: number }[]
   >([
@@ -34,7 +47,6 @@ export default function DetectiveMysteryCreatePage() {
       correctAnswer: 0
     }
   ]);
-  const [photos, setPhotos] = useState<{fileUrl: string}[]>([]);
   const [createdLink, setCreatedLink] = useState<string | null>(null);
 
   const handleAddQuestion = () => {
@@ -52,10 +64,12 @@ export default function DetectiveMysteryCreatePage() {
     }
   };
 
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files).map(f => ({ fileUrl: URL.createObjectURL(f) }));
-      setPhotos(p => [...p, ...files].slice(0, 5));
+  const handlePhotoUpload = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const url = URL.createObjectURL(e.target.files[0]);
+      const updated = [...evidenceItems];
+      updated[index].fileUrl = url;
+      setEvidenceItems(updated);
     }
   };
 
@@ -78,8 +92,10 @@ export default function DetectiveMysteryCreatePage() {
       },
       secretPassword: secretPassword || 'кафе',
       redactedWish: redactedWish || 'Честит рожден ден! Бъди все така неуловим.',
-      evidenceClues: evidenceClues.filter(c => c.trim() !== ''),
-      photos: photos.map(p => ({ fileUrl: p.fileUrl })),
+      evidenceClues: evidenceItems.map((item, i) => item.clue.trim() || defaultClues[i]),
+      photos: evidenceItems.map((item, i) => ({ 
+        fileUrl: item.fileUrl || `/images/cards/card-${(i % 3) + 1}.png` 
+      })),
       lieDetectorQuestions: lieDetectorQuestions.filter(q => q.question.trim() !== '')
     };
     localStorage.setItem(`quest_${id}`, JSON.stringify(payload));
@@ -126,12 +142,17 @@ export default function DetectiveMysteryCreatePage() {
 
             <div className="space-y-4">
               <h3 className="text-xs font-black uppercase tracking-widest text-red-800 border-b border-black/20 pb-2">
-                2. Профил на престъпника (Секретни данни)
+                2. Профил на престъпника и парола (Секретни данни за Стейдж 2 & 4)
               </h3>
               
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 block mb-1">Кодово име / Прякор (Alias):</label>
                 <input type="text" required value={suspectProfile.alias} onChange={e => setSuspectProfile(p => ({...p, alias: e.target.value}))} placeholder="напр. Шеф на купона" className="w-full bg-transparent border-b border-black/50 py-2 text-sm text-black placeholder:text-black/30 font-mono focus:outline-none" />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 block mb-1">Главно престъпление (Main Crime):</label>
+                <input type="text" required value={suspectProfile.mainCrime} onChange={e => setSuspectProfile(p => ({...p, mainCrime: e.target.value}))} placeholder="напр. Превишена скорост на празнуване" className="w-full bg-transparent border-b border-black/50 py-2 text-sm text-black placeholder:text-black/30 font-mono focus:outline-none" />
               </div>
 
               <div>
@@ -147,6 +168,11 @@ export default function DetectiveMysteryCreatePage() {
               <div>
                 <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 block mb-1">Специално умение (Special Skill):</label>
                 <input type="text" required value={suspectProfile.specialSkill} onChange={e => setSuspectProfile(p => ({...p, specialSkill: e.target.value}))} placeholder="напр. Неоторизирано ядене на торта" className="w-full bg-transparent border-b border-black/50 py-2 text-sm text-black placeholder:text-black/30 font-mono focus:outline-none" />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-red-700 block mb-1 font-bold">Секретна парола / Ключова дума (за Верификационния терминал в Стейдж 4):</label>
+                <input type="text" required value={secretPassword} onChange={e => setSecretPassword(e.target.value)} placeholder="напр. кафе" className="w-full bg-black/10 border-b border-black/50 py-2 text-sm text-black placeholder:text-black/30 font-mono focus:outline-none px-2 rounded" />
               </div>
             </div>
 
@@ -226,18 +252,76 @@ export default function DetectiveMysteryCreatePage() {
 
             <div className="space-y-4">
               <h3 className="text-xs font-black uppercase tracking-widest text-red-800 border-b border-black/20 pb-2">
-                5. Финални настройки и послание
+                5. Финално послание и 5 доказателства (за Стейдж 4 и 5)
               </h3>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 block mb-1">Послание под цензура (Redacted Wish):</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 block mb-1">Послание под цензура (Redacted Wish - разкрива се под лупата в Стейдж 4):</label>
                 <textarea rows={3} required value={redactedWish} onChange={e => setRedactedWish(e.target.value)} placeholder="Честит рожден ден! Бъди все така..." className="w-full bg-transparent border-b border-black/50 py-2 text-sm text-black placeholder:text-black/30 font-mono focus:outline-none resize-none" />
               </div>
 
-              <div className="space-y-2 pt-2">
-                <input type="file" multiple accept="image/*" onChange={handleUpload} id="p-up" className="hidden" />
-                <label htmlFor="p-up" className="block text-center text-xs bg-black/10 hover:bg-black/20 text-black py-3 rounded-xl cursor-pointer font-bold border border-black/20 transition">Качи снимки за доказателства (до 5)</label>
-                {photos.length > 0 && <div className="flex gap-2 pt-2">{photos.map((p, i) => <img key={i} src={p.fileUrl} className="w-12 h-12 object-cover rounded-xl border border-black/30" />)}</div>}
+              <div className="space-y-3 pt-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-red-700 block">
+                  📌 5 Двойки (Снимка + Въпрос/Улика) за Корковото табло в Стейдж 5:
+                </label>
+                <p className="text-[10px] text-black/70 italic">
+                  За всяка от 5-те бележки качете снимка И изберете готов въпрос от шаблоните ИЛИ напишете собствен уникален текст.
+                </p>
+
+                <div className="space-y-3 pt-1">
+                  {evidenceItems.map((item, i) => (
+                    <div key={i} className="bg-white/70 border border-black/30 p-3 rounded-xl space-y-2">
+                      <div className="flex justify-between items-center text-[10px] font-bold uppercase text-red-800">
+                        <span>Доказателство / Снимка №{i + 1}</span>
+                        {item.fileUrl ? <span className="text-green-700">✓ Снимка качена</span> : <span className="text-neutral-500">Очаква снимка</span>}
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {item.fileUrl && (
+                          <img src={item.fileUrl} alt={`Preview ${i+1}`} className="w-12 h-12 object-cover rounded-lg border border-black/40 shadow-sm" />
+                        )}
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={e => handlePhotoUpload(i, e)} 
+                          className="text-[11px] text-black file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-black/10 file:text-black hover:file:bg-black/20 cursor-pointer"
+                        />
+                      </div>
+
+                      <div>
+                        <select
+                          onChange={e => {
+                            if (e.target.value) {
+                              const updated = [...evidenceItems];
+                              updated[i].clue = e.target.value;
+                              setEvidenceItems(updated);
+                            }
+                          }}
+                          className="w-full bg-white border border-black/30 rounded p-1 text-[11px] text-black font-mono focus:outline-none mb-1.5"
+                          defaultValue=""
+                        >
+                          <option value="" disabled>-- Изберете готов забавен въпрос (шаблон) --</option>
+                          {defaultClues.map((tmpl, tIdx) => (
+                            <option key={tIdx} value={tmpl}>{tmpl}</option>
+                          ))}
+                        </select>
+
+                        <input 
+                          type="text" 
+                          required
+                          value={item.clue} 
+                          onChange={e => {
+                            const updated = [...evidenceItems];
+                            updated[i].clue = e.target.value;
+                            setEvidenceItems(updated);
+                          }}
+                          placeholder={`Въпрос или улика за бележка №${i + 1}...`}
+                          className="w-full bg-transparent border-b border-black/40 py-1 text-xs text-black font-mono focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 

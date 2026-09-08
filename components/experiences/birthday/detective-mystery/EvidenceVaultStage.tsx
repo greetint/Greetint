@@ -44,8 +44,8 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
 
   const boardRef = useRef<HTMLDivElement>(null);
-  const clueRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
-  const photoRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const cluePinRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const photoPinRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const [lineCoords, setLineCoords] = useState<{ [photoIdx: number]: { x1: number; y1: number; x2: number; y2: number } }>({});
 
   useEffect(() => {
@@ -60,18 +60,18 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
 
     Object.entries(connections).forEach(([pIdxStr, factId]) => {
       const pIdx = Number(pIdxStr);
-      const clueEl = clueRefs.current[factId];
-      const photoEl = photoRefs.current[pIdx];
+      const pinA = cluePinRefs.current[factId];
+      const pinB = photoPinRefs.current[pIdx];
 
-      if (clueEl && photoEl) {
-        const cRect = clueEl.getBoundingClientRect();
-        const pRect = photoEl.getBoundingClientRect();
+      if (pinA && pinB) {
+        const rectA = pinA.getBoundingClientRect();
+        const rectB = pinB.getBoundingClientRect();
 
         newCoords[pIdx] = {
-          x1: cRect.left + cRect.width / 2 - boardRect.left,
-          y1: cRect.top + cRect.height / 2 - boardRect.top,
-          x2: pRect.left + pRect.width / 2 - boardRect.left,
-          y2: pRect.top + pRect.height / 2 - boardRect.top,
+          x1: rectA.left + rectA.width / 2 - boardRect.left,
+          y1: rectA.top + rectA.height / 2 - boardRect.top,
+          x2: rectB.left + rectB.width / 2 - boardRect.left,
+          y2: rectB.top + rectB.height / 2 - boardRect.top,
         };
       }
     });
@@ -200,7 +200,6 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
               return (
                 <motion.div
                   key={fact.id}
-                  ref={el => { clueRefs.current[fact.id] = el; }}
                   whileHover={{ scale: 1.04, rotate: 0 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={() => !used && handleSelectFact(fact.id)}
@@ -213,7 +212,12 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
                   }`}
                   style={{ transform: `rotate(${rot}deg)` }}
                 >
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-lg flex items-center justify-center text-white text-[10px] border border-red-400">📌</div>
+                  <div 
+                    ref={el => { cluePinRefs.current[fact.id] = el; }}
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-lg flex items-center justify-center text-white text-[10px] border border-red-400 z-30"
+                  >
+                    📌
+                  </div>
                   <div className="text-[10px] font-black uppercase text-red-800 mb-1 flex items-center justify-between">
                     <span>Улика #{fact.id + 1}: {fact.label}</span>
                     {used && <span className="text-green-700 font-bold">[СВЪРЗАНО ✓]</span>}
@@ -246,7 +250,6 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
               return (
                 <motion.div
                   key={idx}
-                  ref={el => { photoRefs.current[idx] = el; }}
                   initial={{ rotate: rot }}
                   whileHover={{ scale: 1.02 }}
                   className={`relative bg-[#f4ebd0] p-3.5 pb-5 rounded-xl shadow-2xl border-2 transition-all duration-300 ${
@@ -258,7 +261,12 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
                   }`}
                   style={{ transform: `rotate(${rot}deg)` }}
                 >
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-lg flex items-center justify-center text-white text-[10px] z-30 border border-red-400">📌</div>
+                  <div 
+                    ref={el => { photoPinRefs.current[idx] = el; }}
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-lg flex items-center justify-center text-white text-[10px] z-30 border border-red-400"
+                  >
+                    📌
+                  </div>
                   <div 
                     onClick={() => handleConnectPhoto(idx)}
                     className="relative w-full aspect-square bg-black rounded-lg overflow-hidden cursor-pointer group shadow-inner border border-neutral-400"
