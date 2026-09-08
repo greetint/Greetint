@@ -187,25 +187,23 @@ export function SuspectRecordStage({
 
       {/* Large Classified Manila Folder Container */}
       <motion.div 
-        initial={{ scale: 0.95, opacity: 0, y: 15 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="relative z-10 max-w-3xl w-full h-[88vh] max-h-[740px] bg-[#E8E1D1] border-4 border-[#C2B59B] rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.9)] p-5 sm:p-8 flex flex-col justify-between overflow-hidden"
-        style={{
-          backgroundImage: 'radial-gradient(#d6ccb4 0.9px, transparent 0.9px)',
-          backgroundSize: '16px 16px'
-        }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
       >
-        {/* Manila Folder Tab */}
-        <div className="absolute -top-3.5 left-8 bg-[#C2B59B] text-[#1F1A17] px-6 py-1.5 rounded-t-lg text-[10px] font-black uppercase tracking-[0.25em] border-t-2 border-x-2 border-[#A89A80] shadow-md flex items-center gap-3">
-          <span>📁 ФЕДЕРАЛНО ДОСИЕ // СУБЕКТ: {recipient}</span>
-          <span className="text-red-800">[ TOP SECRET ]</span>
-        </div>
+        {/* Manila Folder Container */}
+        <div className="relative w-full max-w-2xl">
+          {/* Folder Tab */}
+          <div className="absolute -top-7 left-10 w-60 h-8 bg-[#d2b48c] rounded-t-xl flex items-center justify-center text-[11px] uppercase font-bold tracking-wider text-black/70 shadow-md border-t border-x border-black/10 z-0">
+            CLASSIFIED FILE // EYES ONLY
+          </div>
 
-        {/* Red Classified Stamp */}
-        <div className="absolute top-4 right-6 border-2 border-red-700 text-red-700 px-3 py-1 rounded font-black text-xs uppercase tracking-[0.25em] transform rotate-3 bg-red-950/10 shadow-md pointer-events-none">
-          TOP SECRET // EYES ONLY
-        </div>
+          <div className="relative bg-[#d2b48c] rounded-r-2xl rounded-bl-sm p-6 shadow-[20px_20px_40px_rgba(0,0,0,0.4)] border-l-8 border-l-black/10">
+            {/* Vertical Crease Line */}
+            <div className="absolute top-0 bottom-0 left-6 w-px bg-black/20" />
+
+          {/* Inner Paper Area */}
+          <div className="bg-[#f7f4ef] rounded-lg p-8 shadow-inner border border-black/5">
 
         {/* Header & Page Navigation Tabs */}
         <div className="border-b-2 border-black/20 pb-4 pt-2 space-y-3">
@@ -335,6 +333,9 @@ export function SuspectRecordStage({
             )}
           </div>
         </div>
+          </div>
+        </div>
+      </div>
       </motion.div>
     </div>
   );
