@@ -95,7 +95,7 @@ export function SuspectRecordStage({
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
         const distance = Math.hypot(clientX - cx, clientY - cy);
-        if (distance < 100) {
+        if (distance < 70) {
           newRevealed[key] = true;
           if (!revealedItems[key]) {
             newlyRevealedCount++;
@@ -121,35 +121,35 @@ export function SuspectRecordStage({
     }
   };
   const renderFields = (fields: typeof page1Fields) => (
-    <div className="space-y-3">
+    <div className="space-y-1 sm:space-y-1.5">
       {fields.map((field) => {
         const isRevealed = revealedItems[field.key];
         return (
           <div 
             key={field.key}
-            className="bg-[#F5F1E8] border-2 border-black/40 px-4 py-3 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-inner relative"
+            className="bg-[#F5F1E8] border border-black/10 px-2 py-1 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 shadow-sm relative"
           >
-            <div>
-              <div className="text-xs font-black text-red-900 tracking-wider">
+            <div className="leading-tight">
+              <div className="text-[9px] font-black text-red-900 tracking-wider uppercase">
                 {field.label}
               </div>
-              <div className="text-[10px] text-neutral-600 italic">
+              <div className="text-[8px] text-neutral-600 italic">
                 {field.note}
               </div>
             </div>
 
             <div 
               ref={el => { redactedRefs.current[field.key] = el; }}
-              className="relative px-3 py-2 rounded-lg overflow-hidden min-w-[180px] sm:min-w-[220px] text-center bg-[#2B2723] shadow-inner self-stretch sm:self-auto flex items-center justify-center"
+              className="relative px-2 py-1 rounded-md overflow-hidden min-w-[140px] sm:min-w-[180px] text-center bg-[#2B2723] shadow-inner self-stretch sm:self-auto flex items-center justify-center h-7"
             >
-              <span className={`text-xs sm:text-sm font-black font-mono tracking-wider uppercase transition-all duration-200 ${isRevealed ? 'text-amber-200' : 'text-transparent select-none'}`}>
+              <span className={`text-[11px] font-black font-mono tracking-wider uppercase transition-all duration-200 ${isRevealed ? 'text-amber-200' : 'text-transparent select-none'}`}>
                 {field.value}
               </span>
 
               <div 
                 className={`absolute inset-0 bg-black transition-all duration-200 rounded flex items-center justify-center ${isRevealed ? 'opacity-0 pointer-events-none scale-105' : 'opacity-100 scale-100'}`}
               >
-                <span className="text-[11px] text-neutral-400 font-mono tracking-[0.2em] select-none font-black">
+                <span className="text-[9px] text-neutral-400 font-mono tracking-[0.2em] select-none font-black">
                   [ REDACTED ]
                 </span>
               </div>
@@ -169,20 +169,14 @@ export function SuspectRecordStage({
         setIsInside(false);
         setRevealedItems({});
       }}
-      className="relative w-screen h-screen bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-crosshair"
+      className="relative w-screen h-screen bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-2 sm:p-4 select-none overflow-hidden cursor-crosshair"
     >
       {/* Laser Pointer Spotlight Effects */}
       {isInside && (
-        <>
-          <div 
-            className="pointer-events-none w-72 h-72 rounded-full blur-3xl bg-red-600/35 z-50 fixed -translate-x-1/2 -translate-y-1/2 transition-all duration-75 ease-out mix-blend-screen"
-            style={{ left: mouseScreen.x, top: mouseScreen.y }}
-          />
-          <div 
-            className="pointer-events-none w-5 h-5 rounded-full bg-red-500 shadow-[0_0_25px_rgba(239,68,68,1)] z-55 fixed -translate-x-1/2 -translate-y-1/2 border-2 border-white"
-            style={{ left: mouseScreen.x, top: mouseScreen.y }}
-          />
-        </>
+        <div 
+          className="pointer-events-none w-2 h-2 rounded-full bg-red-600 z-55 fixed -translate-x-1/2 -translate-y-1/2 border border-white/40 shadow-sm"
+          style={{ left: mouseScreen.x, top: mouseScreen.y }}
+        />
       )}
 
       {/* Large Classified Manila Folder Container */}
@@ -190,154 +184,148 @@ export function SuspectRecordStage({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl my-auto"
+        className="w-full max-w-2xl max-h-[98vh] flex flex-col my-auto overflow-visible relative"
       >
-        {/* Manila Folder Container */}
-        <div className="relative w-full">
-          {/* Folder Tab */}
-          <div className="absolute -top-7 left-10 w-60 h-8 bg-[#d2b48c] rounded-t-xl flex items-center justify-center text-[11px] uppercase font-bold tracking-wider text-black/70 shadow-md border-t border-x border-black/10 z-0">
-            CLASSIFIED FILE // EYES ONLY
-          </div>
+        {/* Folder Tab */}
+        <div className="absolute -top-4 left-8 w-32 h-5 bg-[#d2b48c] rounded-t-lg flex items-center justify-center text-[7px] uppercase font-bold tracking-wider text-black/60 shadow-sm border-t border-x border-black/10 z-0">
+          CLASSIFIED FILE // EYES ONLY
+        </div>
 
-          <div className="relative bg-[#d2b48c] rounded-r-2xl rounded-bl-sm p-4 sm:p-6 shadow-[20px_20px_40px_rgba(0,0,0,0.4)] border-l-8 border-l-black/10">
-            {/* Vertical Crease Line */}
-            <div className="absolute top-0 bottom-0 left-6 w-px bg-black/20" />
+        <div className="relative bg-[#d2b48c] rounded-r-lg rounded-bl-sm p-1.5 sm:p-2 shadow-[10px_10px_20px_rgba(0,0,0,0.5)] border-l-4 sm:border-l-6 border-l-black/10 flex flex-col overflow-hidden">
+          {/* Vertical Crease Line */}
+          <div className="absolute top-0 bottom-0 left-4 sm:left-5 w-px bg-black/10" />
 
           {/* Inner Paper Area */}
-          <div className="bg-[#f7f4ef] rounded-lg p-4 sm:p-8 shadow-inner border border-black/5">
+          <div className="bg-[#f7f4ef] rounded-md p-2 sm:p-3 shadow-inner border border-black/5 flex flex-col overflow-hidden">
 
-        {/* Header & Page Navigation Tabs */}
-        <div className="border-b-2 border-black/20 pb-4 pt-2 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <span className="text-[10px] uppercase tracking-widest text-red-700 font-extrabold block">ЦЕНТРАЛЕН АРХИВ НА РАЗСЛЕДВАНЕТО</span>
-              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-wide text-black">{recipient}</h2>
+            {/* Header & Page Navigation Tabs */}
+            <div className="border-b border-black/10 pb-1 pt-0">
+              <div className="flex items-center justify-between gap-2">
+                <div className="leading-tight">
+                  <span className="text-[7px] uppercase tracking-widest text-red-700 font-extrabold block">ЦЕНТРАЛЕН АРХИВ</span>
+                  <h2 className="text-base sm:text-lg font-black uppercase tracking-tight text-black">{recipient}</h2>
+                </div>
+
+                {/* Folder Page Navigation Buttons */}
+                <div className="flex items-center gap-0.5 bg-[#D6CCB4] p-0.5 rounded-md border border-black/5 shadow-inner">
+                  <button 
+                    onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(1); }}
+                    className={`px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 1 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                  >
+                    1. Идентичност
+                  </button>
+                  <button 
+                    onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(2); }}
+                    className={`px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 2 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                  >
+                    2. Престъпления
+                  </button>
+                  <button 
+                    onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(3); }}
+                    className={`px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                  >
+                    3. Доказателства
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* Folder Page Navigation Buttons */}
-            <div className="flex items-center gap-1.5 bg-[#D6CCB4] p-1.5 rounded-xl border border-black/20 shadow-inner">
-              <button 
-                onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(1); }}
-                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 1 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
-              >
-                1. Идентичност
-              </button>
-              <button 
-                onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(2); }}
-                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 2 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
-              >
-                2. Престъпления
-              </button>
-              <button 
-                onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(3); }}
-                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
-              >
-                3. Доказателства
-              </button>
+            {/* Folder Content Area with Page Flipping Animation */}
+            <div className="flex-1 overflow-visible py-1 sm:py-1.5">
+              <AnimatePresence mode="wait">
+                {currentPage === 1 && (
+                  <motion.div 
+                    key="page1"
+                    initial={{ opacity: 0, x: -10, rotateY: -3 }}
+                    animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                    exit={{ opacity: 0, x: 10, rotateY: 3 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-1"
+                  >
+                    <div className="flex items-center justify-between text-[8px] uppercase font-extrabold text-black/80 px-1 border-b border-black/5 pb-0.5">
+                      <span>СТРАНИЦА 1: ОСНОВНИ ДАННИ</span>
+                      <span className="text-red-700 font-bold">[ ИДЕНТИЧНОСТ ]</span>
+                    </div>
+                    {renderFields(page1Fields)}
+                  </motion.div>
+                )}
+
+                {currentPage === 2 && (
+                  <motion.div 
+                    key="page2"
+                    initial={{ opacity: 0, x: -10, rotateY: -3 }}
+                    animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                    exit={{ opacity: 0, x: 10, rotateY: 3 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-1"
+                  >
+                    <div className="flex items-center justify-between text-[8px] uppercase font-extrabold text-black/80 px-1 border-b border-black/5 pb-0.5">
+                      <span>СТРАНИЦА 2: ПРЕСТЪПЛЕНИЯ</span>
+                      <span className="text-red-700 font-bold">[ ДОСИЕ ]</span>
+                    </div>
+                    {renderFields(page2Fields)}
+                  </motion.div>
+                )}
+
+                {currentPage === 3 && (
+                  <motion.div 
+                    key="page3"
+                    initial={{ opacity: 0, x: -10, rotateY: -3 }}
+                    animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                    exit={{ opacity: 0, x: 10, rotateY: 3 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-1"
+                  >
+                    <div className="flex items-center justify-between text-[8px] uppercase font-extrabold text-black/80 px-1 border-b border-black/5 pb-0.5">
+                      <span>СТРАНИЦА 3: СЕКРЕТНИ ДОКАЗАТЕЛСТВА</span>
+                      <span className="text-red-700 font-bold">[ УЛИКИ ]</span>
+                    </div>
+                    {renderFields(page3Fields)}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          </div>
 
-          <p className="text-[11px] text-neutral-800 italic font-medium">
-            Инструкция: Задръжте лазерния фенер върху черните цензурирани ленти <span className="text-red-700 font-bold">[ REDACTED ]</span>, за да разчетете класифицираната информация на всяка страница.
-          </p>
-        </div>
+            {/* Footer & Navigation Button */}
+            <div className="border-t border-black/10 pt-1 space-y-1">
+              <div className="bg-red-950/5 border border-red-700/20 p-1.5 rounded-md text-[8px] text-red-950 font-mono font-bold shadow-inner flex items-center justify-between">
+                <span className="hidden sm:inline text-neutral-800">⚖️ ПРИСЪДА: НАВЪРШВАНЕ НА {age} ГОДИНИ.</span>
+                <span className="sm:hidden text-neutral-800">⚖️ ПРИСЪДА: {age} ГОДИНИ.</span>
+                <span className="text-red-700 uppercase font-black tracking-tighter">СТРАНИЦА {currentPage} / 3</span>
+              </div>
 
-        {/* Folder Content Area with Page Flipping Animation */}
-        <div className="flex-1 overflow-y-auto py-3 pr-1 my-2">
-          <AnimatePresence mode="wait">
-            {currentPage === 1 && (
-              <motion.div 
-                key="page1"
-                initial={{ opacity: 0, x: -20, rotateY: -5 }}
-                animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                exit={{ opacity: 0, x: 20, rotateY: 5 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-4"
-              >
-                <div className="flex items-center justify-between text-[11px] uppercase font-extrabold text-black/80 px-1 border-b border-black/10 pb-1">
-                  <span>СТРАНИЦА 1: ОСНОВНИ ДАННИ И ИДЕНТИЧНОСТ</span>
-                  <span className="text-red-700 font-bold">[ ФЕДЕРАЛЕН РЕГИСТЪР ]</span>
-                </div>
-                {renderFields(page1Fields)}
-              </motion.div>
-            )}
+              <div className="flex items-center gap-1.5">
+                {currentPage > 1 && (
+                  <button 
+                    onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(prev => Math.max(1, prev - 1) as any); }}
+                    className="bg-[#D6CCB4] hover:bg-[#c2b59b] text-black px-2.5 py-1 rounded-md text-[8px] uppercase font-black transition cursor-pointer border border-black/10 shadow-sm"
+                  >
+                    ←
+                  </button>
+                )}
 
-            {currentPage === 2 && (
-              <motion.div 
-                key="page2"
-                initial={{ opacity: 0, x: -20, rotateY: -5 }}
-                animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                exit={{ opacity: 0, x: 20, rotateY: 5 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-4"
-              >
-                <div className="flex items-center justify-between text-[11px] uppercase font-extrabold text-black/80 px-1 border-b border-black/10 pb-1">
-                  <span>СТРАНИЦА 2: ПРЕСТЪПЛЕНИЯ И ОТЛИЧИТЕЛНИ БЕЛЕЗИ</span>
-                  <span className="text-red-700 font-bold">[ ДОСИЕ НА СУБЕКТА ]</span>
-                </div>
-                {renderFields(page2Fields)}
-              </motion.div>
-            )}
-
-            {currentPage === 3 && (
-              <motion.div 
-                key="page3"
-                initial={{ opacity: 0, x: -20, rotateY: -5 }}
-                animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                exit={{ opacity: 0, x: 20, rotateY: 5 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-4"
-              >
-                <div className="flex items-center justify-between text-[11px] uppercase font-extrabold text-black/80 px-1 border-b border-black/10 pb-1">
-                  <span>СТРАНИЦА 3: СЕКРЕТНИ ДОКАЗАТЕЛСТВА (ЗА КОРКОВОТО ТАБЛО)</span>
-                  <span className="text-red-700 font-bold">[ УЛИКИ ЗА СТЕЙДЖ 5 ]</span>
-                </div>
-                {renderFields(page3Fields)}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Footer & Navigation Button */}
-        <div className="border-t-2 border-black/20 pt-4 space-y-3">
-          <div className="bg-red-950/10 border-2 border-red-700/50 p-3 rounded-xl text-[11px] text-red-950 font-mono font-bold shadow-inner flex items-center justify-between">
-            <span>⚖️ ПРИСЪДА: НАВЪРШВАНЕ НА {age} ГОДИНИ ПРИ СТРОГО ЗАТВОРНИЧЕСКИ РЕЖИМ НА КУПОН.</span>
-            <span className="text-red-700 uppercase font-black">СТРАНИЦА {currentPage} / 3</span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {currentPage > 1 && (
-              <button 
-                onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(prev => Math.max(1, prev - 1) as any); }}
-                className="bg-[#D6CCB4] hover:bg-[#c2b59b] text-black px-5 py-3.5 rounded-xl text-xs uppercase tracking-widest font-black transition cursor-pointer border border-black/30 shadow"
-              >
-                ← Предишна
-              </button>
-            )}
-
-            {currentPage < 3 ? (
-              <button 
-                onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(prev => Math.min(3, prev + 1) as any); }}
-                className="flex-1 bg-[#2B2723] hover:bg-black text-[#F7F4EF] py-3.5 rounded-xl text-xs uppercase tracking-[0.2em] font-black transition cursor-pointer border border-neutral-700 shadow"
-              >
-                Следваща страница →
-              </button>
-            ) : (
-              <motion.button 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={onComplete}
-                className="flex-1 bg-red-700 hover:bg-red-800 text-white py-3.5 rounded-xl text-xs uppercase tracking-[0.2em] font-black shadow-lg transition cursor-pointer border border-red-500 flex items-center justify-center gap-2 group"
-              >
-                <span>[ ПРЕМИН КЪМ ДЕТЕКТОРА НА ЛЪЖАТА → ]</span>
-              </motion.button>
-            )}
-          </div>
-        </div>
-          </div>
-        </div>
+                {currentPage < 3 ? (
+                  <button 
+                    onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(prev => Math.min(3, prev + 1) as any); }}
+                    className="flex-1 bg-[#2B2723] hover:bg-black text-[#F7F4EF] py-1 rounded-md text-[8px] uppercase tracking-[0.05em] font-black transition cursor-pointer border border-neutral-700 shadow-sm"
+                  >
+                    Следваща страница →
+                  </button>
+                ) : (
+                  <motion.button 
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={onComplete}
+                    className="flex-1 bg-red-700 hover:bg-red-800 text-white py-1 rounded-md text-[8px] uppercase tracking-[0.05em] font-black shadow-md transition cursor-pointer border border-red-500 flex items-center justify-center gap-1 group"
+                  >
+                    <span>[ ПРЕМИН КЪМ ДЕТЕКТОРА ]</span>
+                  </motion.button>
+                )}
+              </div>
+            </div>
       </div>
-      </motion.div>
     </div>
+  </motion.div>
+</div>
   );
 }
