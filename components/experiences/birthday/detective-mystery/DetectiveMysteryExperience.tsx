@@ -86,9 +86,6 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       audioRef.current.muted = newState;
       if (newState) {
         audioRef.current.pause();
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-        }
       } else {
         audioRef.current.play().catch(() => {});
       }

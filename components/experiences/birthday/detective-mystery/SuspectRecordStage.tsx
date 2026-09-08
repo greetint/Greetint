@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { speakBulgarian, playSoundEffect } from './utils/speech';
+import { playSoundEffect } from './utils/speech';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SuspectRecordProps {
@@ -80,14 +80,7 @@ export function SuspectRecordStage({
   ];
 
   useEffect(() => {
-    const text = 'Заподозрян разпознат. Преглед на официалното секретно досие. Използвайте лазерния фенер, за да разсекретите цензурираните данни за следващите етапи.';
-    speakBulgarian(text, isMuted, 0.92, 1.0);
-
-    return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
+    // No speech
   }, [isMuted]);
 
   const handlePointerMove = useCallback((clientX: number, clientY: number) => {

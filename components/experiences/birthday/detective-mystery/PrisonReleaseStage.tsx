@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { speakBulgarian, playSoundEffect } from './utils/speech';
+import { playSoundEffect } from './utils/speech';
 
 interface PrisonReleaseProps {
   recipient: string;
@@ -34,8 +34,7 @@ export function PrisonReleaseStage({ recipient, age, sender, charges, photos, re
   ];
 
   useEffect(() => {
-    speakBulgarian("Разпит на свидетеля. Потвърдете самоличността си.", isMuted, 0.92, 1.0);
-    return () => { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); };
+    // No speech
   }, [isMuted]);
 
   const verify = (e: React.FormEvent) => {

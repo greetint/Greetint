@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { speakBulgarian, playSoundEffect } from './utils/speech';
+import { playSoundEffect } from './utils/speech';
 
 interface MagnifyingGlassProps {
   secretMemory: string;
@@ -32,10 +32,7 @@ export function MagnifyingGlassStage({
   const msgRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (subStage === 1) speakBulgarian(`Етап 1: Радиостанция. Настройте честотата на ${targetAge} MHz.`, isMuted, 0.92, 1.0);
-    else if (subStage === 2) speakBulgarian("Етап 2: Верификационен терминал. Въведете секретната дума от досието.", isMuted, 0.92, 1.0);
-    else if (subStage === 3) speakBulgarian("Етап 3: Химическа лупа. Плъзнете лупата, за да разчетете посланието.", isMuted, 0.92, 1.0);
-    return () => { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); };
+    // No speech
   }, [subStage, targetAge, isMuted]);
 
   const handleFreq = (val: number) => {
@@ -43,7 +40,6 @@ export function MagnifyingGlassStage({
     if (val === targetAge && !isLocked) {
       setIsLocked(true);
       playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.9);
-      speakBulgarian("Честотата е засечена!", isMuted, 0.92, 1.0);
     }
   };
 
@@ -61,7 +57,6 @@ export function MagnifyingGlassStage({
     if (isMatch) {
       playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.9);
       setHasError(false);
-      speakBulgarian("Кодът е верен!", isMuted, 0.92, 1.0);
       setTimeout(() => setSubStage(3), 800);
     } else {
       setHasError(true);

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { speakBulgarian, playSoundEffect } from './utils/speech';
+import { playSoundEffect } from './utils/speech';
 
 interface QuestionItem {
   question: string;
@@ -82,7 +82,7 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
     timer = setTimeout(typeNextChar, 100);
 
     if (currentQIndex === 0) {
-      speakBulgarian(`Включен е полиграфският детектор на лъжата за субект ${recipient}. Отговорете на въпросите честно.`, isMuted, 0.92, 1.0);
+      // no speech
     }
 
     return () => clearTimeout(timer);
@@ -97,12 +97,10 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
     if (isCorrect) {
       setAnswerStatus('truth');
       playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.7);
-      speakBulgarian("Истина. Полиграфът отчита абсолютна искреност.", isMuted, 0.92, 1.0);
     } else {
       setAnswerStatus('lie');
       setIsScreenFlashing(true);
       playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.85);
-      speakBulgarian("Засечена е лъжа!", isMuted, 0.92, 1.0);
 
       if (typeof window !== 'undefined' && 'vibrate' in navigator) {
         try {
@@ -122,7 +120,6 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
     } else {
       setIsTestFinished(true);
       playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.9);
-      speakBulgarian(`Полиграфският тест приключи успешно за субект ${recipient}.`, isMuted, 0.92, 1.0);
     }
   };
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { speakBulgarian, playSoundEffect } from './utils/speech';
+import { playSoundEffect } from './utils/speech';
 
 interface EvidenceVaultProps {
   photos: { fileUrl: string }[];
@@ -66,11 +66,6 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
   const photoPinRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const [lineCoords, setLineCoords] = useState<{ [photoIdx: number]: { x1: number; y1: number; x2: number; y2: number } }>({});
 
-  useEffect(() => {
-    speakBulgarian("Детективско корково табло. Изберете улика от жълтите бележки и я свържете с правилната замаглена снимка, за да опънете червен конец.", isMuted, 0.92, 1.0);
-    return () => { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); };
-  }, [isMuted]);
-
   const updateLines = useCallback(() => {
     if (!boardRef.current) return;
     const boardRect = boardRef.current.getBoundingClientRect();
@@ -111,7 +106,6 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
 
     playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.4);
     setSelectedFactId(factId);
-    speakBulgarian(`Избрана улика: ${facts.find(f => f.id === factId)?.label}. Сега кликнете на съответната снимка на таблото.`, isMuted, 0.95, 1.0);
   };
 
   const handleConnectPhoto = (photoIdx: number) => {
@@ -121,7 +115,6 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
     }
 
     if (selectedFactId === null) {
-      speakBulgarian("Моля, първо изберете улика от жълтите бележки!", isMuted, 0.95, 1.0);
       return;
     }
 
@@ -136,14 +129,12 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
       setUnlocked(newUnlocked);
       setSelectedFactId(null);
       setErrorPhotoIdx(null);
-      speakBulgarian("Правилна връзка! Червеният конец е опънат, снимката е разсекретена.", isMuted, 0.95, 1.0);
       setTimeout(updateLines, 50);
     } else {
       playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.9);
       setErrorPhotoIdx(photoIdx);
       if (navigator.vibrate) try { navigator.vibrate([120, 60, 120]); } catch (e) {}
       setTimeout(() => setErrorPhotoIdx(null), 1500);
-      speakBulgarian("Грешна връзка! Конецът се къса. Опитайте отново.", isMuted, 0.95, 1.0);
     }
   };
 
