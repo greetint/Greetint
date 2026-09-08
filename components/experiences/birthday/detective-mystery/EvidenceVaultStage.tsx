@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { speakBulgarian, playSoundEffect } from './utils/speech';
 
@@ -14,6 +14,7 @@ interface EvidenceVaultProps {
 
 export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMuted = false, onComplete }: EvidenceVaultProps) {
   const profile = suspectProfile || { alias: 'Шеф на купона', mainCrime: 'Превишена скорост', distinguishingMark: 'Усмивка', lastSeen: 'Дансинга', specialSkill: 'Ядене на торта' };
+
   const facts = [
     { id: 0, label: 'Кодово име', value: profile.alias },
     { id: 1, label: 'Престъпление', value: profile.mainCrime },
@@ -21,228 +22,338 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
     { id: 3, label: 'Последно', value: profile.lastSeen },
     { id: 4, label: 'Умение', value: profile.specialSkill }
   ];
-  const clues = evidenceClues?.length ? evidenceClues : ["Кой е псевдонимът?", "Какво е престъплението?", "Кой е белегът?", "Къде е забелязан?", "Какво е умението?"];
-  const evPhotos = photos.length ? photos : [{ fileUrl: '/images/cards/card-1.png' }, { fileUrl: '/images/cards/card-2.png' }, { fileUrl: '/images/cards/card-3.png' }];
+
+  const clues = evidenceClues?.length ? evidenceClues : [
+    'Кой е псевдонимът на заподозрения?',
+    'Какво е основното престъпление?',
+    'Кой е отличителният белег?',
+    'Къде е забележан за последно?',
+    'Какво е специалното умение?'
+  ];
+
+  const evPhotos = photos.length ? photos : [
+    { fileUrl: '/images/cards/card-1.png' }, 
+    { fileUrl: '/images/cards/card-2.png' }, 
+    { fileUrl: '/images/cards/card-3.png' }
+  ];
 
   const [selectedFactId, setSelectedFactId] = useState<number | null>(null);
   const [connections, setConnections] = useState<{ [photoIdx: number]: number }>({});
   const [unlocked, setUnlocked] = useState<boolean[]>(Array(evPhotos.length).fill(false));
-  const [errorIdx, setErrorIdx] = useState<number | null>(null);
+  const [errorPhotoIdx, setErrorPhotoIdx] = useState<number | null>(null);
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
 
+  const boardRef = useRef<HTMLDivElement>(null);
+  const clueRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const photoRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const [lineCoords, setLineCoords] = useState<{ [photoIdx: number]: { x1: number; y1: number; x2: number; y2: number } }>({});
+
   useEffect(() => {
-    speakBulgarian("Вестникарски изрезки и червени конци. Изберете улика от пресата и я свържете със замаглената снимка.", isMuted, 0.92, 1.0);
+    speakBulgarian("Детективско корково табло. Изберете улика от жълтите бележки и я свържете с правилната замаглена снимка, за да опънете червен конец.", isMuted, 0.92, 1.0);
     return () => { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); };
   }, [isMuted]);
 
-  const handleConnect = (photoIdx: number) => {
-    if (selectedFactId === null) {
-      speakBulgarian("Първо изберете вестникарска изрезка!", isMuted, 0.95, 1.0);
+  const updateLines = useCallback(() => {
+    if (!boardRef.current) return;
+    const boardRect = boardRef.current.getBoundingClientRect();
+    const newCoords: { [photoIdx: number]: { x1: number; y1: number; x2: number; y2: number } } = {};
+
+    Object.entries(connections).forEach(([pIdxStr, factId]) => {
+      const pIdx = Number(pIdxStr);
+      const clueEl = clueRefs.current[factId];
+      const photoEl = photoRefs.current[pIdx];
+
+      if (clueEl && photoEl) {
+        const cRect = clueEl.getBoundingClientRect();
+        const pRect = photoEl.getBoundingClientRect();
+
+        newCoords[pIdx] = {
+          x1: cRect.left + cRect.width / 2 - boardRect.left,
+          y1: cRect.top + cRect.height / 2 - boardRect.top,
+          x2: pRect.left + pRect.width / 2 - boardRect.left,
+          y2: pRect.top + pRect.height / 2 - boardRect.top,
+        };
+      }
+    });
+
+    setLineCoords(newCoords);
+  }, [connections]);
+
+  useEffect(() => {
+    updateLines();
+    window.addEventListener('resize', updateLines);
+    return () => window.removeEventListener('resize', updateLines);
+  }, [connections, updateLines]);
+
+  const handleSelectFact = (factId: number) => {
+    const isAlreadyConnected = Object.values(connections).includes(factId);
+    if (isAlreadyConnected) return;
+
+    playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.4);
+    setSelectedFactId(factId);
+    speakBulgarian(`Избрана улика: ${facts.find(f => f.id === factId)?.label}. Сега кликнете на съответната снимка на таблото.`, isMuted, 0.95, 1.0);
+  };
+
+  const handleConnectPhoto = (photoIdx: number) => {
+    if (unlocked[photoIdx]) {
+      setSelectedImg(evPhotos[photoIdx].fileUrl);
       return;
     }
-    if (unlocked[photoIdx]) return;
 
-    if (selectedFactId === (photoIdx % facts.length)) {
-      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.8);
-      setConnections({ ...connections, [photoIdx]: selectedFactId });
-      const u = [...unlocked]; u[photoIdx] = true; setUnlocked(u);
-      setSelectedFactId(null); setErrorIdx(null);
-      speakBulgarian("Правилна връзка! Снимката е разсекретена.", isMuted, 0.95, 1.0);
+    if (selectedFactId === null) {
+      speakBulgarian("Моля, първо изберете улика от жълтите бележки!", isMuted, 0.95, 1.0);
+      return;
+    }
+
+    const expectedFactId = photoIdx % facts.length;
+
+    if (selectedFactId === expectedFactId) {
+      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85);
+      const newConn = { ...connections, [photoIdx]: selectedFactId };
+      setConnections(newConn);
+      const newUnlocked = [...unlocked];
+      newUnlocked[photoIdx] = true;
+      setUnlocked(newUnlocked);
+      setSelectedFactId(null);
+      setErrorPhotoIdx(null);
+      speakBulgarian("Правилна връзка! Червеният конец е опънат, снимката е разсекретена.", isMuted, 0.95, 1.0);
+      setTimeout(updateLines, 50);
     } else {
       playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.9);
-      setErrorIdx(photoIdx);
+      setErrorPhotoIdx(photoIdx);
       if (navigator.vibrate) try { navigator.vibrate([120, 60, 120]); } catch (e) {}
-      setTimeout(() => setErrorIdx(null), 1500);
-      speakBulgarian("Грешна връзка! Конецът се къса.", isMuted, 0.95, 1.0);
+      setTimeout(() => setErrorPhotoIdx(null), 1500);
+      speakBulgarian("Грешна връзка! Конецът се къса. Опитайте отново.", isMuted, 0.95, 1.0);
     }
   };
 
   const allUnlocked = unlocked.every(Boolean) || unlocked.filter(Boolean).length >= evPhotos.length;
-  return (
-    <div className="relative w-full h-full bg-[#2b1d11] text-[#2b1d0c] font-mono flex flex-col items-center justify-start p-4 sm:p-6 select-none overflow-y-auto">
-      {/* Cork board subtle texture overlay */}
-      <div className="absolute inset-0 pointer-events-none opacity-50 bg-[radial-gradient(#4a2e18_1.8px,transparent_1.8px)] [background-size:22px_22px]" />
-      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:40px_40px]" />
 
-      {/* Header Note */}
+  const clueRotations = [-2, 3, -1, 2, -3];
+  const photoRotations = [2, -2, 3, -3, 1];
+
+  return (
+    <div 
+      ref={boardRef}
+      className="relative w-full h-full bg-[#2b1d11] text-[#2b1d0c] font-mono flex flex-col items-center justify-start p-3 sm:p-6 select-none overflow-y-auto"
+    >
+      <div className="absolute inset-0 pointer-events-none opacity-60 bg-[radial-gradient(#4a2e18_2px,transparent_2px)] [background-size:24px_24px]" />
+      <div className="absolute inset-0 pointer-events-none opacity-25 bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:48px_48px]" />
+      <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]" />
+
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible">
+        {Object.entries(lineCoords).map(([pIdxStr, coords]) => {
+          const pIdx = Number(pIdxStr);
+          const midX = (coords.x1 + coords.x2) / 2 + 20;
+          const midY = (coords.y1 + coords.y2) / 2 - 25;
+          return (
+            <g key={pIdx}>
+              <path
+                d={`M ${coords.x1} ${coords.y1} Q ${midX} ${midY} ${coords.x2} ${coords.y2}`}
+                fill="none"
+                stroke="rgba(0,0,0,0.5)"
+                strokeWidth="5"
+                strokeLinecap="round"
+              />
+              <path
+                d={`M ${coords.x1} ${coords.y1} Q ${midX} ${midY} ${coords.x2} ${coords.y2}`}
+                fill="none"
+                stroke="#dc2626"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                className="filter drop-shadow-[0_2px_4px_rgba(220,38,38,0.6)]"
+              />
+              <circle cx={coords.x1} cy={coords.y1} r="4" fill="#991b1b" stroke="#f87171" strokeWidth="1.5" />
+              <circle cx={coords.x2} cy={coords.y2} r="4" fill="#991b1b" stroke="#f87171" strokeWidth="1.5" />
+            </g>
+          );
+        })}
+      </svg>
+
       <motion.div 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="relative z-20 text-center mb-6 bg-[#f4ebd0] px-6 py-3 rounded-xl border-2 border-[#5c3317] shadow-2xl max-w-xl w-full transform -rotate-1"
+        className="relative z-30 text-center mb-6 bg-[#f4ebd0] px-6 py-3.5 rounded-xl border-2 border-[#5c3317] shadow-2xl max-w-2xl w-full transform -rotate-1"
       >
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-md flex items-center justify-center text-white text-[10px]">📌</div>
-        <span className="text-[10px] text-red-700 font-black uppercase tracking-widest">[ ВЕСТНИКАРСКИ ИЗРЕЗКИ И УЛИКИ ]</span>
-        <h2 className="text-lg font-serif font-bold text-black uppercase">Детективско корково табло</h2>
-        <p className="text-xs text-[#5c3317] mt-1">
+        <span className="text-[10px] text-red-700 font-black uppercase tracking-widest">[ ДЕТЕКТИВСКО ТАБЛО С ПИНЧЕТА И КОНЦИ ]</span>
+        <h2 className="text-lg sm:text-xl font-serif font-bold text-black uppercase tracking-wide">Стейдж 5: Разследване на уликите</h2>
+        <p className="text-xs text-[#5c3317] mt-1 font-semibold">
           {selectedFactId !== null 
-            ? "📌 Избрана е изрезка! Кликнете на съответната снимка за опъване на конец." 
-            : "1. Кликнете на вестникарска изрезка (долу/встрани) ➔ 2. Свържете я с правилната снимка!"}
+            ? "📌 Уликата е избрана! Кликнете на съответната Polaroid снимка на таблото, за да опънете червен конец." 
+            : "Стъпка 1: Кликнете на жълта бележка-улика ➔ Стъпка 2: Кликнете на съответната снимка за свързване."}
         </p>
       </motion.div>
 
-      {/* Main Board Container */}
-      <div className="relative z-20 max-w-7xl w-full space-y-8 pb-16">
-        
-        {/* Newspaper Clippings (Answers) Section scattered like clippings on corkboard */}
-        <div className="bg-[#1c120a]/80 backdrop-blur-sm p-4 rounded-2xl border-2 border-amber-900/60 shadow-2xl">
-          <div className="text-center mb-3">
-            <span className="text-[10px] uppercase tracking-widest text-amber-300 font-bold bg-black/40 px-3 py-1 rounded-full border border-amber-700/50">
-              📰 Вестникарски изрезки с отговори (Кликнете за избор)
+      <div className="relative z-30 max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 pb-16 items-start">
+        <div className="space-y-4">
+          <div className="text-center bg-black/50 backdrop-blur-sm py-1.5 px-4 rounded-lg border border-amber-800/60 inline-block mb-2">
+            <span className="text-[11px] text-amber-300 font-extrabold uppercase tracking-wider">
+              📝 Жълти бележки с факти от досието (Кликнете за избор)
             </span>
           </div>
-          <div className="flex flex-wrap gap-3 justify-center items-center">
-            {facts.map((fact) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {facts.map((fact, idx) => {
               const isSelected = selectedFactId === fact.id;
               const used = Object.values(connections).includes(fact.id);
+              const rot = clueRotations[idx % clueRotations.length];
               return (
-                <motion.div 
-                  key={fact.id} 
-                  whileHover={{ scale: 1.05, rotate: (fact.id % 2 === 0 ? 1 : -1) }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => !used && setSelectedFactId(fact.id)} 
-                  className={`relative p-3 rounded-lg shadow-xl border-2 cursor-pointer transition-all duration-300 transform ${
+                <motion.div
+                  key={fact.id}
+                  ref={el => { clueRefs.current[fact.id] = el; }}
+                  whileHover={{ scale: 1.04, rotate: 0 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => !used && handleSelectFact(fact.id)}
+                  className={`relative p-4 rounded-xl shadow-2xl border-2 cursor-pointer transition-all duration-300 transform ${
                     used 
-                      ? 'bg-neutral-800 text-neutral-500 line-through opacity-40 border-neutral-700 rotate-0' 
+                      ? 'bg-neutral-800/90 text-neutral-500 line-through opacity-50 border-neutral-700 rotate-0' 
                       : isSelected 
-                      ? 'bg-amber-100 text-red-950 border-red-600 ring-4 ring-red-600/50 scale-105 rotate-1 shadow-2xl' 
-                      : 'bg-[#f4ebd0] text-black border-[#5c3317] hover:bg-[#fff9e6]'
+                      ? 'bg-amber-100 text-red-950 border-red-600 ring-4 ring-red-600/50 scale-105 shadow-[0_0_25px_rgba(220,38,38,0.5)] z-40' 
+                      : 'bg-[#fef08a] hover:bg-[#fef9c3] text-neutral-900 border-[#ca8a04]'
                   }`}
-                  style={{ transform: `rotate(${(fact.id * 2 - 4)}deg)` }}
+                  style={{ transform: `rotate(${rot}deg)` }}
                 >
-                  <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-700 rounded-full shadow flex items-center justify-center text-white text-[9px]">📌</div>
-                  <div className="text-[8px] font-extrabold text-red-800 uppercase tracking-wider">[{fact.label}]</div>
-                  <div className="text-xs sm:text-sm font-black uppercase font-serif tracking-tight mt-0.5">„{fact.value}“</div>
-                  {used && <div className="absolute inset-0 bg-black/20 flex items-center justify-center rounded-lg pointer-events-none"><span className="text-[9px] font-black text-green-400 bg-black/80 px-2 py-0.5 rounded uppercase">[ СВЪРЗАНО ✓ ]</span></div>}
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-lg flex items-center justify-center text-white text-[10px] border border-red-400">📌</div>
+                  <div className="text-[10px] font-black uppercase text-red-800 mb-1 flex items-center justify-between">
+                    <span>Улика #{fact.id + 1}: {fact.label}</span>
+                    {used && <span className="text-green-700 font-bold">[СВЪРЗАНО ✓]</span>}
+                  </div>
+                  <div className="text-xs sm:text-sm font-bold bg-white/60 p-2 rounded border border-amber-300/60 shadow-inner">
+                    „{fact.value}“
+                  </div>
+                  <div className="text-[10px] text-neutral-600 mt-2 italic">
+                    {clues[idx % clues.length]}
+                  </div>
                 </motion.div>
               );
             })}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-4">
-          {evPhotos.map((photo, idx) => {
-            const isUnl = unlocked[idx];
-            const isErr = errorIdx === idx;
-            const connectedFact = connections[idx] !== undefined ? facts.find(f => f.id === connections[idx]) : null;
-
-            return (
-              <motion.div 
-                key={idx} 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                onClick={() => handleConnect(idx)}
-                className={`relative bg-[#f7f4ee] p-4 rounded-xl shadow-2xl border-2 cursor-pointer flex flex-col justify-between transform transition-all duration-300 hover:scale-[1.02] ${
-                  isErr ? 'border-red-600 bg-red-50' : isUnl ? 'border-green-600 shadow-[0_0_25px_rgba(34,197,94,0.3)]' : 'border-[#5c3317] hover:border-red-700'
-                }`}
-                style={{ transform: `rotate(${(idx % 2 === 0 ? 1 : -1) * 1.5}deg)` }}
-              >
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-7 h-7 bg-red-700 rounded-full flex items-center justify-center text-white text-xs shadow-lg border-2 border-red-900 z-20">📌</div>
-
-                {isUnl && (
-                  <svg className="absolute -top-16 left-1/2 w-32 h-20 pointer-events-none z-30 overflow-visible" style={{ transform: 'translateX(-50%)' }}>
-                    <motion.path 
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      animate={{ pathLength: 1, opacity: 1 }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                      d="M 16 60 Q 64 0 112 65" 
-                      fill="none" stroke="#dc2626" strokeWidth="4" strokeLinecap="round"
-                      className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]" 
-                    />
-                    <circle cx="16" cy="60" r="4" fill="#991b1b" />
-                    <circle cx="112" cy="65" r="4" fill="#991b1b" />
-                  </svg>
-                )}
-
-                <div 
-                  className="relative mt-2 overflow-hidden rounded-lg bg-black aspect-square group shadow-inner border border-black/20" 
-                  onClick={e => { if (isUnl) { e.stopPropagation(); setSelectedImg(photo.fileUrl); } }}
+        <div className="space-y-4">
+          <div className="text-center bg-black/50 backdrop-blur-sm py-1.5 px-4 rounded-lg border border-amber-800/60 inline-block mb-2">
+            <span className="text-[11px] text-amber-300 font-extrabold uppercase tracking-wider">
+              📸 Замаглени Polaroid снимки на таблото
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {evPhotos.map((photo, idx) => {
+              const isUnl = unlocked[idx];
+              const isErr = errorPhotoIdx === idx;
+              const rot = photoRotations[idx % photoRotations.length];
+              const connectedFactId = connections[idx];
+              const connectedFact = facts.find(f => f.id === connectedFactId);
+              return (
+                <motion.div
+                  key={idx}
+                  ref={el => { photoRefs.current[idx] = el; }}
+                  initial={{ rotate: rot }}
+                  whileHover={{ scale: 1.02 }}
+                  className={`relative bg-[#f4ebd0] p-3.5 pb-5 rounded-xl shadow-2xl border-2 transition-all duration-300 ${
+                    isUnl 
+                      ? 'border-green-600 shadow-[0_0_30px_rgba(34,197,94,0.3)] bg-[#fffefc]' 
+                      : isErr 
+                      ? 'border-red-600 ring-4 ring-red-600 animate-shake bg-red-50' 
+                      : 'border-[#78350f] hover:border-amber-600'
+                  }`}
+                  style={{ transform: `rotate(${rot}deg)` }}
                 >
-                  <img 
-                    src={photo.fileUrl} alt="Evidence" 
-                    className={`w-full h-full object-cover transition-all duration-700 ${isUnl ? 'filter-none scale-100' : 'filter blur-[16px] grayscale brightness-75 scale-105'}`} 
-                  />
-                  {isUnl && (
-                    <div className="absolute inset-0 bg-green-950/30 backdrop-blur-[2px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-green-700 text-white font-black px-3 py-1.5 rounded-lg text-xs uppercase shadow-lg border border-green-500">[ УВЕЛИЧИ КАДЪРА 🔍 ]</div>
-                    </div>
-                  )}
-                  {!isUnl && (
-                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white p-3 text-center">
-                      <span className="text-2xl mb-1">🔒</span>
-                      <span className="text-[10px] font-black uppercase tracking-widest bg-red-950/90 px-3 py-1 rounded border border-red-700 shadow">ЗАСЕКРЕТЕНО КАДЪР №{idx + 1}</span>
-                      <span className="text-[9px] text-amber-300 mt-2">Свържете с вестникарска изрезка</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-2.5 pt-3 text-left">
-                  <div className="flex items-center justify-between">
-                    <div className="text-[10px] font-extrabold text-red-900 uppercase tracking-wider">📌 Улика / Въпрос #{idx + 1}:</div>
-                    {isUnl && connectedFact && (
-                      <span className="text-[9px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded border border-green-300 uppercase">✓ {connectedFact.label}</span>
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-lg flex items-center justify-center text-white text-[10px] z-30 border border-red-400">📌</div>
+                  <div 
+                    onClick={() => handleConnectPhoto(idx)}
+                    className="relative w-full aspect-square bg-black rounded-lg overflow-hidden cursor-pointer group shadow-inner border border-neutral-400"
+                  >
+                    <img 
+                      src={photo.fileUrl} 
+                      alt={`Evidence ${idx + 1}`}
+                      className={`w-full h-full object-cover transition-all duration-700 ${
+                        isUnl 
+                          ? 'filter-none scale-100 group-hover:scale-105' 
+                          : 'filter blur-[16px] grayscale brightness-75 scale-105'
+                      }`}
+                    />
+                    {!isUnl ? (
+                      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white p-3 text-center">
+                        <span className="text-2xl mb-1 animate-pulse">🔒</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest bg-red-950/90 px-2.5 py-1 rounded border border-red-700 shadow">
+                          КАДЪР №{idx + 1} ЗАСЕКРЕТЕН
+                        </span>
+                        {selectedFactId !== null ? (
+                          <span className="text-[10px] text-amber-300 mt-2 font-bold animate-bounce bg-black/80 px-2 py-1 rounded border border-amber-500">
+                            👉 Кликнете тук за свързване с конец!
+                          </span>
+                        ) : (
+                          <span className="text-[9px] text-neutral-300 mt-2">
+                            Изберете улика отляво
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 bg-green-950/20 backdrop-blur-[1px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="bg-green-700 text-white font-black px-3 py-1.5 rounded-lg text-xs uppercase shadow-lg border border-green-400">
+                          [ УВЕЛИЧИ КАДЪРА 🔍 ]
+                        </div>
+                      </div>
                     )}
                   </div>
-                  
-                  <div className="text-xs sm:text-sm font-bold text-neutral-900 bg-amber-100/90 p-2.5 rounded-lg border border-amber-300 shadow-sm leading-snug">
-                    „{clues[idx % clues.length]}“
-                  </div>
-
-                  {isErr && (
-                    <motion.p initial={{ scale: 0.8 }} animate={{ scale: [1, 1.1, 1] }} className="text-[11px] text-red-700 font-black uppercase text-center bg-red-100 py-1 rounded border border-red-300">
-                      ❌ Грешна връзка! Конецът се къса!
-                    </motion.p>
-                  )}
-
-                  {!isUnl && selectedFactId !== null && (
-                    <div className="text-center pt-1">
-                      <span className="text-[10px] text-red-700 font-bold animate-pulse uppercase tracking-wide block bg-red-50 p-1.5 rounded border border-red-200">
-                        👉 Кликнете тук, за да опънете конец!
-                      </span>
+                  <div className="pt-3 text-center space-y-1.5">
+                    <div className="flex items-center justify-between text-[10px] font-bold text-neutral-700 uppercase">
+                      <span>ФЕДЕРАЛЕН АРХИВ #{idx + 1}</span>
+                      {isUnl && connectedFact ? (
+                        <span className="text-green-700 bg-green-100 px-2 py-0.5 rounded border border-green-300 font-extrabold">
+                          ✓ {connectedFact.label}
+                        </span>
+                      ) : (
+                        <span className="text-red-700 bg-red-100 px-2 py-0.5 rounded border border-red-300">
+                          ОЧАКВА КОНЕЦ
+                        </span>
+                      )}
                     </div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Completion action button */}
-        <div className="pt-6 text-center space-y-4 max-w-lg mx-auto">
-          {!allUnlocked ? (
-            <div className="bg-[#3b220f] border-2 border-amber-700/70 p-3.5 rounded-xl shadow-xl flex items-center justify-center space-x-2">
-              <span className="text-amber-400 text-sm">⚠️</span>
-              <p className="text-xs text-amber-200 font-bold uppercase tracking-wider">
-                Свържете всички вестникарски изрезки с правилните снимки на таблото!
-              </p>
-            </div>
-          ) : (
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="bg-green-950/90 border-2 border-green-500 p-4 rounded-2xl shadow-2xl text-center space-y-2"
-            >
-              <span className="text-xs text-green-400 font-black uppercase tracking-widest block">🎉 Всички улики са разсекретени!</span>
-              <p className="text-xs text-neutral-200">Корковото табло е напълно свързано. Готови сте за разпита на свидетеля.</p>
-            </motion.div>
-          )}
-
-          <motion.button 
-            whileHover={{ scale: 1.02 }} 
-            whileTap={{ scale: 0.98 }} 
-            onClick={onComplete} 
-            className={`w-full py-4 rounded-2xl text-xs sm:text-sm uppercase tracking-[0.2em] font-black shadow-2xl cursor-pointer transition-all duration-300 ${
-              allUnlocked 
-                ? 'bg-gradient-to-r from-red-700 via-red-600 to-amber-700 hover:from-red-600 hover:to-amber-600 text-white shadow-[0_0_30px_rgba(220,38,38,0.5)] border-2 border-red-400' 
-                : 'bg-[#3b220f] hover:bg-[#4a2e18] text-amber-200/70 border-2 border-amber-900'
-            }`}
-          >
-            <span>[ ПРЕМИН КЪМ РАЗПИТА НА СВИДЕТЕЛЯ → ]</span>
-          </motion.button>
+                    {isErr && (
+                      <p className="text-[11px] text-red-700 font-black uppercase bg-red-200 py-1 rounded border border-red-400">
+                        ❌ Грешна връзка! Конецът се скъса.
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Enlarged Photo Modal */}
+      <div className="relative z-30 pt-6 pb-12 text-center space-y-4 max-w-lg mx-auto w-full">
+        {!allUnlocked ? (
+          <div className="bg-[#3b220f] border-2 border-amber-700/70 p-4 rounded-xl shadow-2xl flex items-center justify-center space-x-2.5">
+            <span className="text-amber-400 text-base">⚠️</span>
+            <p className="text-xs text-amber-200 font-bold uppercase tracking-wider">
+              Свържете всички бележки с правилните снимки, за да разсекретите корковото табло!
+            </p>
+          </div>
+        ) : (
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-green-950/90 border-2 border-green-500 p-4 rounded-2xl shadow-2xl text-center space-y-2"
+          >
+            <span className="text-xs text-green-400 font-black uppercase tracking-widest block">🎉 Всички червени конци са опънати!</span>
+            <p className="text-xs text-neutral-200">Корковото табло е напълно разсекретено. Готови сте за финалния разпит на свидетеля.</p>
+          </motion.div>
+        )}
+        <motion.button 
+          whileHover={{ scale: 1.02 }} 
+          whileTap={{ scale: 0.98 }} 
+          onClick={onComplete} 
+          className={`w-full py-4 rounded-2xl text-xs sm:text-sm uppercase tracking-[0.2em] font-black shadow-2xl cursor-pointer transition-all duration-300 ${
+            allUnlocked 
+              ? 'bg-gradient-to-r from-red-700 via-red-600 to-amber-700 hover:from-red-600 hover:to-amber-600 text-white shadow-[0_0_30px_rgba(220,38,38,0.6)] border-2 border-red-400' 
+              : 'bg-[#3b220f] hover:bg-[#4a2e18] text-amber-200/70 border-2 border-amber-900'
+          }`}
+        >
+          <span>[ ПРЕМИН КЪМ РАЗПИТА НА СВИДЕТЕЛЯ → ]</span>
+        </motion.button>
+      </div>
+
       <AnimatePresence>
         {selectedImg && (
           <motion.div 
@@ -276,4 +387,3 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
     </div>
   );
 }
-
