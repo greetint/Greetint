@@ -69,23 +69,29 @@ export function SuspectRecordStage({
     setIsInside(true);
 
     const newRevealed: { [key: string]: boolean } = {};
+    let newlyRevealedCount = 0;
+
     Object.entries(redactedRefs.current).forEach(([key, el]) => {
       if (el) {
         const rect = el.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
         const distance = Math.hypot(clientX - cx, clientY - cy);
-        if (distance < 95) {
+        if (distance < 100) {
           newRevealed[key] = true;
-          playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.15);
+          if (!revealedItems[key]) {
+            newlyRevealedCount++;
+          }
         }
       }
     });
 
-    if (Object.keys(newRevealed).length > 0) {
-      setRevealedItems(prev => ({ ...prev, ...newRevealed }));
+    if (newlyRevealedCount > 0) {
+      playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
     }
-  }, [isMuted]);
+
+    setRevealedItems(newRevealed);
+  }, [isMuted, revealedItems]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     handlePointerMove(e.clientX, e.clientY);
@@ -102,17 +108,21 @@ export function SuspectRecordStage({
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
       onMouseEnter={() => setIsInside(true)}
-      onMouseLeave={() => setIsInside(false)}
-      className="relative w-full h-full bg-[#0d0c0a] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-y-auto cursor-crosshair"
+      onMouseLeave={() => {
+        setIsInside(false);
+        setRevealedItems({});
+      }}
+      className="relative w-full h-full bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-y-auto cursor-crosshair"
     >
+      {/* Laser Pointer Spotlight Effects */}
       {isInside && (
         <>
           <div 
-            className="pointer-events-none w-56 h-56 rounded-full blur-2xl bg-red-600/35 z-50 fixed -translate-x-1/2 -translate-y-1/2 transition-all duration-75 ease-out mix-blend-screen"
+            className="pointer-events-none w-64 h-64 rounded-full blur-3xl bg-red-600/40 z-50 fixed -translate-x-1/2 -translate-y-1/2 transition-all duration-75 ease-out mix-blend-screen"
             style={{ left: mouseScreen.x, top: mouseScreen.y }}
           />
           <div 
-            className="pointer-events-none w-4 h-4 rounded-full bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.9)] z-55 fixed -translate-x-1/2 -translate-y-1/2 border border-white/80"
+            className="pointer-events-none w-5 h-5 rounded-full bg-red-500 shadow-[0_0_25px_rgba(239,68,68,1)] z-55 fixed -translate-x-1/2 -translate-y-1/2 border-2 border-white"
             style={{ left: mouseScreen.x, top: mouseScreen.y }}
           />
         </>
@@ -122,32 +132,36 @@ export function SuspectRecordStage({
         initial={{ scale: 0.95, opacity: 0, y: 15 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative z-10 max-w-2xl w-full bg-[#EAE3D2] border-4 border-[#C2B59B] rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.85)] p-6 sm:p-8 space-y-6 my-auto overflow-hidden"
+        className="relative z-10 max-w-2xl w-full bg-[#E8E1D1] border-4 border-[#C2B59B] rounded-2xl shadow-[0_30px_70px_rgba(0,0,0,0.9)] p-6 sm:p-8 space-y-6 my-auto overflow-hidden"
         style={{
-          backgroundImage: 'radial-gradient(#d6ccb4 0.75px, transparent 0.75px)',
+          backgroundImage: 'radial-gradient(#d6ccb4 0.8px, transparent 0.8px)',
           backgroundSize: '16px 16px'
         }}
       >
-        <div className="absolute -top-3 left-8 bg-[#C2B59B] text-[#1F1A17] px-4 py-1 rounded-t-lg text-[10px] font-black uppercase tracking-[0.25em] border-t-2 border-x-2 border-[#A89A80] shadow-sm">
+        {/* Manila Folder Tab */}
+        <div className="absolute -top-3 left-8 bg-[#C2B59B] text-[#1F1A17] px-5 py-1.5 rounded-t-lg text-[10px] font-black uppercase tracking-[0.25em] border-t-2 border-x-2 border-[#A89A80] shadow-sm">
           MANILA FILE // TOP SECRET // EYES ONLY
         </div>
 
-        <div className="absolute top-4 right-6 border-2 border-red-700/60 text-red-700 px-3 py-1 rounded font-black text-[11px] uppercase tracking-[0.3em] transform rotate-3 bg-red-950/10 shadow-sm pointer-events-none">
-          TOP SECRET // CONFIDENTIAL
+        {/* Red Classified Stamp */}
+        <div className="absolute top-4 right-6 border-3 border-red-700 text-red-700 px-3.5 py-1 rounded font-black text-[11px] uppercase tracking-[0.3em] transform rotate-3 bg-red-950/10 shadow-sm pointer-events-none">
+          TOP SECRET // EYES ONLY
         </div>
 
+        {/* Header */}
         <div className="border-b-2 border-black/30 pb-4 pt-2">
           <span className="text-[10px] uppercase tracking-widest text-red-700 font-extrabold block">ФЕДЕРАЛНО ДОСИЕ НА СУБЕКТА</span>
           <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-wide text-black mt-1">{recipient}</h2>
-          <p className="text-[11px] text-neutral-600 mt-1 italic">
-            Инструкция: Преминете с лазерния фенер върху черните цензурирани ленти, за да разкриете секретните ключови данни.
+          <p className="text-[11px] text-neutral-700 mt-1 italic font-medium">
+            Инструкция: Задръжте или прекарайте лазерния фенер върху черните цензурирани ленти [ REDACTED ], за да разчетете секретните данни. При отместване текстът отново се скрива.
           </p>
         </div>
 
+        {/* Dossier Fields */}
         <div className="space-y-3.5">
           <div className="flex justify-between items-center text-xs uppercase font-extrabold tracking-wider text-black/80 px-1">
             <span>ОФИЦИАЛНИ ДАННИ И УЛИКИ:</span>
-            <span className="text-[10px] text-red-700 animate-pulse">[ 🔦 ОСВЕТЕТЕ С ФЕНЕРА ]</span>
+            <span className="text-[10px] text-red-700 animate-pulse font-bold">[ 🔦 НАСОЧЕТЕ ЛАЗЕРА ]</span>
           </div>
 
           <div className="space-y-3">
@@ -158,29 +172,29 @@ export function SuspectRecordStage({
                   key={field.key}
                   className="bg-[#F5F1E8] border-2 border-black/40 p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-inner relative"
                 >
-                  <div className="text-xs font-black text-red-800 tracking-wider">
+                  <div className="text-xs font-black text-red-900 tracking-wider">
                     {field.label}:
                   </div>
 
                   <div className="flex items-center gap-3">
                     <div 
                       ref={el => { redactedRefs.current[field.key] = el; }}
-                      className="relative px-3 py-1 rounded overflow-hidden min-w-[140px] text-center"
+                      className="relative px-3 py-1.5 rounded overflow-hidden min-w-[160px] text-center bg-[#2B2723] shadow-inner"
                     >
-                      <span className={`text-xs font-black font-mono tracking-widest uppercase transition-colors duration-300 ${isRevealed ? 'text-red-600' : 'text-transparent select-none'}`}>
+                      <span className={`text-xs font-black font-mono tracking-widest uppercase transition-all duration-200 ${isRevealed ? 'text-amber-200' : 'text-transparent select-none'}`}>
                         {field.value}
                       </span>
 
                       <div 
-                        className={`absolute inset-0 bg-black transition-opacity duration-300 rounded flex items-center justify-center ${isRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                        className={`absolute inset-0 bg-black transition-all duration-200 rounded flex items-center justify-center ${isRevealed ? 'opacity-0 pointer-events-none scale-105' : 'opacity-100 scale-100'}`}
                       >
-                        <span className="text-[10px] text-neutral-400 font-mono tracking-[0.15em] select-none font-bold">
+                        <span className="text-[11px] text-neutral-400 font-mono tracking-[0.2em] select-none font-black">
                           [ REDACTED ]
                         </span>
                       </div>
                     </div>
 
-                    <span className="text-[10px] text-neutral-500 hidden sm:inline-block max-w-[160px] truncate">
+                    <span className="text-[10px] text-neutral-600 hidden sm:inline-block max-w-[160px] truncate font-medium">
                       ({field.note})
                     </span>
                   </div>
@@ -190,10 +204,12 @@ export function SuspectRecordStage({
           </div>
         </div>
 
-        <div className="bg-red-950/10 border-2 border-red-700/50 p-4 rounded-xl text-xs text-red-900 font-mono font-bold shadow-inner">
+        {/* Verdict Box */}
+        <div className="bg-red-950/10 border-2 border-red-700/60 p-4 rounded-xl text-xs text-red-950 font-mono font-bold shadow-inner">
           <span className="text-red-700 font-black">ПРИСЪДА:</span> НАВЪРШВАНЕ НА {age} ГОДИНИ ПРИ СТРОГО ЗАТВОРНИЧЕСКИ РЕЖИМ НА КУПОН, НЕОГРАНИЧЕНИ ПРАЗНЕНСТВА И ЗАДЪЛЖИТЕЛНИ УСМИВКИ.
         </div>
 
+        {/* Navigation Button */}
         <motion.button 
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
