@@ -134,26 +134,32 @@ export function MagnifyingGlassStage({
         )}
 
         {subStage === 3 && (
-          <div className="bg-[#161412] p-6 rounded-3xl border-2 border-amber-500/60 shadow-2xl space-y-6 text-center">
+          <div className="flex flex-col items-center justify-center space-y-8 my-auto text-center py-6">
             <div className="space-y-2">
-              <span className="text-xs text-amber-400 font-bold uppercase">🔍 Химическа Лупа</span>
+              <span className="text-xs text-amber-400 font-bold uppercase tracking-widest">🔍 Химическа Лупа</span>
               <p className="text-xs text-[#958679]">Минете с лупата над посланието за разкриване.</p>
             </div>
-            <div ref={msgRef} className="relative p-6 bg-black/60 rounded-2xl border border-white/10 min-h-[120px] flex items-center justify-center my-2">
-              <p className="text-sm font-serif italic text-neutral-600 blur-sm select-none">&quot;{finalMemory}&quot;</p>
-              <div className={`absolute inset-0 flex items-center justify-center p-6 transition-opacity ${revealed ? 'opacity-100' : 'opacity-25'}`}>
-                <p className="text-sm font-serif font-bold text-amber-200">&quot;{finalMemory}&quot;</p>
-              </div>
+            
+            <div ref={msgRef} className="py-8 px-4 max-w-lg mx-auto select-none">
+              <p className="text-base sm:text-lg font-serif italic text-[#131110] leading-relaxed select-none">
+                &quot;{finalMemory}&quot;
+              </p>
             </div>
-            <button onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); onComplete(); }} className="w-full bg-amber-600 hover:bg-amber-500 text-black py-4 rounded-2xl text-xs uppercase tracking-widest font-black cursor-pointer border-2 border-amber-400 shadow">[ КЪМ ТАБЛОТО (СТЕЙДЖ 5) → ]</button>
+
+            <button 
+              onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); onComplete(); }} 
+              className="max-w-xs w-full bg-amber-600 hover:bg-amber-500 text-black py-4 rounded-2xl text-xs uppercase tracking-widest font-black cursor-pointer border-2 border-amber-400 shadow-xl transition"
+            >
+              [ КЪМ ТАБЛОТО (СТЕЙДЖ 5) → ]
+            </button>
           </div>
         )}
       </div>
 
       {subStage === 3 && isInside && (
-        <div className="absolute pointer-events-none rounded-full border-4 border-amber-400/95 shadow-2xl overflow-hidden bg-amber-950/25 backdrop-blur-[2px] z-50 flex items-center justify-center p-4 text-center" style={{ width: '160px', height: '160px', left: `${mousePos.x - 80}px`, top: `${mousePos.y - 80}px` }}>
-          <div className="absolute inset-0 flex items-center justify-center p-2">
-            <p className="text-amber-100 text-[11px] font-serif font-bold leading-tight">{finalMemory}</p>
+        <div className="absolute pointer-events-none rounded-full border-4 border-amber-400/95 shadow-2xl overflow-hidden bg-[#161210] backdrop-blur-md z-50 flex items-center justify-center p-4 text-center" style={{ width: '180px', height: '180px', left: `${mousePos.x - 90}px`, top: `${mousePos.y - 90}px` }}>
+          <div className="absolute inset-0 flex items-center justify-center p-3">
+            <p className="text-amber-100 text-xs sm:text-sm font-serif font-bold leading-snug">&quot;{finalMemory}&quot;</p>
           </div>
         </div>
       )}
