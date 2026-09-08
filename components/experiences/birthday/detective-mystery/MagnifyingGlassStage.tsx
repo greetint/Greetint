@@ -49,7 +49,16 @@ export function MagnifyingGlassStage({
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputCode.trim().toLowerCase() === (secretPassword || 'кафе').trim().toLowerCase()) {
+    const cleanInput = inputCode.trim().toLowerCase().replace(/[^\wа-яѓѕјљњќџабвгдежзийклмнопрстуфхцчшщъьюя]/g, '');
+    const cleanSecret = (secretPassword || 'кафе').trim().toLowerCase().replace(/[^\wа-яѓѕјљњќџабвгдежзийклмнопрстуфхцчшщъьюя]/g, '');
+
+    const isMatch = 
+      cleanInput === cleanSecret ||
+      cleanInput.includes(cleanSecret) ||
+      cleanSecret.includes(cleanInput) ||
+      (cleanSecret === 'кафе' && ['кафе', 'coffee', 'espresso', 'кафенце', 'caffee'].some(s => cleanInput.includes(s)));
+
+    if (isMatch) {
       playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.9);
       setHasError(false);
       speakBulgarian("Кодът е верен!", isMuted, 0.92, 1.0);

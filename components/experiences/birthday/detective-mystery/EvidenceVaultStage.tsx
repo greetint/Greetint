@@ -7,12 +7,14 @@ import { speakBulgarian, playSoundEffect } from './utils/speech';
 interface EvidenceVaultProps {
   photos: { fileUrl: string }[];
   evidenceClues?: string[];
+  evidenceAnswers?: string[];
+  evidenceItems?: { fileUrl: string; clue: string; answer: string }[];
   suspectProfile?: { alias: string; mainCrime: string; distinguishingMark: string; lastSeen: string; specialSkill: string };
   isMuted?: boolean;
   onComplete: () => void;
 }
 
-export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMuted = false, onComplete }: EvidenceVaultProps) {
+export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evidenceItems, suspectProfile, isMuted = false, onComplete }: EvidenceVaultProps) {
   const profile = suspectProfile || { 
     alias: 'Шеф на купона', 
     mainCrime: 'Превишена скорост на празнуване', 
@@ -21,12 +23,22 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
     specialSkill: 'Неоторизирано ядене на торта' 
   };
 
+  const defaultAnswers = [
+    profile.alias || 'Шеф на купона',
+    profile.mainCrime || 'Превишена скорост на празнуване',
+    profile.distinguishingMark || 'Заразно добро настроение',
+    profile.lastSeen || 'На дансинга в петък вечер',
+    profile.specialSkill || 'Неоторизирано ядене на торта'
+  ];
+
+  const answers = evidenceAnswers?.length === 5 ? evidenceAnswers : (evidenceItems?.length === 5 ? evidenceItems.map(item => item.answer) : defaultAnswers);
+
   const facts = [
-    { id: 0, label: 'Кодово име', value: profile.alias || 'Шеф на купона' },
-    { id: 1, label: 'Престъпление', value: profile.mainCrime || 'Превишена скорост на празнуване' },
-    { id: 2, label: 'Белег', value: profile.distinguishingMark || 'Заразно добро настроение' },
-    { id: 3, label: 'Последно', value: profile.lastSeen || 'На дансинга в петък вечер' },
-    { id: 4, label: 'Умение', value: profile.specialSkill || 'Неоторизирано ядене на торта' }
+    { id: 0, label: 'Улика 1', value: answers[0] },
+    { id: 1, label: 'Улика 2', value: answers[1] },
+    { id: 2, label: 'Улика 3', value: answers[2] },
+    { id: 3, label: 'Улика 4', value: answers[3] },
+    { id: 4, label: 'Улика 5', value: answers[4] }
   ];
 
   const clues = evidenceClues?.length ? evidenceClues : [

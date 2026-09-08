@@ -25,12 +25,20 @@ export default function DetectiveMysteryCreatePage() {
     'Коя е следващата детективска дестинация?'
   ];
 
-  const [evidenceItems, setEvidenceItems] = useState<Array<{ fileUrl: string; clue: string }>>([
-    { fileUrl: '', clue: defaultClues[0] },
-    { fileUrl: '', clue: defaultClues[1] },
-    { fileUrl: '', clue: defaultClues[2] },
-    { fileUrl: '', clue: defaultClues[3] },
-    { fileUrl: '', clue: defaultClues[4] },
+  const defaultAnswers = [
+    'Шеф на купона',
+    'Превишена скорост на празнуване',
+    'Заразно добро настроение',
+    'На дансинга в петък вечер',
+    'Неоторизирано ядене на торта'
+  ];
+
+  const [evidenceItems, setEvidenceItems] = useState<Array<{ fileUrl: string; clue: string; answer: string }>>([
+    { fileUrl: '', clue: defaultClues[0], answer: defaultAnswers[0] },
+    { fileUrl: '', clue: defaultClues[1], answer: defaultAnswers[1] },
+    { fileUrl: '', clue: defaultClues[2], answer: defaultAnswers[2] },
+    { fileUrl: '', clue: defaultClues[3], answer: defaultAnswers[3] },
+    { fileUrl: '', clue: defaultClues[4], answer: defaultAnswers[4] },
   ]);
 
   const [lieDetectorQuestions, setLieDetectorQuestions] = useState<
@@ -92,7 +100,13 @@ export default function DetectiveMysteryCreatePage() {
       },
       secretPassword: secretPassword || 'кафе',
       redactedWish: redactedWish || 'Честит рожден ден! Бъди все така неуловим.',
+      evidenceItems: evidenceItems.map((item, i) => ({
+        fileUrl: item.fileUrl || `/images/cards/card-${(i % 3) + 1}.png`,
+        clue: item.clue.trim() || defaultClues[i],
+        answer: item.answer.trim() || defaultAnswers[i]
+      })),
       evidenceClues: evidenceItems.map((item, i) => item.clue.trim() || defaultClues[i]),
+      evidenceAnswers: evidenceItems.map((item, i) => item.answer.trim() || defaultAnswers[i]),
       photos: evidenceItems.map((item, i) => ({ 
         fileUrl: item.fileUrl || `/images/cards/card-${(i % 3) + 1}.png` 
       })),
@@ -289,6 +303,7 @@ export default function DetectiveMysteryCreatePage() {
                       </div>
 
                       <div>
+                        <label className="text-[10px] font-black uppercase text-black/70 block mb-1">❓ Въпрос / Улика към снимката:</label>
                         <select
                           onChange={e => {
                             if (e.target.value) {
@@ -315,7 +330,38 @@ export default function DetectiveMysteryCreatePage() {
                             updated[i].clue = e.target.value;
                             setEvidenceItems(updated);
                           }}
-                          placeholder={`Въпрос или улика за бележка №${i + 1}...`}
+                          placeholder={`Въпрос или улика за снимка №${i + 1}...`}
+                          className="w-full bg-transparent border-b border-black/40 py-1 text-xs text-black font-mono focus:outline-none mb-3"
+                        />
+
+                        <label className="text-[10px] font-black uppercase text-black/70 block mb-1">💡 Очакван отговор / Факт (на жълтата бележка):</label>
+                        <select
+                          onChange={e => {
+                            if (e.target.value) {
+                              const updated = [...evidenceItems];
+                              updated[i].answer = e.target.value;
+                              setEvidenceItems(updated);
+                            }
+                          }}
+                          className="w-full bg-white border border-black/30 rounded p-1 text-[11px] text-black font-mono focus:outline-none mb-1.5"
+                          defaultValue=""
+                        >
+                          <option value="" disabled>-- Изберете готов отговор (шаблон) --</option>
+                          {defaultAnswers.map((tmpl, tIdx) => (
+                            <option key={tIdx} value={tmpl}>{tmpl}</option>
+                          ))}
+                        </select>
+
+                        <input 
+                          type="text" 
+                          required
+                          value={item.answer} 
+                          onChange={e => {
+                            const updated = [...evidenceItems];
+                            updated[i].answer = e.target.value;
+                            setEvidenceItems(updated);
+                          }}
+                          placeholder={`Факт / отговор за бележка №${i + 1}...`}
                           className="w-full bg-transparent border-b border-black/40 py-1 text-xs text-black font-mono focus:outline-none"
                         />
                       </div>

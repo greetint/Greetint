@@ -27,6 +27,8 @@ interface DetectiveMysteryExperienceProps {
     redactedWish: string;
     photos: { fileUrl: string }[];
     evidenceClues?: string[];
+    evidenceAnswers?: string[];
+    evidenceItems?: { fileUrl: string; clue: string; answer: string }[];
     lieDetectorQuestions?: {
       question: string;
       options: string[];
@@ -128,6 +130,8 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       key="vault" 
       photos={photos} 
       evidenceClues={data?.evidenceClues}
+      evidenceAnswers={data?.evidenceAnswers}
+      evidenceItems={data?.evidenceItems}
       suspectProfile={suspectProfile}
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(5)} 
