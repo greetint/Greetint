@@ -108,6 +108,9 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       recipient={recipient} 
       age={age} 
       suspectProfile={suspectProfile} 
+      secretPassword={data?.secretPassword}
+      evidenceAnswers={data?.evidenceAnswers}
+      evidenceItems={data?.evidenceItems}
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(2)} 
     />,
