@@ -55,7 +55,7 @@ export function SuspectRecordStage({
     profile.specialSkill || 'Неоторизирано ядене на торта'
   ];
 
-  const answers = evidenceAnswers?.length === 5 ? evidenceAnswers : (evidenceItems?.length === 5 ? evidenceItems.map(item => item.answer) : defaultAnswers);
+  const answers = evidenceAnswers?.length ? evidenceAnswers : (evidenceItems?.length ? evidenceItems.map(item => item.answer) : defaultAnswers);
   const secretPassVal = secretPassword || 'кафе';
 
   const page1Fields = [
@@ -71,13 +71,12 @@ export function SuspectRecordStage({
     { key: 'specialSkill', label: '[ СПЕЦИАЛНО УМЕНИЕ ]', value: profile.specialSkill, note: 'Улика за корковото табло' },
   ];
 
-  const page3Fields = [
-    { key: 'ev0', label: '[ ДОКАЗАТЕЛСТВО №1 ]', value: answers[0], note: 'Факт за корковото табло (Стейдж 5)' },
-    { key: 'ev1', label: '[ ДОКАЗАТЕЛСТВО №2 ]', value: answers[1], note: 'Факт за корковото табло (Стейдж 5)' },
-    { key: 'ev2', label: '[ ДОКАЗАТЕЛСТВО №3 ]', value: answers[2], note: 'Факт за корковото табло (Стейдж 5)' },
-    { key: 'ev3', label: '[ ДОКАЗАТЕЛСТВО №4 ]', value: answers[3], note: 'Факт за корковото табло (Стейдж 5)' },
-    { key: 'ev4', label: '[ ДОКАЗАТЕЛСТВО №5 ]', value: answers[4], note: 'Факт за корковото табло (Стейдж 5)' },
-  ];
+  const page3Fields = answers.map((ans, idx) => ({
+    key: `ev${idx}`,
+    label: `[ ДОКАЗАТЕЛСТВО №${idx + 1} ]`,
+    value: ans,
+    note: 'Факт за корковото табло (Стейдж 5)'
+  }));
 
   useEffect(() => {
     // No speech

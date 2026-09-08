@@ -23,6 +23,13 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
     specialSkill: 'Неоторизирано ядене на торта' 
   };
 
+  const evPhotos = photos.length ? photos : [
+    { fileUrl: '/images/cards/card-1.png' }, 
+    { fileUrl: '/images/cards/card-2.png' }, 
+    { fileUrl: '/images/cards/card-3.png' }
+  ];
+  const numItems = evPhotos.length;
+
   const defaultAnswers = [
     profile.alias || 'Шеф на купона',
     profile.mainCrime || 'Превишена скорост на празнуване',
@@ -31,17 +38,15 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
     profile.specialSkill || 'Неоторизирано ядене на торта'
   ];
 
-  const answers = evidenceAnswers?.length === 5 ? evidenceAnswers : (evidenceItems?.length === 5 ? evidenceItems.map(item => item.answer) : defaultAnswers);
+  const answers = evidenceAnswers?.length ? evidenceAnswers : (evidenceItems?.length ? evidenceItems.map(item => item.answer) : defaultAnswers.slice(0, numItems));
 
-  const facts = [
-    { id: 0, label: 'Улика 1', value: answers[0] },
-    { id: 1, label: 'Улика 2', value: answers[1] },
-    { id: 2, label: 'Улика 3', value: answers[2] },
-    { id: 3, label: 'Улика 4', value: answers[3] },
-    { id: 4, label: 'Улика 5', value: answers[4] }
-  ];
+  const facts = answers.map((ans, idx) => ({
+    id: idx,
+    label: `Доказателство №${idx + 1}`,
+    value: ans
+  }));
 
-  const clues = evidenceClues?.length ? evidenceClues : [
+  const defaultClues = [
     'Кой е псевдонимът на заподозрения?',
     'Какво е основното престъпление?',
     'Кой е отличителният белег?',
@@ -49,15 +54,10 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
     'Какво е специалното умение?'
   ];
 
-  const evPhotos = photos.length ? photos : [
-    { fileUrl: '/images/cards/card-1.png' }, 
-    { fileUrl: '/images/cards/card-2.png' }, 
-    { fileUrl: '/images/cards/card-3.png' }
-  ];
+  const clues = evidenceClues?.length ? evidenceClues : defaultClues.slice(0, numItems);
 
   const [selectedFactId, setSelectedFactId] = useState<number | null>(null);
   const [connections, setConnections] = useState<{ [photoIdx: number]: number }>({});
-  const [unlocked, setUnlocked] = useState<boolean[]>(Array(evPhotos.length).fill(false));
   const [errorPhotoIdx, setErrorPhotoIdx] = useState<number | null>(null);
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
 
@@ -65,6 +65,8 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
   const cluePinRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const photoPinRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const [lineCoords, setLineCoords] = useState<{ [photoIdx: number]: { x1: number; y1: number; x2: number; y2: number } }>({});
+  const [unlocked, setUnlocked] = useState<boolean[]>(Array(numItems).fill(false));
+
 
   const updateLines = useCallback(() => {
     if (!boardRef.current) return;
