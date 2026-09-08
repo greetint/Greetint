@@ -169,7 +169,7 @@ export function SuspectRecordStage({
         setIsInside(false);
         setRevealedItems({});
       }}
-      className="relative w-screen h-screen bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-hidden cursor-crosshair"
+      className="relative w-screen h-screen bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-crosshair"
     >
       {/* Laser Pointer Spotlight Effects */}
       {isInside && (
@@ -190,20 +190,21 @@ export function SuspectRecordStage({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
+        className="w-full max-w-2xl my-auto"
       >
         {/* Manila Folder Container */}
-        <div className="relative w-full max-w-2xl">
+        <div className="relative w-full">
           {/* Folder Tab */}
           <div className="absolute -top-7 left-10 w-60 h-8 bg-[#d2b48c] rounded-t-xl flex items-center justify-center text-[11px] uppercase font-bold tracking-wider text-black/70 shadow-md border-t border-x border-black/10 z-0">
             CLASSIFIED FILE // EYES ONLY
           </div>
 
-          <div className="relative bg-[#d2b48c] rounded-r-2xl rounded-bl-sm p-6 shadow-[20px_20px_40px_rgba(0,0,0,0.4)] border-l-8 border-l-black/10">
+          <div className="relative bg-[#d2b48c] rounded-r-2xl rounded-bl-sm p-4 sm:p-6 shadow-[20px_20px_40px_rgba(0,0,0,0.4)] border-l-8 border-l-black/10">
             {/* Vertical Crease Line */}
             <div className="absolute top-0 bottom-0 left-6 w-px bg-black/20" />
 
           {/* Inner Paper Area */}
-          <div className="bg-[#f7f4ef] rounded-lg p-8 shadow-inner border border-black/5">
+          <div className="bg-[#f7f4ef] rounded-lg p-4 sm:p-8 shadow-inner border border-black/5">
 
         {/* Header & Page Navigation Tabs */}
         <div className="border-b-2 border-black/20 pb-4 pt-2 space-y-3">
