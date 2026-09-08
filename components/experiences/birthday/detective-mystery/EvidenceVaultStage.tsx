@@ -13,14 +13,20 @@ interface EvidenceVaultProps {
 }
 
 export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMuted = false, onComplete }: EvidenceVaultProps) {
-  const profile = suspectProfile || { alias: 'Шеф на купона', mainCrime: 'Превишена скорост', distinguishingMark: 'Усмивка', lastSeen: 'Дансинга', specialSkill: 'Ядене на торта' };
+  const profile = suspectProfile || { 
+    alias: 'Шеф на купона', 
+    mainCrime: 'Превишена скорост на празнуване', 
+    distinguishingMark: 'Заразно добро настроение', 
+    lastSeen: 'На дансинга в петък вечер', 
+    specialSkill: 'Неоторизирано ядене на торта' 
+  };
 
   const facts = [
-    { id: 0, label: 'Кодово име', value: profile.alias },
-    { id: 1, label: 'Престъпление', value: profile.mainCrime },
-    { id: 2, label: 'Белег', value: profile.distinguishingMark },
-    { id: 3, label: 'Последно', value: profile.lastSeen },
-    { id: 4, label: 'Умение', value: profile.specialSkill }
+    { id: 0, label: 'Кодово име', value: profile.alias || 'Шеф на купона' },
+    { id: 1, label: 'Престъпление', value: profile.mainCrime || 'Превишена скорост на празнуване' },
+    { id: 2, label: 'Белег', value: profile.distinguishingMark || 'Заразно добро настроение' },
+    { id: 3, label: 'Последно', value: profile.lastSeen || 'На дансинга в петък вечер' },
+    { id: 4, label: 'Умение', value: profile.specialSkill || 'Неоторизирано ядене на торта' }
   ];
 
   const clues = evidenceClues?.length ? evidenceClues : [
@@ -56,6 +62,8 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
   const updateLines = useCallback(() => {
     if (!boardRef.current) return;
     const boardRect = boardRef.current.getBoundingClientRect();
+    const scrollTop = boardRef.current.scrollTop;
+    const scrollLeft = boardRef.current.scrollLeft;
     const newCoords: { [photoIdx: number]: { x1: number; y1: number; x2: number; y2: number } } = {};
 
     Object.entries(connections).forEach(([pIdxStr, factId]) => {
@@ -68,10 +76,10 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
         const rectB = pinB.getBoundingClientRect();
 
         newCoords[pIdx] = {
-          x1: rectA.left + rectA.width / 2 - boardRect.left,
-          y1: rectA.top + rectA.height / 2 - boardRect.top,
-          x2: rectB.left + rectB.width / 2 - boardRect.left,
-          y2: rectB.top + rectB.height / 2 - boardRect.top,
+          x1: rectA.left + rectA.width / 2 - boardRect.left + scrollLeft,
+          y1: rectA.top + rectA.height / 2 - boardRect.top + scrollTop,
+          x2: rectB.left + rectB.width / 2 - boardRect.left + scrollLeft,
+          y2: rectB.top + rectB.height / 2 - boardRect.top + scrollTop,
         };
       }
     });
@@ -105,7 +113,7 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
       return;
     }
 
-    const expectedFactId = photoIdx % facts.length;
+    const expectedFactId = photoIdx;
 
     if (selectedFactId === expectedFactId) {
       playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85);
@@ -135,6 +143,7 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
   return (
     <div 
       ref={boardRef}
+      onScroll={updateLines}
       className="relative w-full h-full bg-[#2b1d11] text-[#2b1d0c] font-mono flex flex-col items-center justify-start p-3 sm:p-6 select-none overflow-y-auto"
     >
       <div className="absolute inset-0 pointer-events-none opacity-60 bg-[radial-gradient(#4a2e18_2px,transparent_2px)] [background-size:24px_24px]" />
@@ -305,11 +314,11 @@ export function EvidenceVaultStage({ photos, evidenceClues, suspectProfile, isMu
                     )}
                   </div>
                   <div className="pt-3 text-center space-y-1.5">
-                    <div className="flex items-center justify-between text-[10px] font-bold text-neutral-700 uppercase">
+                    <div className="flex flex-col sm:flex-row items-center justify-between text-[10px] font-bold text-neutral-700 uppercase gap-1">
                       <span>ФЕДЕРАЛЕН АРХИВ #{idx + 1}</span>
                       {isUnl && connectedFact ? (
-                        <span className="text-green-700 bg-green-100 px-2 py-0.5 rounded border border-green-300 font-extrabold">
-                          ✓ {connectedFact.label}
+                        <span className="text-green-800 bg-green-100 px-2 py-0.5 rounded border border-green-300 font-extrabold text-[10px] truncate max-w-full">
+                          ✓ {connectedFact.label}: {connectedFact.value}
                         </span>
                       ) : (
                         <span className="text-red-700 bg-red-100 px-2 py-0.5 rounded border border-red-300">
