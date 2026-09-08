@@ -95,7 +95,7 @@ export function SuspectRecordStage({
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
         const distance = Math.hypot(clientX - cx, clientY - cy);
-        if (distance < 70) {
+        if (distance < 85) {
           newRevealed[key] = true;
           if (!revealedItems[key]) {
             newlyRevealedCount++;
@@ -108,7 +108,7 @@ export function SuspectRecordStage({
       playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
     }
 
-    setRevealedItems(newRevealed);
+    setRevealedItems(prev => ({ ...prev, ...newRevealed }));
   }, [isMuted, revealedItems]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -121,35 +121,41 @@ export function SuspectRecordStage({
     }
   };
   const renderFields = (fields: typeof page1Fields) => (
-    <div className="space-y-2.5 sm:space-y-3.5">
+    <div className="space-y-2 sm:space-y-2.5">
       {fields.map((field) => {
         const isRevealed = revealedItems[field.key];
         return (
           <div 
             key={field.key}
-            className="bg-[#F5F1E8] border border-black/20 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-xs relative"
+            onPointerEnter={() => {
+              if (!revealedItems[field.key]) {
+                setRevealedItems(prev => ({ ...prev, [field.key]: true }));
+                playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
+              }
+            }}
+            className="bg-[#F5F1E8] border border-black/20 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-xs relative transition-colors duration-200 hover:border-black/40"
           >
             <div className="leading-tight">
-              <div className="text-xs sm:text-sm font-black text-red-900 tracking-wider uppercase">
+              <div className="text-xs font-black text-red-900 tracking-wider uppercase">
                 {field.label}
               </div>
-              <div className="text-[10px] sm:text-xs text-neutral-600 italic mt-0.5">
+              <div className="text-[10px] text-neutral-600 italic mt-0.5">
                 {field.note}
               </div>
             </div>
 
             <div 
               ref={el => { redactedRefs.current[field.key] = el; }}
-              className="relative px-3 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg overflow-hidden min-w-[160px] sm:min-w-[220px] text-center bg-[#2B2723] shadow-inner self-stretch sm:self-auto flex items-center justify-center h-8 sm:h-10"
+              className="relative px-3 py-1.5 rounded-md overflow-hidden min-w-[150px] sm:min-w-[190px] text-center bg-[#24201D] shadow-inner self-stretch sm:self-auto flex items-center justify-center h-8 sm:h-9"
             >
-              <span className={`text-xs sm:text-sm md:text-base font-black font-mono tracking-wider uppercase transition-all duration-200 ${isRevealed ? 'text-amber-200' : 'text-transparent select-none'}`}>
+              <span className={`text-xs sm:text-sm font-black font-mono tracking-wider uppercase transition-all duration-300 ${isRevealed ? 'text-amber-200' : 'text-transparent select-none'}`}>
                 {field.value}
               </span>
 
               <div 
-                className={`absolute inset-0 bg-black transition-all duration-200 rounded flex items-center justify-center ${isRevealed ? 'opacity-0 pointer-events-none scale-105' : 'opacity-100 scale-100'}`}
+                className={`absolute inset-0 bg-black transition-all duration-300 rounded flex items-center justify-center ${isRevealed ? 'opacity-0 pointer-events-none scale-105' : 'opacity-100 scale-100'}`}
               >
-                <span className="text-[10px] sm:text-xs text-neutral-400 font-mono tracking-[0.2em] select-none font-black">
+                <span className="text-[10px] text-neutral-400 font-mono tracking-[0.2em] select-none font-black">
                   [ REDACTED ]
                 </span>
               </div>
@@ -169,60 +175,52 @@ export function SuspectRecordStage({
         setIsInside(false);
         setRevealedItems({});
       }}
-      className="relative w-screen h-screen bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-crosshair"
+      className="relative w-screen h-screen bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-default"
     >
-      {/* Laser Pointer Spotlight Effects */}
-      {isInside && (
-        <div 
-          className="pointer-events-none w-2.5 h-2.5 rounded-full bg-red-600 z-55 fixed -translate-x-1/2 -translate-y-1/2 border border-white/60 shadow-sm"
-          style={{ left: mouseScreen.x, top: mouseScreen.y }}
-        />
-      )}
-
-      {/* Large Classified Manila Folder Container */}
+      {/* Classified Manila Folder Container */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-3xl lg:max-w-5xl xl:max-w-6xl my-auto pt-7 sm:pt-8 relative"
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-2xl sm:max-w-3xl my-auto pt-7 sm:pt-8 relative"
       >
         {/* Folder Tab */}
-        <div className="absolute top-0 left-6 sm:left-12 w-64 sm:w-72 h-8 sm:h-9 bg-[#d2b48c] rounded-t-xl flex items-center justify-center text-[10px] sm:text-xs uppercase font-extrabold tracking-wider text-black/75 shadow-sm border-t-2 border-x-2 border-black/15 z-0">
+        <div className="absolute top-0 left-6 sm:left-10 w-52 sm:w-60 h-7 sm:h-8 bg-[#d2b48c] rounded-t-xl flex items-center justify-center text-[9px] sm:text-[10px] uppercase font-extrabold tracking-wider text-black/75 shadow-sm border-t-2 border-x-2 border-black/15 z-0">
           CLASSIFIED FILE // EYES ONLY
         </div>
 
-        <div className="relative bg-[#d2b48c] rounded-r-2xl sm:rounded-r-3xl rounded-bl-sm p-4 sm:p-6 lg:p-8 shadow-[25px_25px_60px_rgba(0,0,0,0.65)] border-l-6 sm:border-l-8 border-l-black/20 flex flex-col">
+        <div className="relative bg-[#d2b48c] rounded-r-2xl rounded-bl-sm p-3.5 sm:p-5 lg:p-6 shadow-[20px_20px_45px_rgba(0,0,0,0.6)] border-l-6 sm:border-l-8 border-l-black/20 flex flex-col">
           {/* Vertical Crease Line */}
-          <div className="absolute top-0 bottom-0 left-5 sm:left-7 w-px bg-black/15 pointer-events-none" />
+          <div className="absolute top-0 bottom-0 left-5 sm:left-6 w-px bg-black/15 pointer-events-none" />
 
           {/* Inner Paper Area */}
-          <div className="bg-[#F9F7F1] rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-inner border border-black/10 flex flex-col min-h-[420px] sm:min-h-[500px]">
+          <div className="bg-[#F9F7F1] rounded-xl p-3.5 sm:p-5 lg:p-6 shadow-inner border border-black/10 flex flex-col">
 
             {/* Header & Page Navigation Tabs */}
-            <div className="border-b-2 border-black/15 pb-4 pt-0">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="border-b border-black/15 pb-3 pt-0">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <div className="leading-tight">
-                  <span className="text-[10px] sm:text-xs uppercase tracking-widest text-red-700 font-extrabold block">ЦЕНТРАЛЕН АРХИВ НА РАЗСЛЕДВАНЕТО</span>
-                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-wide text-black">{recipient}</h2>
+                  <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-red-700 font-extrabold block">ЦЕНТРАЛЕН АРХИВ НА РАЗСЛЕДВАНЕТО</span>
+                  <h2 className="text-lg sm:text-xl font-black uppercase tracking-wide text-black">{recipient}</h2>
                 </div>
 
                 {/* Folder Page Navigation Buttons */}
-                <div className="flex items-center gap-1.5 bg-[#D6CCB4] p-1.5 rounded-xl border border-black/15 shadow-inner">
+                <div className="flex items-center gap-1 bg-[#D6CCB4] p-1 rounded-xl border border-black/15 shadow-inner">
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(1); }}
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 1 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 1 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
                     1. Идентичност
                   </button>
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(2); }}
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 2 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 2 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
                     2. Престъпления
                   </button>
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(3); }}
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
                     3. Доказателства
                   </button>
@@ -231,7 +229,7 @@ export function SuspectRecordStage({
             </div>
 
             {/* Folder Content Area with Page Flipping Animation */}
-            <div className="flex-1 overflow-visible py-4 sm:py-5">
+            <div className="flex-1 overflow-visible py-3 sm:py-3.5">
               <AnimatePresence mode="wait">
                 {currentPage === 1 && (
                   <motion.div 
@@ -287,18 +285,18 @@ export function SuspectRecordStage({
             </div>
 
             {/* Footer & Navigation Button */}
-            <div className="border-t-2 border-black/15 pt-4 sm:pt-5 space-y-3">
-              <div className="bg-red-950/10 border-2 border-red-700/40 p-3 sm:p-3.5 rounded-xl text-xs sm:text-sm text-red-950 font-mono font-bold shadow-inner flex items-center justify-between gap-3">
+            <div className="border-t border-black/15 pt-3 sm:pt-4 space-y-2.5">
+              <div className="bg-red-950/10 border-2 border-red-700/40 p-2.5 sm:p-3 rounded-xl text-[11px] sm:text-xs text-red-950 font-mono font-bold shadow-inner flex items-center justify-between gap-2">
                 <span className="hidden sm:inline text-red-950">⚖️ ПРИСЪДА: НАВЪРШВАНЕ НА {age} ГОДИНИ ПРИ СТРОГО ЗАТВОРНИЧЕСКИ РЕЖИМ НА КУПОН.</span>
                 <span className="sm:hidden text-red-950">⚖️ ПРИСЪДА: {age} ГОДИНИ КУПОН.</span>
                 <span className="text-red-700 uppercase font-black tracking-tight shrink-0">СТРАНИЦА {currentPage} / 3</span>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 {currentPage > 1 && (
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(prev => Math.max(1, prev - 1) as any); }}
-                    className="bg-[#D6CCB4] hover:bg-[#c2b59b] text-black px-4 sm:px-6 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm uppercase tracking-wider font-black transition cursor-pointer border border-black/20 shadow-sm"
+                    className="bg-[#D6CCB4] hover:bg-[#c2b59b] text-black px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm uppercase tracking-wider font-black transition cursor-pointer border border-black/20 shadow-sm"
                   >
                     ← Предишна
                   </button>
@@ -307,7 +305,7 @@ export function SuspectRecordStage({
                 {currentPage < 3 ? (
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(prev => Math.min(3, prev + 1) as any); }}
-                    className="flex-1 bg-[#2B2723] hover:bg-black text-[#F7F4EF] py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.15em] font-black transition cursor-pointer border border-neutral-700 shadow"
+                    className="flex-1 bg-[#2B2723] hover:bg-black text-[#F7F4EF] py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.12em] font-black transition cursor-pointer border border-neutral-700 shadow"
                   >
                     Следваща страница →
                   </button>
@@ -316,7 +314,7 @@ export function SuspectRecordStage({
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={onComplete}
-                    className="flex-1 bg-red-700 hover:bg-red-800 text-white py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.15em] font-black shadow-lg transition cursor-pointer border border-red-500 flex items-center justify-center gap-2 group"
+                    className="flex-1 bg-red-700 hover:bg-red-800 text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.12em] font-black shadow-lg transition cursor-pointer border border-red-500 flex items-center justify-center gap-2 group"
                   >
                     <span>[ ПРЕМИН КЪМ ДЕТЕКТОРА НА ЛЪЖАТА → ]</span>
                   </motion.button>
