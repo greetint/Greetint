@@ -120,6 +120,7 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       key="magnify" 
       secretMemory={redactedWish} 
       secretPassword={data?.secretPassword}
+      age={age}
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(4)} 
     />,

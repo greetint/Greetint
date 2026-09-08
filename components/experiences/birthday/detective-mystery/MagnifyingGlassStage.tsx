@@ -1,36 +1,58 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { speakBulgarian, playSoundEffect } from './utils/speech';
 
 interface MagnifyingGlassProps {
   secretMemory: string;
   secretPassword?: string;
+  age?: string;
   isMuted?: boolean;
   onComplete: () => void;
 }
 
-export function MagnifyingGlassStage({ secretMemory, secretPassword = 'кафе', isMuted = false, onComplete }: MagnifyingGlassProps) {
+export function MagnifyingGlassStage({
+  secretMemory,
+  secretPassword = 'кафе',
+  age = '30',
+  isMuted = false,
+  onComplete
+}: MagnifyingGlassProps) {
+  const targetAge = parseInt(age, 10) || 30;
+  const [subStage, setSubStage] = useState<1 | 2 | 3>(1);
+  const [frequency, setFrequency] = useState<number>(10);
+  const [isLocked, setIsLocked] = useState<boolean>(false);
+  const [inputCode, setInputCode] = useState<string>('');
+  const [hasError, setHasError] = useState<boolean>(false);
   const [mousePos, setMousePos] = useState({ x: 200, y: 200 });
   const [isInside, setIsInside] = useState(false);
-  const [inputCode, setInputCode] = useState('');
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [revealed, setRevealed] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const msgRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    speakBulgarian("Използвайте дигиталната лупа, за да откриете скритата улика, и въведете секретния код.", isMuted, 0.92, 1.0);
+    if (subStage === 1) speakBulgarian(`Етап 1: Радиостанция. Настройте честотата на ${targetAge} MHz.`, isMuted, 0.92, 1.0);
+    else if (subStage === 2) speakBulgarian("Етап 2: Верификационен терминал. Въведете секретната дума от досието.", isMuted, 0.92, 1.0);
+    else if (subStage === 3) speakBulgarian("Етап 3: Химическа лупа. Плъзнете лупата, за да разчетете посланието.", isMuted, 0.92, 1.0);
     return () => { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); };
-  }, [isMuted]);
+  }, [subStage, targetAge, isMuted]);
+
+  const handleFreq = (val: number) => {
+    setFrequency(val);
+    if (val === targetAge && !isLocked) {
+      setIsLocked(true);
+      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.9);
+      speakBulgarian("Честотата е засечена!", isMuted, 0.92, 1.0);
+    }
+  };
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputCode.trim().toLowerCase() === (secretPassword || 'кафе').trim().toLowerCase()) {
-      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85);
-      setIsUnlocked(true); 
+      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.9);
       setHasError(false);
-      speakBulgarian("Кодът е верен! Личното послание е разсекретено.", isMuted, 0.92, 1.0);
+      speakBulgarian("Кодът е верен!", isMuted, 0.92, 1.0);
+      setTimeout(() => setSubStage(3), 800);
     } else {
       setHasError(true);
       playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.9);
@@ -38,63 +60,104 @@ export function MagnifyingGlassStage({ secretMemory, secretPassword = 'кафе'
     }
   };
 
+  const handleMove = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const cx = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const cy = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    const x = cx - rect.left;
+    const y = cy - rect.top;
+    setMousePos({ x, y });
+    setIsInside(true);
+
+    if (msgRef.current) {
+      const mrect = msgRef.current.getBoundingClientRect();
+      const mx = mrect.left + mrect.width / 2 - rect.left;
+      const my = mrect.top + mrect.height / 2 - rect.top;
+      if (Math.hypot(x - mx, y - my) < 160 && !revealed) {
+        setRevealed(true);
+        playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.4);
+      }
+    }
+  }, [revealed, isMuted]);
+
   const finalMemory = secretMemory || 'Честит рожден ден! Бъди все така неуловим и успешен.';
 
   return (
-    <div 
-      ref={containerRef}
-      onMouseMove={e => {
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
-        setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-        setIsInside(true);
-      }}
-      onMouseLeave={() => setIsInside(false)}
-      className="relative w-full h-full bg-[#0D0B0A] text-[#F7F4EF] font-mono flex flex-col items-center justify-between p-6 select-none overflow-hidden"
-    >
+    <div ref={containerRef} onMouseMove={handleMove} onTouchMove={handleMove} onMouseEnter={() => setIsInside(true)} onMouseLeave={() => setIsInside(false)} className="relative w-full h-full bg-[#0D0B0A] text-[#F7F4EF] font-mono flex flex-col items-center justify-between p-6 select-none overflow-hidden cursor-crosshair">
       <div className="relative z-20 text-center space-y-1 pt-2">
-        <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold block">СЕКРЕТЕН ТЕРМИНАЛ С ДИГИТАЛНА ЛУПА</span>
-        <h2 className="text-xl font-serif font-bold text-white uppercase">Разшифриране на архива</h2>
-        <p className="text-xs text-[#958679]">🔍 Плъзни лупата по екрана, за да откриеш скритата улика</p>
+        <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold block">ФЕДЕРАЛЕН АРХИВ // СТЕЙДЖ 4</span>
+        <h2 className="text-xl font-serif font-bold text-white uppercase">
+          {subStage === 1 && 'Етап 1: Радиостанция'}
+          {subStage === 2 && 'Етап 2: Верификация'}
+          {subStage === 3 && 'Етап 3: Химическа Лупа'}
+        </h2>
+        <div className="flex justify-center gap-2 pt-1">
+          <span className={`w-2.5 h-2.5 rounded-full ${subStage >= 1 ? 'bg-green-500' : 'bg-neutral-700'}`} />
+          <span className={`w-2.5 h-2.5 rounded-full ${subStage >= 2 ? 'bg-green-500' : 'bg-neutral-700'}`} />
+          <span className={`w-2.5 h-2.5 rounded-full ${subStage >= 3 ? 'bg-green-500' : 'bg-neutral-700'}`} />
+        </div>
       </div>
 
-      {!isUnlocked ? (
-        <div className="relative z-20 max-w-md w-full space-y-6 my-auto">
-          <div className="bg-[#1A1816]/80 backdrop-blur-md p-6 rounded-2xl border border-white/10 text-center space-y-3">
-            <div className="text-xs text-amber-400 font-bold">💡 Улика под лупата: Върни се към досието (Стейдж 2) и въведи секретната дума.</div>
+      <div className="relative z-20 max-w-xl w-full my-auto">
+        {subStage === 1 && (
+          <div className="bg-[#161412] p-6 rounded-3xl border-2 border-amber-500/40 shadow-2xl space-y-6 text-center">
+            <div className="space-y-2">
+              <span className="text-xs text-amber-300 font-bold uppercase">📡 Радиочестотен Тунер</span>
+              <p className="text-xs text-[#958679]">Настройте честотата до възрастта: <span className="text-amber-400 font-bold">{targetAge} MHz</span></p>
+            </div>
+            <div className="space-y-4 py-2">
+              <div className="text-3xl font-mono font-black text-amber-400">{frequency} MHz</div>
+              <input type="range" min="1" max="99" value={frequency} onChange={(e) => handleFreq(parseInt(e.target.value, 10))} className="w-full accent-amber-500 cursor-pointer h-2 bg-neutral-800 rounded-lg" />
+            </div>
+            {isLocked ? (
+              <div className="space-y-3">
+                <div className="text-green-400 text-xs font-bold uppercase bg-green-950/60 py-2 rounded-xl border border-green-500/40">✔ ЗАКЛЮЧЕНО!</div>
+                <button onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setSubStage(2); }} className="w-full bg-green-600 hover:bg-green-500 text-black py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">[ КЪМ ВЕРИФИКАЦИЯ → ]</button>
+              </div>
+            ) : (
+              <div className="text-xs text-neutral-400 italic">Цел: {targetAge} MHz</div>
+            )}
           </div>
-          <form onSubmit={handleVerify} className="bg-[#1A1816] p-6 rounded-3xl border-2 border-red-700/60 shadow-2xl space-y-4 text-center">
-            <input 
-              type="text" 
-              value={inputCode} 
-              onChange={e => setInputCode(e.target.value)} 
-              placeholder="Въведи секретен код..." 
-              className="w-full bg-black/70 border border-white/20 rounded-xl p-3.5 text-xs text-white text-center tracking-widest uppercase focus:outline-none focus:border-red-600 font-mono" 
-            />
-            {hasError && <p className="text-[11px] text-red-500 font-bold">[ ГРЕШЕН КОД // ПРОВЕРЕТЕ ДОСИЕТО ]</p>}
-            <button type="submit" className="w-full bg-red-700 hover:bg-red-600 text-white py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">
-              [ ДЕШИФРИРАЙ ПОСЛАНИЕТО 🔓 ]
-            </button>
+        )}
+
+        {subStage === 2 && (
+          <form onSubmit={handleVerify} className="bg-[#161412] p-6 rounded-3xl border-2 border-red-700/60 shadow-2xl space-y-6 text-center">
+            <div className="space-y-2">
+              <span className="text-xs text-red-400 font-bold uppercase">🔐 Верификационен Терминал</span>
+              <p className="text-xs text-[#958679]">Въведете секретната улика от Досието:</p>
+            </div>
+            <input type="text" value={inputCode} onChange={(e) => setInputCode(e.target.value)} placeholder="Секретен код..." className="w-full bg-black/80 border border-white/20 rounded-xl p-4 text-xs text-white text-center tracking-widest uppercase focus:outline-none focus:border-red-600 font-mono" />
+            {hasError && <p className="text-[11px] text-red-500 font-bold">[ ❌ ГРЕШЕН КОД ]</p>}
+            <button type="submit" className="w-full bg-red-700 hover:bg-red-600 text-white py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">[ ДЕШИФРИРАЙ 🔓 ]</button>
           </form>
-        </div>
-      ) : (
-        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative z-20 max-w-xl w-full bg-[#1A1816] p-8 sm:p-12 rounded-3xl border-4 border-green-600 shadow-2xl text-center space-y-8 my-auto">
-          <div className="absolute top-6 right-6 border-4 border-green-500 text-green-400 px-3 py-1 font-black text-xs uppercase tracking-widest transform rotate-12 bg-green-950/50">[ DECLASSIFIED // ИСТИНА ]</div>
-          <div className="space-y-4 pt-4">
-            <span className="text-[10px] uppercase tracking-widest text-green-400 font-bold block">ЛИЧНО ПОСЛАНИЕ ОТ ИНСПЕКТОРА</span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white leading-relaxed">&quot;{finalMemory}&quot;</h2>
+        )}
+
+        {subStage === 3 && (
+          <div className="bg-[#161412] p-6 rounded-3xl border-2 border-amber-500/60 shadow-2xl space-y-6 text-center">
+            <div className="space-y-2">
+              <span className="text-xs text-amber-400 font-bold uppercase">🔍 Химическа Лупа</span>
+              <p className="text-xs text-[#958679]">Минете с лупата над посланието за разкриване.</p>
+            </div>
+            <div ref={msgRef} className="relative p-6 bg-black/60 rounded-2xl border border-white/10 min-h-[120px] flex items-center justify-center my-2">
+              <p className="text-sm font-serif italic text-neutral-600 blur-sm select-none">&quot;{finalMemory}&quot;</p>
+              <div className={`absolute inset-0 flex items-center justify-center p-6 transition-opacity ${revealed ? 'opacity-100' : 'opacity-25'}`}>
+                <p className="text-sm font-serif font-bold text-amber-200">&quot;{finalMemory}&quot;</p>
+              </div>
+            </div>
+            <button onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); onComplete(); }} className="w-full bg-amber-600 hover:bg-amber-500 text-black py-4 rounded-2xl text-xs uppercase tracking-widest font-black cursor-pointer border-2 border-amber-400 shadow">[ КЪМ ТАБЛОТО (СТЕЙДЖ 5) → ]</button>
           </div>
-          <button onClick={onComplete} className="w-full bg-green-600 hover:bg-green-500 text-black py-4 rounded-2xl text-xs uppercase tracking-widest font-black cursor-pointer border-2 border-green-400 shadow">
-            [ ПРЕМИН КЪМ ДЕТЕКТИВСКОТО ТАБЛО → ]
-          </button>
-        </motion.div>
+        )}
+      </div>
+
+      {subStage === 3 && isInside && (
+        <div className="absolute pointer-events-none rounded-full border-4 border-amber-400/95 shadow-2xl overflow-hidden bg-amber-950/25 backdrop-blur-[2px] z-50 flex items-center justify-center p-4 text-center" style={{ width: '160px', height: '160px', left: `${mousePos.x - 80}px`, top: `${mousePos.y - 80}px` }}>
+          <div className="absolute inset-0 flex items-center justify-center p-2">
+            <p className="text-amber-100 text-[11px] font-serif font-bold leading-tight">{finalMemory}</p>
+          </div>
+        </div>
       )}
 
-      {isInside && !isUnlocked && (
-        <div className="absolute pointer-events-none rounded-full border-4 border-amber-500/90 shadow-2xl overflow-hidden bg-[#1A1816]/95 z-40 flex items-center justify-center p-6 text-center" style={{ width: '200px', height: '200px', left: `${mousePos.x - 100}px`, top: `${mousePos.y - 100}px` }}>
-          <div className="text-amber-300 text-xs font-mono font-bold">🔍 УЛИКА ПОД ЛУПАТА:<br /><span className="text-white text-[11px] font-normal">„Търси кодовата парола от Стейдж 2!“</span></div>
-        </div>
-      )}
       <div className="relative z-20 pb-2 text-[10px] text-neutral-500 uppercase tracking-widest">ФЕДЕРАЛЕН АРХИВ // СТЕЙДЖ 4</div>
     </div>
   );
