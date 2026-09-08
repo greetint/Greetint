@@ -27,6 +27,7 @@ export function MagnifyingGlassStage({
   const [mousePos, setMousePos] = useState({ x: 200, y: 200 });
   const [isInside, setIsInside] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  const [msgCoords, setMsgCoords] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement | null>(null);
   const msgRef = useRef<HTMLDivElement | null>(null);
 
@@ -74,6 +75,8 @@ export function MagnifyingGlassStage({
       const mrect = msgRef.current.getBoundingClientRect();
       const mx = mrect.left + mrect.width / 2 - rect.left;
       const my = mrect.top + mrect.height / 2 - rect.top;
+      setMsgCoords({ x: mx, y: my });
+
       if (Math.hypot(x - mx, y - my) < 160 && !revealed) {
         setRevealed(true);
         playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.4);
@@ -141,7 +144,7 @@ export function MagnifyingGlassStage({
             </div>
             
             <div ref={msgRef} className="py-8 px-4 max-w-lg mx-auto select-none">
-              <p className="text-base sm:text-lg font-serif italic text-[#131110] leading-relaxed select-none">
+              <p className="text-lg sm:text-xl font-serif italic text-[#0D0B0A] leading-relaxed select-none">
                 &quot;{finalMemory}&quot;
               </p>
             </div>
@@ -157,9 +160,20 @@ export function MagnifyingGlassStage({
       </div>
 
       {subStage === 3 && isInside && (
-        <div className="absolute pointer-events-none rounded-full border-4 border-amber-400/95 shadow-2xl overflow-hidden bg-[#161210] backdrop-blur-md z-50 flex items-center justify-center p-4 text-center" style={{ width: '180px', height: '180px', left: `${mousePos.x - 90}px`, top: `${mousePos.y - 90}px` }}>
-          <div className="absolute inset-0 flex items-center justify-center p-3">
-            <p className="text-amber-100 text-xs sm:text-sm font-serif font-bold leading-snug">&quot;{finalMemory}&quot;</p>
+        <div 
+          className="absolute pointer-events-none rounded-full border-4 border-amber-400/95 shadow-2xl overflow-hidden bg-[#161210]/90 backdrop-blur-sm z-50 flex items-center justify-center text-center" 
+          style={{ width: '180px', height: '180px', left: `${mousePos.x - 90}px`, top: `${mousePos.y - 90}px` }}
+        >
+          <div 
+            className="absolute flex items-center justify-center p-4 text-center max-w-sm"
+            style={{
+              transform: `translate(${msgCoords.x - mousePos.x}px, ${msgCoords.y - mousePos.y}px)`,
+              width: '100%',
+            }}
+          >
+            <p className="text-amber-100 text-sm sm:text-base font-serif font-bold italic leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              &quot;{finalMemory}&quot;
+            </p>
           </div>
         </div>
       )}
