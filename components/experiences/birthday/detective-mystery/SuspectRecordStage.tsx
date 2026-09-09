@@ -167,7 +167,7 @@ export function SuspectRecordStage({
       onTouchStart={handleTouchMove}
       onTouchEnd={() => setActiveLaserKey(null)}
       onMouseLeave={() => setActiveLaserKey(null)}
-      className={`relative ${isModal ? 'w-full h-auto bg-transparent p-0' : 'w-screen h-screen bg-[#0b0a09]'} text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-default`}
+      className={`relative ${isModal ? 'w-full h-auto bg-transparent p-0' : 'w-screen h-screen bg-[#0b0a09]'} text-[#1F1A17] font-mono flex flex-col items-center justify-center p-2 sm:p-6 select-none overflow-hidden sm:overflow-y-auto cursor-default`}
     >
       {/* Realistic Spreading Red Laser Light Effect */}
       {mouseScreen.x > -500 && (
@@ -197,10 +197,10 @@ export function SuspectRecordStage({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-2xl sm:max-w-3xl my-auto pt-7 sm:pt-8 relative"
+        className="w-full max-w-sm sm:max-w-3xl my-auto pt-5 sm:pt-8 relative"
       >
         {/* Folder Tab */}
-        <div className="absolute top-0 left-6 sm:left-10 w-52 sm:w-60 h-7 sm:h-8 bg-[#d2b48c] rounded-t-xl flex items-center justify-center text-[9px] sm:text-[10px] uppercase font-extrabold tracking-wider text-black/75 shadow-sm border-t-2 border-x-2 border-black/15 z-0">
+        <div className="absolute top-0 left-4 sm:left-10 w-40 sm:w-60 h-6 sm:h-8 bg-[#d2b48c] rounded-t-xl flex items-center justify-center text-[8px] sm:text-[10px] uppercase font-extrabold tracking-wider text-black/75 shadow-sm border-t-2 border-x-2 border-black/15 z-0">
           CLASSIFIED FILE // EYES ONLY
         </div>
 
@@ -210,18 +210,18 @@ export function SuspectRecordStage({
               playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85);
               onClose();
             }}
-            className="absolute top-0 right-2 z-30 bg-red-700 hover:bg-red-800 text-white px-3.5 py-1 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-md border border-red-500 cursor-pointer transition"
+            className="absolute top-0 right-2 z-30 bg-red-700 hover:bg-red-800 text-white px-2.5 py-1 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-wider shadow-md border border-red-500 cursor-pointer transition"
           >
             [ ЗАТВОРИ ДОСИЕТО ✕ ]
           </button>
         )}
 
-        <div className="relative bg-[#d2b48c] rounded-r-2xl rounded-bl-sm p-3.5 sm:p-5 lg:p-6 shadow-[20px_20px_45px_rgba(0,0,0,0.6)] border-l-6 sm:border-l-8 border-l-black/20 flex flex-col">
+        <div className="relative bg-[#d2b48c] rounded-r-2xl rounded-bl-sm p-2.5 sm:p-5 lg:p-6 shadow-[20px_20px_45px_rgba(0,0,0,0.6)] border-l-4 sm:border-l-8 border-l-black/20 flex flex-col">
           {/* Vertical Crease Line */}
-          <div className="absolute top-0 bottom-0 left-5 sm:left-6 w-px bg-black/15 pointer-events-none" />
+          <div className="absolute top-0 bottom-0 left-4 sm:left-6 w-px bg-black/15 pointer-events-none" />
 
           {/* Inner Paper Area */}
-          <div className="bg-[#F9F7F1] rounded-xl p-3.5 sm:p-5 lg:p-6 shadow-inner border border-black/10 flex flex-col">
+          <div className="bg-[#F9F7F1] rounded-xl p-2.5 sm:p-5 lg:p-6 shadow-inner border border-black/10 flex flex-col">
 
             {/* Header & Page Navigation Tabs */}
             <div className="border-b border-black/15 pb-3 pt-0">

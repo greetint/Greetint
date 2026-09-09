@@ -164,23 +164,23 @@ export function EvidenceVaultStage({
   // Mobile: Safe, non-overlapping vertical flow sequence (no mashing or overlapping)
   // Desktop (md+): Free, independent scattered layout with varied rotations
   const scatterConfigs = [
-    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[2%]', mobileTop: 'top-[2%]', desktopTop: 'md:top-[3%]', rotate: -6, width: 'w-[90vw] max-w-[320px] md:w-[260px]' },
-    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[32%]', mobileTop: 'top-[14%]', desktopTop: 'md:top-[5%]', rotate: 5, width: 'w-[90vw] max-w-[320px] md:w-[230px]' },
-    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[62%]', mobileTop: 'top-[26%]', desktopTop: 'md:top-[2%]', rotate: -8, width: 'w-[90vw] max-w-[320px] md:w-[250px]' },
-    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[15%]', mobileTop: 'top-[38%]', desktopTop: 'md:top-[30%]', rotate: 7, width: 'w-[90vw] max-w-[320px] md:w-[230px]' },
-    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[45%]', mobileTop: 'top-[50%]', desktopTop: 'md:top-[25%]', rotate: -5, width: 'w-[90vw] max-w-[320px] md:w-[260px]' },
-    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[72%]', mobileTop: 'top-[62%]', desktopTop: 'md:top-[35%]', rotate: 6, width: 'w-[90vw] max-w-[320px] md:w-[230px]' },
-    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[8%]', mobileTop: 'top-[74%]', desktopTop: 'md:top-[58%]', rotate: 4, width: 'w-[90vw] max-w-[320px] md:w-[250px]' },
-    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[38%]', mobileTop: 'top-[86%]', desktopTop: 'md:top-[60%]', rotate: -7, width: 'w-[90vw] max-w-[320px] md:w-[230px]' },
-    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[65%]', mobileTop: 'top-[98%]', desktopTop: 'md:top-[55%]', rotate: 8, width: 'w-[90vw] max-w-[320px] md:w-[260px]' },
-    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[25%]', mobileTop: 'top-[110%]', desktopTop: 'md:top-[80%]', rotate: -4, width: 'w-[90vw] max-w-[320px] md:w-[230px]' },
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[2%]', mobileTop: 'top-[6%]', desktopTop: 'md:top-[3%]', rotate: -5, width: 'w-[145px] max-w-[150px] md:w-[260px] md:max-w-none' },
+    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[32%]', mobileTop: 'top-[6%]', desktopTop: 'md:top-[5%]', rotate: 4, width: 'w-[140px] max-w-[145px] md:w-[230px] md:max-w-none' },
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[62%]', mobileTop: 'top-[38%]', desktopTop: 'md:top-[2%]', rotate: -6, width: 'w-[145px] max-w-[150px] md:w-[250px] md:max-w-none' },
+    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[15%]', mobileTop: 'top-[38%]', desktopTop: 'md:top-[30%]', rotate: 5, width: 'w-[140px] max-w-[145px] md:w-[230px] md:max-w-none' },
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[45%]', mobileTop: 'top-[70%]', desktopTop: 'md:top-[25%]', rotate: -4, width: 'w-[145px] max-w-[150px] md:w-[260px] md:max-w-none' },
+    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[72%]', mobileTop: 'top-[70%]', desktopTop: 'md:top-[35%]', rotate: 6, width: 'w-[140px] max-w-[145px] md:w-[230px] md:max-w-none' },
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[8%]', mobileTop: 'top-[74%]', desktopTop: 'md:top-[58%]', rotate: 4, width: 'w-[145px] max-w-[150px] md:w-[250px] md:max-w-none' },
+    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[38%]', mobileTop: 'top-[86%]', desktopTop: 'md:top-[60%]', rotate: -7, width: 'w-[140px] max-w-[145px] md:w-[230px] md:max-w-none' },
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[65%]', mobileTop: 'top-[98%]', desktopTop: 'md:top-[55%]', rotate: 8, width: 'w-[145px] max-w-[150px] md:w-[260px] md:max-w-none' },
+    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[25%]', mobileTop: 'top-[110%]', desktopTop: 'md:top-[80%]', rotate: -4, width: 'w-[140px] max-w-[145px] md:w-[230px] md:max-w-none' },
   ];
 
   return (
     <div 
       ref={boardRef}
       onScroll={updateLines}
-      className="relative w-full h-full bg-[#2b1d11] text-[#2b1d0c] font-mono flex flex-col items-center justify-start p-3 sm:p-6 select-none overflow-y-auto"
+      className="relative w-full h-full sm:min-h-[1500px] bg-[#2b1d11] text-[#2b1d0c] font-mono flex flex-col items-center justify-between sm:justify-start p-2 sm:p-6 select-none overflow-hidden sm:overflow-y-auto"
     >
       <div className="absolute inset-0 pointer-events-none opacity-60 bg-[radial-gradient(#4a2e18_2px,transparent_2px)] [background-size:24px_24px]" />
       <div className="absolute inset-0 pointer-events-none opacity-25 bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:48px_48px]" />
