@@ -78,6 +78,7 @@ export function EvidenceVaultStage({
   const [errorPhotoIdx, setErrorPhotoIdx] = useState<number | null>(null);
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
   const [isDossierOpen, setIsDossierOpen] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
 
   const boardRef = useRef<HTMLDivElement>(null);
   const cluePinRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
@@ -179,6 +180,16 @@ export function EvidenceVaultStage({
   return (
     <div 
       ref={boardRef}
+      onMouseMove={e => {
+        if (!boardRef.current) return;
+        const rect = boardRef.current.getBoundingClientRect();
+        setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      }}
+      onTouchMove={e => {
+        if (!boardRef.current || !e.touches[0]) return;
+        const rect = boardRef.current.getBoundingClientRect();
+        setMousePos({ x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top });
+      }}
       className="relative w-full h-screen bg-[#2b1d11] text-[#2b1d0c] font-mono flex flex-col items-center justify-between p-2 sm:p-4 select-none overflow-hidden"
     >
       <div className="absolute inset-0 pointer-events-none opacity-60 bg-[radial-gradient(#4a2e18_2px,transparent_2px)] [background-size:24px_24px]" />
@@ -212,6 +223,32 @@ export function EvidenceVaultStage({
             </g>
           );
         })}
+
+        {/* Active dragging yarn line when a fact is selected */}
+        {selectedFactId !== null && mousePos.x > 0 && cluePinRefs.current[selectedFactId] && boardRef.current && (() => {
+          const pinEl = cluePinRefs.current[selectedFactId];
+          const boardRect = boardRef.current.getBoundingClientRect();
+          const pinRect = pinEl!.getBoundingClientRect();
+          const x1 = pinRect.left + pinRect.width / 2 - boardRect.left;
+          const y1 = pinRect.top + pinRect.height / 2 - boardRect.top;
+          const x2 = mousePos.x;
+          const y2 = mousePos.y;
+          const midX = (x1 + x2) / 2 + 10;
+          const midY = (y1 + y2) / 2 - 15;
+          return (
+            <g>
+              <path
+                d={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
+                fill="none"
+                stroke="#dc2626"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                className="filter drop-shadow-[0_2px_4px_rgba(220,38,38,0.8)] animate-pulse"
+              />
+              <circle cx={x1} cy={y1} r="4" fill="#991b1b" stroke="#f87171" strokeWidth="1.5" />
+            </g>
+          );
+        })()}
       </svg>
 
       <motion.div 
