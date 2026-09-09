@@ -164,16 +164,16 @@ export function EvidenceVaultStage({
   // Mobile: Safe, non-overlapping vertical flow sequence (no mashing or overlapping)
   // Desktop (md+): Free, independent scattered layout with varied rotations
   const scatterConfigs = [
-    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[4%]', mobileTop: 'top-[2%]', desktopTop: 'md:top-[3%]', rotate: -4, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
-    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[27%]', mobileTop: 'top-[2%]', desktopTop: 'md:top-[5%]', rotate: 3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[52%]', mobileTop: 'top-[17%]', desktopTop: 'md:top-[2%]', rotate: -5, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
-    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[75%]', mobileTop: 'top-[17%]', desktopTop: 'md:top-[4%]', rotate: 4, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[14%]', mobileTop: 'top-[32%]', desktopTop: 'md:top-[32%]', rotate: -3, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
-    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[39%]', mobileTop: 'top-[32%]', desktopTop: 'md:top-[35%]', rotate: 5, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[64%]', mobileTop: 'top-[47%]', desktopTop: 'md:top-[33%]', rotate: 3, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
-    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[8%]', mobileTop: 'top-[47%]', desktopTop: 'md:top-[58%]', rotate: -6, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[31%]', mobileTop: 'top-[62%]', desktopTop: 'md:top-[55%]', rotate: 6, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
-    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[58%]', mobileTop: 'top-[62%]', desktopTop: 'md:top-[54%]', rotate: -3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[3%]', mdLeft: 'md:left-[4%]', top: 'top-[2%]', mdTop: 'md:top-[3%]', rotate: -4, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
+    { left: 'left-[52%]', mdLeft: 'md:left-[27%]', top: 'top-[2%]', mdTop: 'md:top-[5%]', rotate: 3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[15%]', mdLeft: 'md:left-[52%]', top: 'top-[17%]', mdTop: 'md:top-[2%]', rotate: -5, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { left: 'left-[58%]', mdLeft: 'md:left-[75%]', top: 'top-[19%]', mdTop: 'md:top-[4%]', rotate: 4, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[4%]', mdLeft: 'md:left-[14%]', top: 'top-[34%]', mdTop: 'md:top-[30%]', rotate: -3, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
+    { left: 'left-[52%]', mdLeft: 'md:left-[39%]', top: 'top-[36%]', mdTop: 'md:top-[32%]', rotate: 5, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[22%]', mdLeft: 'md:left-[64%]', top: 'top-[51%]', mdTop: 'md:top-[30%]', rotate: 3, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { left: 'left-[60%]', mdLeft: 'md:left-[8%]', top: 'top-[53%]', mdTop: 'md:top-[48%]', rotate: -6, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[8%]', mdLeft: 'md:left-[31%]', top: 'top-[68%]', mdTop: 'md:top-[45%]', rotate: 6, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
+    { left: 'left-[52%]', mdLeft: 'md:left-[58%]', top: 'top-[70%]', mdTop: 'md:top-[46%]', rotate: -3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
   ];
 
   return (
@@ -260,7 +260,7 @@ export function EvidenceVaultStage({
                 whileHover={{ scale: 1.04, rotate: 0 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={() => !used && handleSelectFact(fact.id)}
-                className={`absolute p-4 sm:p-5 rounded-xl shadow-2xl border-2 cursor-pointer transition-all duration-300 ${config.mobileLeft} ${config.desktopLeft} ${config.mobileTop} ${config.desktopTop} ${config.width} ${
+                className={`absolute p-4 sm:p-5 rounded-xl shadow-2xl border-2 cursor-pointer transition-all duration-300 ${config.left} ${config.mdLeft} ${config.top} ${config.mdTop} ${config.width} ${
                   used 
                     ? 'bg-neutral-800/90 text-neutral-500 line-through opacity-50 border-neutral-700 rotate-0 z-10' 
                     : isSelected 
@@ -298,7 +298,7 @@ export function EvidenceVaultStage({
                 key={`photo-${idx}`}
                 initial={{ rotate: rot }}
                 whileHover={{ scale: 1.02 }}
-                className={`absolute bg-[#f4ebd0] p-3.5 pb-5 rounded-xl shadow-2xl border-2 transition-all duration-300 ${config.mobileLeft} ${config.desktopLeft} ${config.mobileTop} ${config.desktopTop} ${config.width} ${
+                className={`absolute bg-[#f4ebd0] p-3.5 pb-5 rounded-xl shadow-2xl border-2 transition-all duration-300 ${config.left} ${config.mdLeft} ${config.top} ${config.mdTop} ${config.width} ${
                   isUnl 
                     ? 'border-green-600 shadow-[0_0_30px_rgba(34,197,94,0.3)] bg-[#fffefc] z-30' 
                     : isErr 
