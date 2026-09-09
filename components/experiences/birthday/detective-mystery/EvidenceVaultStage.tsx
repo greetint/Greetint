@@ -164,23 +164,22 @@ export function EvidenceVaultStage({
   // Mobile: Safe, non-overlapping vertical flow sequence (no mashing or overlapping)
   // Desktop (md+): Free, independent scattered layout with varied rotations
   const scatterConfigs = [
-    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[2%]', mobileTop: 'top-[3%]', desktopTop: 'md:top-[3%]', rotate: -5, width: 'w-[105px] max-w-[110px] md:w-[260px] md:max-w-none' },
-    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[32%]', mobileTop: 'top-[3%]', desktopTop: 'md:top-[5%]', rotate: 4, width: 'w-[100px] max-w-[105px] md:w-[230px] md:max-w-none' },
-    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[62%]', mobileTop: 'top-[20%]', desktopTop: 'md:top-[2%]', rotate: -6, width: 'w-[105px] max-w-[110px] md:w-[250px] md:max-w-none' },
-    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[15%]', mobileTop: 'top-[20%]', desktopTop: 'md:top-[30%]', rotate: 5, width: 'w-[100px] max-w-[105px] md:w-[230px] md:max-w-none' },
-    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[45%]', mobileTop: 'top-[37%]', desktopTop: 'md:top-[25%]', rotate: -4, width: 'w-[105px] max-w-[110px] md:w-[260px] md:max-w-none' },
-    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[72%]', mobileTop: 'top-[37%]', desktopTop: 'md:top-[35%]', rotate: 6, width: 'w-[100px] max-w-[105px] md:w-[230px] md:max-w-none' },
-    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[8%]', mobileTop: 'top-[54%]', desktopTop: 'md:top-[58%]', rotate: 4, width: 'w-[105px] max-w-[110px] md:w-[250px] md:max-w-none' },
-    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[38%]', mobileTop: 'top-[54%]', desktopTop: 'md:top-[60%]', rotate: -7, width: 'w-[100px] max-w-[105px] md:w-[230px] md:max-w-none' },
-    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[65%]', mobileTop: 'top-[71%]', desktopTop: 'md:top-[55%]', rotate: 8, width: 'w-[105px] max-w-[110px] md:w-[260px] md:max-w-none' },
-    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[25%]', mobileTop: 'top-[71%]', desktopTop: 'md:top-[80%]', rotate: -4, width: 'w-[100px] max-w-[105px] md:w-[230px] md:max-w-none' },
+    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[3%]', mobileTop: 'top-[3%]', desktopTop: 'md:top-[3%]', rotate: -5, width: 'w-[95px] max-w-[100px] md:w-[210px] md:max-w-none' },
+    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[28%]', mobileTop: 'top-[3%]', desktopTop: 'md:top-[5%]', rotate: 4, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[53%]', mobileTop: 'top-[18%]', desktopTop: 'md:top-[2%]', rotate: -6, width: 'w-[95px] max-w-[100px] md:w-[200px] md:max-w-none' },
+    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[78%]', mobileTop: 'top-[18%]', desktopTop: 'md:top-[4%]', rotate: 5, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[15%]', mobileTop: 'top-[33%]', desktopTop: 'md:top-[32%]', rotate: -4, width: 'w-[95px] max-w-[100px] md:w-[210px] md:max-w-none' },
+    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[40%]', mobileTop: 'top-[33%]', desktopTop: 'md:top-[35%]', rotate: 6, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[66%]', mobileTop: 'top-[48%]', desktopTop: 'md:top-[33%]', rotate: 4, width: 'w-[95px] max-w-[100px] md:w-[200px] md:max-w-none' },
+    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[8%]', mobileTop: 'top-[48%]', desktopTop: 'md:top-[62%]', rotate: -7, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[30%]', mobileTop: 'top-[63%]', desktopTop: 'md:top-[60%]', rotate: 8, width: 'w-[95px] max-w-[100px] md:w-[210px] md:max-w-none' },
+    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[60%]', mobileTop: 'top-[63%]', desktopTop: 'md:top-[58%]', rotate: -4, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
   ];
 
   return (
     <div 
       ref={boardRef}
-      onScroll={updateLines}
-      className="relative w-full h-screen sm:h-auto sm:min-h-[1500px] bg-[#2b1d11] text-[#2b1d0c] font-mono flex flex-col items-center justify-between sm:justify-start p-1.5 sm:p-6 select-none overflow-hidden sm:overflow-y-auto"
+      className="relative w-full h-screen bg-[#2b1d11] text-[#2b1d0c] font-mono flex flex-col items-center justify-between p-2 sm:p-4 select-none overflow-hidden"
     >
       <div className="absolute inset-0 pointer-events-none opacity-60 bg-[radial-gradient(#4a2e18_2px,transparent_2px)] [background-size:24px_24px]" />
       <div className="absolute inset-0 pointer-events-none opacity-25 bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:48px_48px]" />
@@ -216,30 +215,30 @@ export function EvidenceVaultStage({
       </svg>
 
       <motion.div 
-        initial={{ y: -20, opacity: 0 }}
+        initial={{ y: -10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="relative z-30 text-center mb-6 bg-[#f4ebd0] px-6 py-3.5 rounded-xl border-2 border-[#5c3317] shadow-2xl max-w-2xl w-full transform -rotate-1"
+        className="relative z-30 text-center bg-[#f4ebd0] px-4 py-2 rounded-lg border-2 border-[#5c3317] shadow-xl max-w-xl w-full transform -rotate-1 shrink-0"
       >
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-md flex items-center justify-center text-white text-[10px]">📌</div>
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-[10px] text-red-700 font-black uppercase tracking-widest">[ ДЕТЕКТИВСКО ТАБЛО С ПИНЧЕТА И КОНЦИ ]</span>
+        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-700 rounded-full shadow flex items-center justify-center text-white text-[8px]">📌</div>
+        <div className="flex items-center justify-between mb-0.5">
+          <span className="text-[9px] text-red-700 font-black uppercase tracking-wider">[ ДЕТЕКТИВСКО ТАБЛО ]</span>
           <button 
             onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setIsDossierOpen(true); }}
-            className="bg-[#2B2723] hover:bg-black text-amber-200 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border border-amber-500/40 shadow cursor-pointer transition flex items-center gap-1"
+            className="bg-[#2B2723] hover:bg-black text-amber-200 px-2 py-0.5 rounded text-[9px] font-black uppercase border border-amber-500/40 shadow cursor-pointer transition flex items-center gap-1"
           >
             <span>📁 ПРЕГЛЕД НА ДОСИЕТО</span>
           </button>
         </div>
-        <h2 className="text-lg sm:text-xl font-serif font-bold text-black uppercase tracking-wide">Стейдж 5: Разследване на уликите</h2>
-        <p className="text-xs text-[#5c3317] mt-1 font-semibold">
+        <h2 className="text-sm sm:text-lg font-serif font-bold text-black uppercase tracking-wide">Стейдж 5: Разследване на уликите</h2>
+        <p className="text-[10px] sm:text-xs text-[#5c3317] font-semibold truncate">
           {selectedFactId !== null 
-            ? "📌 Уликата е избрана! Кликнете на съответната Polaroid снимка на таблото, за да опънете червен конец." 
-            : "Стъпка 1: Кликнете на жълта бележка-улика ➔ Стъпка 2: Кликнете на съответната снимка за свързване."}
+            ? "📌 Уликата е избрана! Кликнете на съответната Polaroid снимка." 
+            : "Стъпка 1: Изберете жълта бележка ➔ Стъпка 2: Кликнете на снимка."}
         </p>
       </motion.div>
 
       {/* Large Scattered Detective Corkboard Canvas */}
-      <div className="relative z-30 w-full max-w-7xl mx-auto min-h-[1100px] sm:min-h-[1300px] md:min-h-[1500px] pb-48 px-2 sm:px-6">
+      <div className="relative z-30 w-full max-w-7xl mx-auto flex-1 relative overflow-hidden my-1 px-2">
         {Array.from({ length: numItems }).flatMap((_, idx) => {
           const fact = facts[idx];
           const photo = evPhotos[idx];
@@ -376,32 +375,31 @@ export function EvidenceVaultStage({
         })}
       </div>
 
-      <div className="relative z-30 pt-6 pb-12 text-center space-y-4 max-w-lg mx-auto w-full">
+      <div className="relative z-30 text-center space-y-1 max-w-lg mx-auto w-full shrink-0 pb-1 px-2">
         {!allUnlocked ? (
-          <div className="bg-[#3b220f] border-2 border-amber-700/70 p-4 rounded-xl shadow-2xl flex items-center justify-center space-x-2.5">
-            <span className="text-amber-400 text-base">⚠️</span>
-            <p className="text-xs text-amber-200 font-bold uppercase tracking-wider">
-              Свържете всички бележки с правилните снимки, за да разсекретите корковото табло!
+          <div className="bg-[#3b220f] border border-amber-700/70 px-3 py-1.5 rounded-lg shadow flex items-center justify-center space-x-1.5">
+            <span className="text-amber-400 text-xs">⚠️</span>
+            <p className="text-[10px] sm:text-xs text-amber-200 font-bold uppercase tracking-wider">
+              Свържете всички бележки с правилните снимки!
             </p>
           </div>
         ) : (
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-green-950/90 border-2 border-green-500 p-4 rounded-2xl shadow-2xl text-center space-y-2"
+            className="bg-green-950/90 border border-green-500 px-3 py-1.5 rounded-lg shadow"
           >
-            <span className="text-xs text-green-400 font-black uppercase tracking-widest block">🎉 Всички червени конци са опънати!</span>
-            <p className="text-xs text-neutral-200">Корковото табло е напълно разсекретено. Готови сте за финалния разпит на свидетеля.</p>
+            <p className="text-[10px] sm:text-xs font-black text-green-200">Корковото табло е напълно разсекретено! Готови сте за разпит.</p>
           </motion.div>
         )}
         <motion.button 
-          whileHover={{ scale: 1.02 }} 
-          whileTap={{ scale: 0.98 }} 
+          whileHover={{ scale: 1.01 }} 
+          whileTap={{ scale: 0.99 }} 
           onClick={onComplete} 
-          className={`w-full py-4 rounded-2xl text-xs sm:text-sm uppercase tracking-[0.2em] font-black shadow-2xl cursor-pointer transition-all duration-300 ${
+          className={`w-full py-2.5 sm:py-3.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.15em] font-black shadow-xl cursor-pointer transition-all ${
             allUnlocked 
-              ? 'bg-gradient-to-r from-red-700 via-red-600 to-amber-700 hover:from-red-600 hover:to-amber-600 text-white shadow-[0_0_30px_rgba(220,38,38,0.6)] border-2 border-red-400' 
-              : 'bg-[#3b220f] hover:bg-[#4a2e18] text-amber-200/70 border-2 border-amber-900'
+              ? 'bg-gradient-to-r from-red-700 via-red-600 to-amber-700 hover:from-red-600 hover:to-amber-600 text-white shadow-[0_0_25px_rgba(220,38,38,0.6)] border-2 border-red-400' 
+              : 'bg-[#3b220f] hover:bg-[#4a2e18] text-amber-200/70 border border-amber-900'
           }`}
         >
           <span>[ ПРЕМИН КЪМ РАЗПИТА НА СВИДЕТЕЛЯ → ]</span>
