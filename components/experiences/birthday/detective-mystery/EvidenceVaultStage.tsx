@@ -160,8 +160,10 @@ export function EvidenceVaultStage({
 
   const allUnlocked = unlocked.every(Boolean) || unlocked.filter(Boolean).length >= evPhotos.length;
 
-  const clueRotations = [-2, 3, -1, 2, -3];
-  const photoRotations = [2, -2, 3, -3, 1];
+  const clueRotations = [-3, 2, -1, 3, -2];
+  const photoRotations = [2, -3, 1, -2, 3];
+  const clueOffsets = ['translate-y-0', 'md:translate-y-6', 'md:-translate-y-4', 'md:translate-y-8', 'md:-translate-y-2'];
+  const photoOffsets = ['md:-translate-y-6', 'md:translate-y-4', 'md:-translate-y-8', 'md:translate-y-2', 'md:-translate-y-4'];
 
   return (
     <div 
@@ -225,72 +227,154 @@ export function EvidenceVaultStage({
         </p>
       </motion.div>
 
-      {/* Organic Scattered Corkboard Layout */}
-      <div className="relative z-30 max-w-7xl w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 pb-16 items-start mx-auto px-4">
-        {Array.from({ length: numItems }).flatMap((_, idx) => {
-          const fact = facts[idx];
-          const photo = evPhotos[idx];
-          const isSelected = selectedFactId === fact.id;
-          const used = Object.values(connections).includes(fact.id);
-          const clueRot = clueRotations[idx % clueRotations.length];
-          const isUnl = unlocked[idx];
-          const isErr = errorPhotoIdx === idx;
-          const photoRot = photoRotations[idx % photoRotations.length];
-          const connectedFactId = connections[idx];
-          const connectedFact = facts.find(f => f.id === connectedFactId);
-
-          return [
-            <motion.div
-              key={`fact-${fact.id}`}
-              whileHover={{ scale: 1.04, rotate: 0 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => !used && handleSelectFact(fact.id)}
-              className={`relative p-4 rounded-xl shadow-2xl border-2 cursor-pointer transition-all duration-300 transform ${
-                used ? 'bg-neutral-800/90 text-neutral-500 line-through opacity-50 border-neutral-700 rotate-0' : isSelected ? 'bg-amber-100 text-red-950 border-red-600 ring-4 ring-red-600/50 scale-105 shadow-[0_0_25px_rgba(220,38,38,0.5)] z-40' : 'bg-[#fef08a] hover:bg-[#fef9c3] text-neutral-900 border-[#ca8a04]'
-              }`}
-              style={{ transform: `rotate(${clueRot}deg)` }}
-            >
-              <div ref={el => { cluePinRefs.current[fact.id] = el; }} className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-lg flex items-center justify-center text-white text-[10px] border border-red-400 z-30">📌</div>
-              <div className="text-[10px] font-black uppercase text-red-800 mb-1 flex items-center justify-between">
-                <span>Улика #{fact.id + 1}: {fact.label}</span>
-                {used && <span className="text-green-700 font-bold">[СВЪРЗАНО ✓]</span>}
-              </div>
-              <div className="text-xs sm:text-sm font-bold bg-white/60 p-2 rounded border border-amber-300/60 shadow-inner">„{fact.value}“</div>
-              <div className="text-[10px] text-neutral-600 mt-2 italic">{clues[idx % clues.length]}</div>
-            </motion.div>,
-
-            <motion.div
-              key={`photo-${idx}`}
-              initial={{ rotate: photoRot }}
-              whileHover={{ scale: 1.02 }}
-              className={`relative bg-[#f4ebd0] p-3.5 pb-5 rounded-xl shadow-2xl border-2 transition-all duration-300 ${isUnl ? 'border-green-600 shadow-[0_0_30px_rgba(34,197,94,0.3)] bg-[#fffefc]' : isErr ? 'border-red-600 ring-4 ring-red-600 animate-shake bg-red-50' : 'border-[#78350f] hover:border-amber-600'}`}
-              style={{ transform: `rotate(${photoRot}deg)` }}
-            >
-              <div ref={el => { photoPinRefs.current[idx] = el; }} className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-lg flex items-center justify-center text-white text-[10px] z-30 border border-red-400">📌</div>
-              <div onClick={() => handleConnectPhoto(idx)} className="relative w-full aspect-square bg-black rounded-lg overflow-hidden cursor-pointer group shadow-inner border border-neutral-400">
-                <img src={photo.fileUrl} alt={`Evidence ${idx + 1}`} className={`w-full h-full object-cover transition-all duration-700 ${isUnl ? 'filter-none scale-100 group-hover:scale-105' : 'filter blur-[16px] grayscale brightness-75 scale-105'}`} />
-                {!isUnl ? (
-                  <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white p-3 text-center">
-                    <span className="text-2xl mb-1 animate-pulse">🔒</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest bg-red-950/90 px-2.5 py-1 rounded border border-red-700 shadow">КАДЪР №{idx + 1} ЗАСЕКРЕТЕН</span>
-                    {selectedFactId !== null ? <span className="text-[10px] text-amber-300 mt-2 font-bold animate-bounce bg-black/80 px-2 py-1 rounded border border-amber-500">👉 Кликнете тук за свързване с конец!</span> : <span className="text-[9px] text-neutral-300 mt-2">Изберете улика от таблото</span>}
+      {/* True Chaotic Scattered Detective Corkboard Layout */}
+      <div className="relative z-30 max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pb-20 items-start mx-auto px-4 sm:px-6">
+        {/* Left Section: Scattered Fact Notes */}
+        <div className="space-y-6 md:space-y-10">
+          <div className="text-center bg-black/60 backdrop-blur-sm py-1.5 px-4 rounded-lg border border-amber-800/60 inline-block mb-2 shadow-lg">
+            <span className="text-[11px] text-amber-300 font-extrabold uppercase tracking-wider">
+              📝 Жълти бележки с факти ({facts.length})
+            </span>
+          </div>
+          <div className="space-y-6">
+            {facts.map((fact, idx) => {
+              const isSelected = selectedFactId === fact.id;
+              const used = Object.values(connections).includes(fact.id);
+              const rot = clueRotations[idx % clueRotations.length];
+              const offset = clueOffsets[idx % clueOffsets.length];
+              return (
+                <motion.div
+                  key={`fact-${fact.id}`}
+                  whileHover={{ scale: 1.03, rotate: 0 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => !used && handleSelectFact(fact.id)}
+                  className={`relative p-4 sm:p-5 rounded-xl shadow-2xl border-2 cursor-pointer transition-all duration-300 transform ${offset} ${
+                    used 
+                      ? 'bg-neutral-800/90 text-neutral-500 line-through opacity-50 border-neutral-700 rotate-0' 
+                      : isSelected 
+                      ? 'bg-amber-100 text-red-950 border-red-600 ring-4 ring-red-600/50 scale-105 shadow-[0_0_25px_rgba(220,38,38,0.5)] z-40' 
+                      : 'bg-[#fef08a] hover:bg-[#fef9c3] text-neutral-900 border-[#ca8a04]'
+                  }`}
+                  style={{ transform: `rotate(${rot}deg)` }}
+                >
+                  <div 
+                    ref={el => { cluePinRefs.current[fact.id] = el; }}
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-lg flex items-center justify-center text-white text-[10px] border border-red-400 z-30"
+                  >
+                    📌
                   </div>
-                ) : (
-                  <div className="absolute inset-0 bg-green-950/20 backdrop-blur-[1px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="bg-green-700 text-white font-black px-3 py-1.5 rounded-lg text-xs uppercase shadow-lg border border-green-400">[ УВЕЛИЧИ КАДЪРА 🔍 ]</div>
+                  <div className="text-[10px] font-black uppercase text-red-800 mb-1.5 flex items-center justify-between">
+                    <span>Улика #{fact.id + 1}</span>
+                    {used && <span className="text-green-700 font-bold">[СВЪРЗАНО ✓]</span>}
                   </div>
-                )}
-              </div>
-              <div className="pt-3 text-center space-y-1.5">
-                <div className="flex flex-col sm:flex-row items-center justify-between text-[10px] font-bold text-neutral-700 uppercase gap-1">
-                  <span>ФЕДЕРАЛЕН АРХИВ #{idx + 1}</span>
-                  {isUnl && connectedFact ? <span className="text-green-800 bg-green-100 px-2 py-0.5 rounded border border-green-300 font-extrabold text-[10px] truncate max-w-full">✓ {connectedFact.label}</span> : <span className="text-red-700 bg-red-100 px-2 py-0.5 rounded border border-red-300">ОЧАКВА КОНЕЦ</span>}
-                </div>
-                {isErr && <p className="text-[11px] text-red-700 font-black uppercase bg-red-200 py-1 rounded border border-red-400">❌ Грешна връзка! Конецът се скъса.</p>}
-              </div>
-            </motion.div>
-          ];
-        })}
+                  <div className="text-xs sm:text-sm font-bold bg-white/60 p-2.5 rounded border border-amber-300/60 shadow-inner">
+                    „{fact.value}“
+                  </div>
+                  <div className="text-[10px] text-neutral-600 mt-2 italic">
+                    {clues[idx % clues.length]}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right Section: Scattered Polaroid Photos */}
+        <div className="space-y-6 md:space-y-10">
+          <div className="text-center bg-black/60 backdrop-blur-sm py-1.5 px-4 rounded-lg border border-amber-800/60 inline-block mb-2 shadow-lg">
+            <span className="text-[11px] text-amber-300 font-extrabold uppercase tracking-wider">
+              📸 Замаглени Polaroid снимки ({evPhotos.length})
+            </span>
+          </div>
+          <div className="space-y-6">
+            {evPhotos.map((photo, idx) => {
+              const isUnl = unlocked[idx];
+              const isErr = errorPhotoIdx === idx;
+              const rot = photoRotations[idx % photoRotations.length];
+              const offset = photoOffsets[idx % photoOffsets.length];
+              const connectedFactId = connections[idx];
+              const connectedFact = facts.find(f => f.id === connectedFactId);
+              return (
+                <motion.div
+                  key={`photo-${idx}`}
+                  initial={{ rotate: rot }}
+                  whileHover={{ scale: 1.02 }}
+                  className={`relative bg-[#f4ebd0] p-3.5 pb-5 rounded-xl shadow-2xl border-2 transition-all duration-300 transform ${offset} ${
+                    isUnl 
+                      ? 'border-green-600 shadow-[0_0_30px_rgba(34,197,94,0.3)] bg-[#fffefc]' 
+                      : isErr 
+                      ? 'border-red-600 ring-4 ring-red-600 animate-shake bg-red-50' 
+                      : 'border-[#78350f] hover:border-amber-600'
+                  }`}
+                  style={{ transform: `rotate(${rot}deg)` }}
+                >
+                  <div 
+                    ref={el => { photoPinRefs.current[idx] = el; }}
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-lg flex items-center justify-center text-white text-[10px] z-30 border border-red-400"
+                  >
+                    📌
+                  </div>
+                  <div 
+                    onClick={() => handleConnectPhoto(idx)}
+                    className="relative w-full aspect-square bg-black rounded-lg overflow-hidden cursor-pointer group shadow-inner border border-neutral-400"
+                  >
+                    <img 
+                      src={photo.fileUrl} 
+                      alt={`Evidence ${idx + 1}`}
+                      className={`w-full h-full object-cover transition-all duration-700 ${
+                        isUnl 
+                          ? 'filter-none scale-100 group-hover:scale-105' 
+                          : 'filter blur-[16px] grayscale brightness-75 scale-105'
+                      }`}
+                    />
+                    {!isUnl ? (
+                      <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white p-3 text-center">
+                        <span className="text-2xl mb-1 animate-pulse">🔒</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest bg-red-950/90 px-2.5 py-1 rounded border border-red-700 shadow">
+                          КАДЪР №{idx + 1} ЗАСЕКРЕТЕН
+                        </span>
+                        {selectedFactId !== null ? (
+                          <span className="text-[10px] text-amber-300 mt-2 font-bold animate-bounce bg-black/80 px-2 py-1 rounded border border-amber-500">
+                            👉 Кликнете тук за свързване с конец!
+                          </span>
+                        ) : (
+                          <span className="text-[9px] text-neutral-300 mt-2">
+                            Изберете улика от таблото
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 bg-green-950/20 backdrop-blur-[1px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="bg-green-700 text-white font-black px-3 py-1.5 rounded-lg text-xs uppercase shadow-lg border border-green-400">
+                          [ УВЕЛИЧИ КАДЪРА 🔍 ]
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pt-3 text-center space-y-1.5">
+                    <div className="flex flex-col sm:flex-row items-center justify-between text-[10px] font-bold text-neutral-700 uppercase gap-1">
+                      <span>ФЕДЕРАЛЕН АРХИВ #{idx + 1}</span>
+                      {isUnl && connectedFact ? (
+                        <span className="text-green-800 bg-green-100 px-2 py-0.5 rounded border border-green-300 font-extrabold text-[10px] truncate max-w-full">
+                          ✓ {connectedFact.label}
+                        </span>
+                      ) : (
+                        <span className="text-red-700 bg-red-100 px-2 py-0.5 rounded border border-red-300">
+                          ОЧАКВА КОНЕЦ
+                        </span>
+                      )}
+                    </div>
+                    {isErr && (
+                      <p className="text-[11px] text-red-700 font-black uppercase bg-red-200 py-1 rounded border border-red-400">
+                        ❌ Грешна връзка! Конецът се скъса.
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <div className="relative z-30 pt-6 pb-12 text-center space-y-4 max-w-lg mx-auto w-full">
