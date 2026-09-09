@@ -160,16 +160,18 @@ export function EvidenceVaultStage({
 
   const allUnlocked = unlocked.every(Boolean) || unlocked.filter(Boolean).length >= evPhotos.length;
 
-  const scatteredRotations = [3, -4, 6, -2, 5, -5, 2, -3, 4, -6];
-  const scatteredMargins = [
-    'md:translate-x-2 md:translate-y-4',
-    'md:-translate-x-6 md:translate-y-8',
-    'md:translate-x-8 md:-translate-y-6',
-    'md:-translate-x-4 md:translate-y-12',
-    'md:translate-x-12 md:-translate-y-4',
-    'md:-translate-x-8 md:translate-y-2',
-    'md:translate-x-4 md:-translate-y-10',
-    'md:-translate-x-10 md:translate-y-6'
+  // Curated chaotic scatter positions across the cork board (independent random-like positions with varied rotations)
+  const scatterConfigs = [
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[2%]', mobileTop: 'top-[2%]', desktopTop: 'md:top-[3%]', rotate: -8, width: 'w-[260px] max-w-[85vw]' },
+    { mobileLeft: 'left-[36%]', desktopLeft: 'md:left-[32%]', mobileTop: 'top-[10%]', desktopTop: 'md:top-[5%]', rotate: 6, width: 'w-[230px] max-w-[80vw]' },
+    { mobileLeft: 'left-[6%]', desktopLeft: 'md:left-[62%]', mobileTop: 'top-[21%]', desktopTop: 'md:top-[2%]', rotate: -12, width: 'w-[250px] max-w-[85vw]' },
+    { mobileLeft: 'left-[40%]', desktopLeft: 'md:left-[15%]', mobileTop: 'top-[32%]', desktopTop: 'md:top-[30%]', rotate: 10, width: 'w-[230px] max-w-[80vw]' },
+    { mobileLeft: 'left-[4%]', desktopLeft: 'md:left-[45%]', mobileTop: 'top-[44%]', desktopTop: 'md:top-[25%]', rotate: -4, width: 'w-[260px] max-w-[85vw]' },
+    { mobileLeft: 'left-[38%]', desktopLeft: 'md:left-[72%]', mobileTop: 'top-[55%]', desktopTop: 'md:top-[35%]', rotate: 8, width: 'w-[230px] max-w-[80vw]' },
+    { mobileLeft: 'left-[6%]', desktopLeft: 'md:left-[8%]', mobileTop: 'top-[67%]', desktopTop: 'md:top-[58%]', rotate: 5, width: 'w-[250px] max-w-[85vw]' },
+    { mobileLeft: 'left-[40%]', desktopLeft: 'md:left-[38%]', mobileTop: 'top-[78%]', desktopTop: 'md:top-[60%]', rotate: -10, width: 'w-[230px] max-w-[80vw]' },
+    { mobileLeft: 'left-[4%]', desktopLeft: 'md:left-[65%]', mobileTop: 'top-[89%]', desktopTop: 'md:top-[55%]', rotate: 13, width: 'w-[260px] max-w-[85vw]' },
+    { mobileLeft: 'left-[36%]', desktopLeft: 'md:left-[25%]', mobileTop: 'top-[97%]', desktopTop: 'md:top-[80%]', rotate: -3, width: 'w-[230px] max-w-[80vw]' },
   ];
 
   return (
@@ -235,7 +237,7 @@ export function EvidenceVaultStage({
       </motion.div>
 
       {/* Large Scattered Detective Corkboard Canvas */}
-      <div className="relative z-30 max-w-7xl w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-10 pb-24 items-start mx-auto px-4 sm:px-8">
+      <div className="relative z-30 w-full max-w-7xl mx-auto min-h-[1100px] sm:min-h-[1300px] md:min-h-[1500px] pb-48 px-2 sm:px-6">
         {Array.from({ length: numItems }).flatMap((_, idx) => {
           const fact = facts[idx];
           const photo = evPhotos[idx];
@@ -244,8 +246,8 @@ export function EvidenceVaultStage({
             { type: 'photo' as const, id: idx, photo, idx }
           ];
         }).map((item, scatterIdx) => {
-          const rot = scatteredRotations[scatterIdx % scatteredRotations.length];
-          const marginOffset = scatteredMargins[scatterIdx % scatteredMargins.length];
+          const config = scatterConfigs[scatterIdx % scatterConfigs.length];
+          const rot = config.rotate;
 
           if (item.type === 'fact') {
             const { fact, idx } = item;
@@ -257,12 +259,12 @@ export function EvidenceVaultStage({
                 whileHover={{ scale: 1.04, rotate: 0 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={() => !used && handleSelectFact(fact.id)}
-                className={`relative p-4 sm:p-5 rounded-xl shadow-2xl border-2 cursor-pointer transition-all duration-300 transform ${marginOffset} ${
+                className={`absolute p-4 sm:p-5 rounded-xl shadow-2xl border-2 cursor-pointer transition-all duration-300 ${config.mobileLeft} ${config.desktopLeft} ${config.mobileTop} ${config.desktopTop} ${config.width} ${
                   used 
-                    ? 'bg-neutral-800/90 text-neutral-500 line-through opacity-50 border-neutral-700 rotate-0' 
+                    ? 'bg-neutral-800/90 text-neutral-500 line-through opacity-50 border-neutral-700 rotate-0 z-10' 
                     : isSelected 
-                    ? 'bg-amber-100 text-red-950 border-red-600 ring-4 ring-red-600/50 scale-105 shadow-[0_0_25px_rgba(220,38,38,0.5)] z-40' 
-                    : 'bg-[#fef08a] hover:bg-[#fef9c3] text-neutral-900 border-[#ca8a04]'
+                    ? 'bg-amber-100 text-red-950 border-red-600 ring-4 ring-red-600/50 scale-105 shadow-[0_0_25px_rgba(220,38,38,0.5)] z-50' 
+                    : 'bg-[#fef08a] hover:bg-[#fef9c3] text-neutral-900 border-[#ca8a04] z-30'
                 }`}
                 style={{ transform: `rotate(${rot}deg)` }}
               >
@@ -295,12 +297,12 @@ export function EvidenceVaultStage({
                 key={`photo-${idx}`}
                 initial={{ rotate: rot }}
                 whileHover={{ scale: 1.02 }}
-                className={`relative bg-[#f4ebd0] p-3.5 pb-5 rounded-xl shadow-2xl border-2 transition-all duration-300 transform ${marginOffset} ${
+                className={`absolute bg-[#f4ebd0] p-3.5 pb-5 rounded-xl shadow-2xl border-2 transition-all duration-300 ${config.mobileLeft} ${config.desktopLeft} ${config.mobileTop} ${config.desktopTop} ${config.width} ${
                   isUnl 
-                    ? 'border-green-600 shadow-[0_0_30px_rgba(34,197,94,0.3)] bg-[#fffefc]' 
+                    ? 'border-green-600 shadow-[0_0_30px_rgba(34,197,94,0.3)] bg-[#fffefc] z-30' 
                     : isErr 
-                    ? 'border-red-600 ring-4 ring-red-600 animate-shake bg-red-50' 
-                    : 'border-[#78350f] hover:border-amber-600'
+                    ? 'border-red-600 ring-4 ring-red-600 animate-shake bg-red-50 z-40' 
+                    : 'border-[#78350f] hover:border-amber-600 z-30'
                 }`}
                 style={{ transform: `rotate(${rot}deg)` }}
               >
