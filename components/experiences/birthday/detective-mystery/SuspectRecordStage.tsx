@@ -15,6 +15,7 @@ interface SuspectRecordProps {
     specialSkill: string;
   };
   secretPassword?: string;
+  evidenceClues?: string[];
   evidenceAnswers?: string[];
   evidenceItems?: { fileUrl: string; clue: string; answer: string }[];
   charges?: string[];
@@ -29,6 +30,7 @@ export function SuspectRecordStage({
   age, 
   suspectProfile, 
   secretPassword = 'кафе', 
+  evidenceClues,
   evidenceAnswers,
   evidenceItems,
   charges, 
@@ -61,6 +63,16 @@ export function SuspectRecordStage({
   const answers = evidenceAnswers?.length ? evidenceAnswers : (evidenceItems?.length ? evidenceItems.map(item => item.answer) : defaultAnswers);
   const secretPassVal = secretPassword || 'кафе';
 
+  const defaultClues = [
+    'Кой е псевдонимът на заподозрения?',
+    'Какво е основното престъпление?',
+    'Кой е отличителният белег?',
+    'Къде е забележан за последно?',
+    'Какво е специалното умение?'
+  ];
+
+  const cluesList = evidenceItems?.length ? evidenceItems.map(item => item.clue) : (evidenceClues?.length ? evidenceClues : defaultClues);
+
   const page1Fields = [
     { key: 'alias', label: '[ КОДОВО ИМЕ / АЛИАС ]', value: profile.alias, note: 'Важна улика за Стейдж 5' },
     { key: 'age', label: '[ ВЪЗРАСТ НА СУБЕКТА ]', value: age, note: 'Ключ за радио честотата в Стейдж 4' },
@@ -76,9 +88,9 @@ export function SuspectRecordStage({
 
   const page3Fields = answers.map((ans, idx) => ({
     key: `ev${idx}`,
-    label: `[ ДОКАЗАТЕЛСТВО №${idx + 1} ]`,
+    label: `[ ${cluesList[idx % cluesList.length] || `ВЪПРОС №${idx + 1}`} ]`,
     value: ans,
-    note: 'Факт за корковото табло (Стейдж 5)'
+    note: 'Улика / Отговор за Стейдж 5'
   }));
 
   useEffect(() => {

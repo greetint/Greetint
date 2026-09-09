@@ -489,6 +489,7 @@ export function EvidenceVaultStage({
                 age={age || '30'}
                 suspectProfile={suspectProfile}
                 secretPassword={secretPassword}
+                evidenceClues={evidenceClues}
                 evidenceAnswers={evidenceAnswers}
                 evidenceItems={evidenceItems}
                 charges={charges}
