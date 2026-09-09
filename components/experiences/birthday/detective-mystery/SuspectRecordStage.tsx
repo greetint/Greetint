@@ -34,8 +34,6 @@ export function SuspectRecordStage({
   onComplete 
 }: SuspectRecordProps) {
   const [currentPage, setCurrentPage] = useState<1 | 2 | 3>(1);
-  const [mouseScreen, setMouseScreen] = useState({ x: -1000, y: -1000 });
-  const [isInside, setIsInside] = useState(false);
   const [revealedItems, setRevealedItems] = useState<{ [key: string]: boolean }>({});
   const redactedRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -83,42 +81,15 @@ export function SuspectRecordStage({
   }, [isMuted]);
 
   const handlePointerMove = useCallback((clientX: number, clientY: number) => {
-    setMouseScreen({ x: clientX, y: clientY });
-    setIsInside(true);
-
-    const newRevealed: { [key: string]: boolean } = {};
-    let newlyRevealedCount = 0;
-
-    Object.entries(redactedRefs.current).forEach(([key, el]) => {
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const distance = Math.hypot(clientX - cx, clientY - cy);
-        if (distance < 85) {
-          newRevealed[key] = true;
-          if (!revealedItems[key]) {
-            newlyRevealedCount++;
-          }
-        }
-      }
-    });
-
-    if (newlyRevealedCount > 0) {
-      playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
-    }
-
-    setRevealedItems(prev => ({ ...prev, ...newRevealed }));
+    // Laser pointer logic removed as per requirements for clean reveal
   }, [isMuted, revealedItems]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    handlePointerMove(e.clientX, e.clientY);
+    // Placeholder
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches[0]) {
-      handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
-    }
+    // Placeholder
   };
   const renderFields = (fields: typeof page1Fields) => (
     <div className="space-y-2 sm:space-y-2.5">
@@ -127,7 +98,7 @@ export function SuspectRecordStage({
         return (
           <div 
             key={field.key}
-            onPointerEnter={() => {
+            onMouseEnter={() => {
               if (!revealedItems[field.key]) {
                 setRevealedItems(prev => ({ ...prev, [field.key]: true }));
                 playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
@@ -168,16 +139,8 @@ export function SuspectRecordStage({
 
   return (
     <div 
-      onMouseMove={handleMouseMove}
-      onTouchMove={handleTouchMove}
-      onMouseEnter={() => setIsInside(true)}
-      onMouseLeave={() => {
-        setIsInside(false);
-        setRevealedItems({});
-      }}
       className="relative w-screen h-screen bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-default"
     >
-      {/* Classified Manila Folder Container */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
