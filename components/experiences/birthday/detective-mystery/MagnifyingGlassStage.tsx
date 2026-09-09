@@ -214,19 +214,16 @@ export function MagnifyingGlassStage({
       <AnimatePresence>
         {isDossierOpen && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-60 bg-transparent flex items-center justify-center p-2 sm:p-6 cursor-default"
-            onClick={() => setIsDossierOpen(false)}
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            transition={{ duration: 0.25 }}
+            className="absolute inset-x-3 sm:inset-x-12 top-12 bottom-6 z-60 flex flex-col items-center justify-center pointer-events-none"
           >
-            <div 
-              className="relative w-full h-full max-w-4xl max-h-[90vh] flex flex-col"
-              onClick={e => e.stopPropagation()}
-            >
+            <div className="relative w-full max-w-3xl max-h-[88vh] flex flex-col pointer-events-auto shadow-[0_25px_60px_rgba(0,0,0,0.7)] rounded-2xl overflow-hidden">
               <button 
                 onClick={() => setIsDossierOpen(false)}
-                className="absolute top-2 right-2 z-70 bg-red-700 hover:bg-red-800 text-white px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-lg border border-red-500 cursor-pointer"
+                className="absolute top-2 right-2 z-70 bg-red-700 hover:bg-red-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-lg border border-red-500 cursor-pointer transition"
               >
                 [ ЗАТВОРИ ДОСИЕТО ✕ ]
               </button>

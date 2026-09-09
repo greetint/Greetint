@@ -140,14 +140,14 @@ export function SuspectRecordStage({
 
             <div 
               ref={el => { redactedRefs.current[field.key] = el; }}
-              className={`relative px-3 py-1.5 rounded-md overflow-hidden min-w-[150px] sm:min-w-[190px] text-center bg-[#24201D] shadow-inner self-stretch sm:self-auto flex items-center justify-center h-8 sm:h-9 transition-all duration-150 ${isRevealed ? 'ring-2 ring-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)]' : ''}`}
+              className={`relative px-3 py-1.5 rounded-md overflow-hidden min-w-[150px] sm:min-w-[190px] text-center bg-[#24201D] shadow-inner self-stretch sm:self-auto flex items-center justify-center h-8 sm:h-9 ${isRevealed ? 'ring-2 ring-red-500 shadow-[0_0_10px_rgba(255,0,0,0.8)]' : ''}`}
             >
-              <span className={`text-xs sm:text-sm font-black font-mono tracking-wider uppercase transition-all duration-150 ${isRevealed ? 'text-amber-200 opacity-100' : 'text-transparent opacity-0 select-none'}`}>
+              <span className={`text-xs sm:text-sm font-black font-mono tracking-wider uppercase transition-none ${isRevealed ? 'text-amber-200 opacity-100' : 'text-transparent opacity-0 select-none'}`}>
                 {field.value}
               </span>
 
               <div 
-                className={`absolute inset-0 bg-black transition-all duration-150 rounded flex items-center justify-center ${isRevealed ? 'opacity-0 pointer-events-none scale-105' : 'opacity-100 scale-100'}`}
+                className={`absolute inset-0 bg-[#24201D] transition-none rounded flex items-center justify-center z-10 ${isRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
               >
                 <span className="text-[10px] text-neutral-400 font-mono tracking-[0.2em] select-none font-black">
                   [ REDACTED ]
