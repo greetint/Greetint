@@ -123,6 +123,11 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       secretMemory={redactedWish} 
       secretPassword={data?.secretPassword}
       age={age}
+      recipient={recipient}
+      suspectProfile={suspectProfile}
+      evidenceAnswers={data?.evidenceAnswers}
+      evidenceItems={data?.evidenceItems}
+      charges={charges}
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(4)} 
     />,
@@ -133,6 +138,10 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       evidenceAnswers={data?.evidenceAnswers}
       evidenceItems={data?.evidenceItems}
       suspectProfile={suspectProfile}
+      recipient={recipient}
+      age={age}
+      secretPassword={data?.secretPassword}
+      charges={charges}
       isMuted={isMuted}
       onComplete={() => setCurrentStageIndex(5)} 
     />,

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playSoundEffect } from './utils/speech';
+import { SuspectRecordStage } from './SuspectRecordStage';
 
 interface EvidenceVaultProps {
   photos: { fileUrl: string }[];
@@ -10,17 +11,33 @@ interface EvidenceVaultProps {
   evidenceAnswers?: string[];
   evidenceItems?: { fileUrl: string; clue: string; answer: string }[];
   suspectProfile?: { alias: string; mainCrime: string; distinguishingMark: string; lastSeen: string; specialSkill: string };
+  recipient?: string;
+  age?: string;
+  secretPassword?: string;
+  charges?: string[];
   isMuted?: boolean;
   onComplete: () => void;
 }
 
-export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evidenceItems, suspectProfile, isMuted = false, onComplete }: EvidenceVaultProps) {
+export function EvidenceVaultStage({ 
+  photos, 
+  evidenceClues, 
+  evidenceAnswers, 
+  evidenceItems, 
+  suspectProfile, 
+  recipient = 'Заподозрян',
+  age = '30',
+  secretPassword = 'кафе',
+  charges,
+  isMuted = false, 
+  onComplete 
+}: EvidenceVaultProps) {
   const profile = suspectProfile || { 
     alias: 'Шеф на купона', 
-    mainCrime: 'Превишена скорост на празнуване', 
-    distinguishingMark: 'Заразно добро настроение', 
+    mainCrime: charges?.[0] || 'Превишена скорост на празнуване', 
+    distinguishingMark: charges?.[1] || 'Заразно добро настроение', 
     lastSeen: 'На дансинга в петък вечер', 
-    specialSkill: 'Неоторизирано ядене на торта' 
+    specialSkill: charges?.[2] || 'Неоторизирано ядене на торта' 
   };
 
   const evPhotos = photos.length ? photos : [
@@ -60,6 +77,7 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
   const [connections, setConnections] = useState<{ [photoIdx: number]: number }>({});
   const [errorPhotoIdx, setErrorPhotoIdx] = useState<number | null>(null);
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
+  const [isDossierOpen, setIsDossierOpen] = useState(false);
 
   const boardRef = useRef<HTMLDivElement>(null);
   const cluePinRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
@@ -190,7 +208,15 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
         className="relative z-30 text-center mb-6 bg-[#f4ebd0] px-6 py-3.5 rounded-xl border-2 border-[#5c3317] shadow-2xl max-w-2xl w-full transform -rotate-1"
       >
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-700 rounded-full shadow-md flex items-center justify-center text-white text-[10px]">📌</div>
-        <span className="text-[10px] text-red-700 font-black uppercase tracking-widest">[ ДЕТЕКТИВСКО ТАБЛО С ПИНЧЕТА И КОНЦИ ]</span>
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[10px] text-red-700 font-black uppercase tracking-widest">[ ДЕТЕКТИВСКО ТАБЛО С ПИНЧЕТА И КОНЦИ ]</span>
+          <button 
+            onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setIsDossierOpen(true); }}
+            className="bg-[#2B2723] hover:bg-black text-amber-200 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border border-amber-500/40 shadow cursor-pointer transition flex items-center gap-1"
+          >
+            <span>📁 ПРЕГЛЕД НА ДОСИЕТО</span>
+          </button>
+        </div>
         <h2 className="text-lg sm:text-xl font-serif font-bold text-black uppercase tracking-wide">Стейдж 5: Разследване на уликите</h2>
         <p className="text-xs text-[#5c3317] mt-1 font-semibold">
           {selectedFactId !== null 
@@ -403,6 +429,43 @@ export function EvidenceVaultStage({ photos, evidenceClues, evidenceAnswers, evi
                 </button>
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isDossierOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-6 cursor-default"
+            onClick={() => setIsDossierOpen(false)}
+          >
+            <div 
+              className="relative w-full h-full max-w-4xl max-h-[90vh] flex flex-col"
+              onClick={e => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setIsDossierOpen(false)}
+                className="absolute top-2 right-2 z-70 bg-red-700 hover:bg-red-800 text-white px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-lg border border-red-500 cursor-pointer"
+              >
+                [ ЗАТВОРИ ДОСИЕТО ✕ ]
+              </button>
+              <SuspectRecordStage 
+                recipient={recipient || 'Заподозрян'}
+                age={age || '30'}
+                suspectProfile={suspectProfile}
+                secretPassword={secretPassword}
+                evidenceAnswers={evidenceAnswers}
+                evidenceItems={evidenceItems}
+                charges={charges}
+                isMuted={isMuted}
+                isModal={true}
+                onClose={() => setIsDossierOpen(false)}
+                onComplete={() => setIsDossierOpen(false)}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

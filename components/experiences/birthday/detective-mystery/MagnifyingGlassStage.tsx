@@ -2,11 +2,24 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { playSoundEffect } from './utils/speech';
+import { motion, AnimatePresence } from 'framer-motion';
+import { SuspectRecordStage } from './SuspectRecordStage';
 
 interface MagnifyingGlassProps {
   secretMemory: string;
   secretPassword?: string;
   age?: string;
+  recipient?: string;
+  suspectProfile?: {
+    alias: string;
+    mainCrime: string;
+    distinguishingMark: string;
+    lastSeen: string;
+    specialSkill: string;
+  };
+  evidenceAnswers?: string[];
+  evidenceItems?: { fileUrl: string; clue: string; answer: string }[];
+  charges?: string[];
   isMuted?: boolean;
   onComplete: () => void;
 }
@@ -15,6 +28,11 @@ export function MagnifyingGlassStage({
   secretMemory,
   secretPassword = 'кафе',
   age = '30',
+  recipient = 'Заподозрян',
+  suspectProfile,
+  evidenceAnswers,
+  evidenceItems,
+  charges,
   isMuted = false,
   onComplete
 }: MagnifyingGlassProps) {
@@ -28,6 +46,7 @@ export function MagnifyingGlassStage({
   const [isInside, setIsInside] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const [msgCoords, setMsgCoords] = useState({ x: 0, y: 0 });
+  const [isDossierOpen, setIsDossierOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const msgRef = useRef<HTMLDivElement | null>(null);
 
@@ -93,7 +112,15 @@ export function MagnifyingGlassStage({
   return (
     <div ref={containerRef} onMouseMove={handleMove} onTouchMove={handleMove} onMouseEnter={() => setIsInside(true)} onMouseLeave={() => setIsInside(false)} className="relative w-full h-full bg-[#0D0B0A] text-[#F7F4EF] font-mono flex flex-col items-center justify-between p-6 select-none overflow-hidden cursor-crosshair">
       <div className="relative z-20 text-center space-y-1 pt-2">
-        <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold block">ФЕДЕРАЛЕН АРХИВ // СТЕЙДЖ 4</span>
+        <div className="flex items-center justify-between max-w-xl mx-auto w-full px-2">
+          <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold">ФЕДЕРАЛЕН АРХИВ // СТЕЙДЖ 4</span>
+          <button 
+            onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setIsDossierOpen(true); }}
+            className="bg-[#2B2723] hover:bg-black text-amber-200 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider border border-amber-500/40 shadow cursor-pointer transition flex items-center gap-1.5"
+          >
+            <span>📁 ПРЕГЛЕД НА ДОСИЕТО</span>
+          </button>
+        </div>
         <h2 className="text-xl font-serif font-bold text-white uppercase">
           {subStage === 1 && 'Етап 1: Радиостанция'}
           {subStage === 2 && 'Етап 2: Верификация'}
@@ -183,6 +210,43 @@ export function MagnifyingGlassStage({
       )}
 
       <div className="relative z-20 pb-2 text-[10px] text-neutral-500 uppercase tracking-widest">ФЕДЕРАЛЕН АРХИВ // СТЕЙДЖ 4</div>
+
+      <AnimatePresence>
+        {isDossierOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-6 cursor-default"
+            onClick={() => setIsDossierOpen(false)}
+          >
+            <div 
+              className="relative w-full h-full max-w-4xl max-h-[90vh] flex flex-col"
+              onClick={e => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setIsDossierOpen(false)}
+                className="absolute top-2 right-2 z-70 bg-red-700 hover:bg-red-800 text-white px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-lg border border-red-500 cursor-pointer"
+              >
+                [ ЗАТВОРИ ДОСИЕТО ✕ ]
+              </button>
+              <SuspectRecordStage 
+                recipient={recipient || 'Заподозрян'}
+                age={age || '30'}
+                suspectProfile={suspectProfile}
+                secretPassword={secretPassword}
+                evidenceAnswers={evidenceAnswers}
+                evidenceItems={evidenceItems}
+                charges={charges}
+                isMuted={isMuted}
+                isModal={true}
+                onClose={() => setIsDossierOpen(false)}
+                onComplete={() => setIsDossierOpen(false)}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -19,6 +19,8 @@ interface SuspectRecordProps {
   evidenceItems?: { fileUrl: string; clue: string; answer: string }[];
   charges?: string[];
   isMuted?: boolean;
+  isModal?: boolean;
+  onClose?: () => void;
   onComplete: () => void;
 }
 
@@ -31,10 +33,11 @@ export function SuspectRecordStage({
   evidenceItems,
   charges, 
   isMuted = false, 
+  isModal = false,
+  onClose,
   onComplete 
 }: SuspectRecordProps) {
   const [currentPage, setCurrentPage] = useState<1 | 2 | 3>(1);
-  const [revealedItems, setRevealedItems] = useState<{ [key: string]: boolean }>({});
   const [mouseScreen, setMouseScreen] = useState({ x: -1000, y: -1000 });
   const [activeLaserKey, setActiveLaserKey] = useState<string | null>(null);
   const redactedRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -98,16 +101,16 @@ export function SuspectRecordStage({
           clientY <= rect.bottom
         ) {
           foundKey = key;
-          if (!revealedItems[key]) {
-            setRevealedItems(prev => ({ ...prev, [key]: true }));
-            playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
-          }
         }
       }
     });
 
+    if (foundKey !== activeLaserKey && foundKey !== null) {
+      playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
+    }
+
     setActiveLaserKey(foundKey);
-  }, [isMuted, revealedItems]);
+  }, [isMuted, activeLaserKey]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     handlePointerMove(e.clientX, e.clientY);
@@ -121,16 +124,10 @@ export function SuspectRecordStage({
   const renderFields = (fields: typeof page1Fields) => (
     <div className="space-y-2 sm:space-y-2.5">
       {fields.map((field) => {
-        const isRevealed = revealedItems[field.key];
+        const isRevealed = activeLaserKey === field.key;
         return (
           <div 
             key={field.key}
-            onMouseEnter={() => {
-              if (!revealedItems[field.key]) {
-                setRevealedItems(prev => ({ ...prev, [field.key]: true }));
-                playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
-              }
-            }}
             className="bg-[#F5F1E8] border border-black/20 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-xs relative transition-colors duration-200 hover:border-black/40"
           >
             <div className="leading-tight">
@@ -144,14 +141,14 @@ export function SuspectRecordStage({
 
             <div 
               ref={el => { redactedRefs.current[field.key] = el; }}
-              className={`relative px-3 py-1.5 rounded-md overflow-hidden min-w-[150px] sm:min-w-[190px] text-center bg-[#24201D] shadow-inner self-stretch sm:self-auto flex items-center justify-center h-8 sm:h-9 transition-all duration-200 ${activeLaserKey === field.key ? 'ring-2 ring-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)]' : ''}`}
+              className={`relative px-3 py-1.5 rounded-md overflow-hidden min-w-[150px] sm:min-w-[190px] text-center bg-[#24201D] shadow-inner self-stretch sm:self-auto flex items-center justify-center h-8 sm:h-9 transition-all duration-150 ${isRevealed ? 'ring-2 ring-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)]' : ''}`}
             >
-              <span className={`text-xs sm:text-sm font-black font-mono tracking-wider uppercase transition-all duration-300 ${isRevealed ? 'text-amber-200' : 'text-transparent select-none'}`}>
+              <span className={`text-xs sm:text-sm font-black font-mono tracking-wider uppercase transition-all duration-150 ${isRevealed ? 'text-amber-200 opacity-100' : 'text-transparent opacity-0 select-none'}`}>
                 {field.value}
               </span>
 
               <div 
-                className={`absolute inset-0 bg-black transition-all duration-300 rounded flex items-center justify-center ${isRevealed ? 'opacity-0 pointer-events-none scale-105' : 'opacity-100 scale-100'}`}
+                className={`absolute inset-0 bg-black transition-all duration-150 rounded flex items-center justify-center ${isRevealed ? 'opacity-0 pointer-events-none scale-105' : 'opacity-100 scale-100'}`}
               >
                 <span className="text-[10px] text-neutral-400 font-mono tracking-[0.2em] select-none font-black">
                   [ REDACTED ]
@@ -313,10 +310,14 @@ export function SuspectRecordStage({
                   <motion.button 
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
-                    onClick={onComplete}
+                    onClick={() => {
+                      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85);
+                      if (isModal && onClose) onClose();
+                      else onComplete();
+                    }}
                     className="flex-1 bg-red-700 hover:bg-red-800 text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.12em] font-black shadow-lg transition cursor-pointer border border-red-500 flex items-center justify-center gap-2 group"
                   >
-                    <span>[ ПРЕМИН КЪМ ДЕТЕКТОРА НА ЛЪЖАТА → ]</span>
+                    <span>{isModal ? '[ ЗАТВОРИ ДОСИЕТО ✕ ]' : '[ ПРЕМИН КЪМ ДЕТЕКТОРА НА ЛЪЖАТА → ]'}</span>
                   </motion.button>
                 )}
               </div>
