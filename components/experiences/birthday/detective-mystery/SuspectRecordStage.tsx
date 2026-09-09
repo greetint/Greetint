@@ -167,15 +167,26 @@ export function SuspectRecordStage({
       onMouseLeave={() => setActiveLaserKey(null)}
       className={`relative ${isModal ? 'w-full h-auto bg-transparent p-0' : 'w-screen h-screen bg-[#0b0a09]'} text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-default`}
     >
-      {/* Realistic Laser Pointer Effect */}
+      {/* Realistic Spreading Red Laser Light Effect */}
       {mouseScreen.x > -500 && (
         <>
           <div 
-            className="pointer-events-none fixed z-55 w-2 h-2 rounded-full bg-[#ff1a1a] shadow-[0_0_6px_2px_rgba(255,0,0,0.95),0_0_12px_4px_rgba(255,0,0,0.5)] -translate-x-1/2 -translate-y-1/2"
+            className="pointer-events-none fixed z-55 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-75 pointer-events-none"
+            style={{
+              left: mouseScreen.x,
+              top: mouseScreen.y,
+              width: '120px',
+              height: '120px',
+              background: 'radial-gradient(circle, rgba(255, 30, 30, 0.4) 0%, rgba(220, 20, 20, 0.18) 35%, rgba(180, 0, 0, 0.05) 70%, transparent 100%)',
+              boxShadow: '0 0 30px 10px rgba(255, 0, 0, 0.25)',
+            }}
+          />
+          <div 
+            className="pointer-events-none fixed z-56 w-2 h-2 rounded-full bg-[#ff1a1a] shadow-[0_0_10px_3px_rgba(255,0,0,1)] -translate-x-1/2 -translate-y-1/2"
             style={{ left: mouseScreen.x, top: mouseScreen.y }}
           />
           <div 
-            className="pointer-events-none fixed z-56 w-1 h-1 rounded-full bg-white -translate-x-1/2 -translate-y-1/2"
+            className="pointer-events-none fixed z-57 w-1 h-1 rounded-full bg-white -translate-x-1/2 -translate-y-1/2"
             style={{ left: mouseScreen.x, top: mouseScreen.y }}
           />
         </>
