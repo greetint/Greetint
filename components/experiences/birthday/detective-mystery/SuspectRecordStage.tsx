@@ -35,6 +35,8 @@ export function SuspectRecordStage({
 }: SuspectRecordProps) {
   const [currentPage, setCurrentPage] = useState<1 | 2 | 3>(1);
   const [revealedItems, setRevealedItems] = useState<{ [key: string]: boolean }>({});
+  const [mouseScreen, setMouseScreen] = useState({ x: -1000, y: -1000 });
+  const [activeLaserKey, setActiveLaserKey] = useState<string | null>(null);
   const redactedRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   const profile = suspectProfile || {
@@ -81,15 +83,40 @@ export function SuspectRecordStage({
   }, [isMuted]);
 
   const handlePointerMove = useCallback((clientX: number, clientY: number) => {
-    // Laser pointer logic removed as per requirements for clean reveal
+    setMouseScreen({ x: clientX, y: clientY });
+
+    let foundKey: string | null = null;
+
+    Object.entries(redactedRefs.current).forEach(([key, el]) => {
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        // Check if mouse/touch is precisely over the black redacted box rect
+        if (
+          clientX >= rect.left &&
+          clientX <= rect.right &&
+          clientY >= rect.top &&
+          clientY <= rect.bottom
+        ) {
+          foundKey = key;
+          if (!revealedItems[key]) {
+            setRevealedItems(prev => ({ ...prev, [key]: true }));
+            playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
+          }
+        }
+      }
+    });
+
+    setActiveLaserKey(foundKey);
   }, [isMuted, revealedItems]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Placeholder
+    handlePointerMove(e.clientX, e.clientY);
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    // Placeholder
+    if (e.touches[0]) {
+      handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
   };
   const renderFields = (fields: typeof page1Fields) => (
     <div className="space-y-2 sm:space-y-2.5">
@@ -117,7 +144,7 @@ export function SuspectRecordStage({
 
             <div 
               ref={el => { redactedRefs.current[field.key] = el; }}
-              className="relative px-3 py-1.5 rounded-md overflow-hidden min-w-[150px] sm:min-w-[190px] text-center bg-[#24201D] shadow-inner self-stretch sm:self-auto flex items-center justify-center h-8 sm:h-9"
+              className={`relative px-3 py-1.5 rounded-md overflow-hidden min-w-[150px] sm:min-w-[190px] text-center bg-[#24201D] shadow-inner self-stretch sm:self-auto flex items-center justify-center h-8 sm:h-9 transition-all duration-200 ${activeLaserKey === field.key ? 'ring-2 ring-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)]' : ''}`}
             >
               <span className={`text-xs sm:text-sm font-black font-mono tracking-wider uppercase transition-all duration-300 ${isRevealed ? 'text-amber-200' : 'text-transparent select-none'}`}>
                 {field.value}
@@ -139,8 +166,18 @@ export function SuspectRecordStage({
 
   return (
     <div 
+      onMouseMove={handleMouseMove}
+      onTouchMove={handleTouchMove}
+      onMouseLeave={() => setActiveLaserKey(null)}
       className="relative w-screen h-screen bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-default"
     >
+      {/* Red Laser Beam Effect - Visible only when shining directly over redacted box */}
+      {activeLaserKey && (
+        <div 
+          className="pointer-events-none w-2.5 h-2.5 rounded-full bg-red-600 shadow-[0_0_15px_rgba(239,68,68,1)] z-55 fixed -translate-x-1/2 -translate-y-1/2 border border-white"
+          style={{ left: mouseScreen.x, top: mouseScreen.y }}
+        />
+      )}
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
