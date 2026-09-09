@@ -164,16 +164,16 @@ export function EvidenceVaultStage({
   // Mobile: Safe, non-overlapping vertical flow sequence (no mashing or overlapping)
   // Desktop (md+): Free, independent scattered layout with varied rotations
   const scatterConfigs = [
-    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[3%]', mobileTop: 'top-[3%]', desktopTop: 'md:top-[3%]', rotate: -5, width: 'w-[95px] max-w-[100px] md:w-[210px] md:max-w-none' },
-    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[28%]', mobileTop: 'top-[3%]', desktopTop: 'md:top-[5%]', rotate: 4, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
-    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[53%]', mobileTop: 'top-[18%]', desktopTop: 'md:top-[2%]', rotate: -6, width: 'w-[95px] max-w-[100px] md:w-[200px] md:max-w-none' },
-    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[78%]', mobileTop: 'top-[18%]', desktopTop: 'md:top-[4%]', rotate: 5, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
-    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[15%]', mobileTop: 'top-[33%]', desktopTop: 'md:top-[32%]', rotate: -4, width: 'w-[95px] max-w-[100px] md:w-[210px] md:max-w-none' },
-    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[40%]', mobileTop: 'top-[33%]', desktopTop: 'md:top-[35%]', rotate: 6, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
-    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[66%]', mobileTop: 'top-[48%]', desktopTop: 'md:top-[33%]', rotate: 4, width: 'w-[95px] max-w-[100px] md:w-[200px] md:max-w-none' },
-    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[8%]', mobileTop: 'top-[48%]', desktopTop: 'md:top-[62%]', rotate: -7, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
-    { mobileLeft: 'left-[2%]', desktopLeft: 'md:left-[30%]', mobileTop: 'top-[63%]', desktopTop: 'md:top-[60%]', rotate: 8, width: 'w-[95px] max-w-[100px] md:w-[210px] md:max-w-none' },
-    { mobileLeft: 'left-[51%]', desktopLeft: 'md:left-[60%]', mobileTop: 'top-[63%]', desktopTop: 'md:top-[58%]', rotate: -4, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[4%]', mobileTop: 'top-[2%]', desktopTop: 'md:top-[3%]', rotate: -4, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
+    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[27%]', mobileTop: 'top-[2%]', desktopTop: 'md:top-[5%]', rotate: 3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[52%]', mobileTop: 'top-[17%]', desktopTop: 'md:top-[2%]', rotate: -5, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[75%]', mobileTop: 'top-[17%]', desktopTop: 'md:top-[4%]', rotate: 4, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[14%]', mobileTop: 'top-[32%]', desktopTop: 'md:top-[32%]', rotate: -3, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
+    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[39%]', mobileTop: 'top-[32%]', desktopTop: 'md:top-[35%]', rotate: 5, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[64%]', mobileTop: 'top-[47%]', desktopTop: 'md:top-[33%]', rotate: 3, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[8%]', mobileTop: 'top-[47%]', desktopTop: 'md:top-[58%]', rotate: -6, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[31%]', mobileTop: 'top-[62%]', desktopTop: 'md:top-[55%]', rotate: 6, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
+    { mobileLeft: 'left-[52%]', desktopLeft: 'md:left-[58%]', mobileTop: 'top-[62%]', desktopTop: 'md:top-[54%]', rotate: -3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
   ];
 
   return (

@@ -232,26 +232,26 @@ export function SuspectRecordStage({
                 </div>
 
                 {/* Folder Page Navigation Buttons */}
-                <div className="grid grid-cols-3 gap-1 bg-[#D6CCB4] p-1 rounded-xl border border-black/15 shadow-inner w-full sm:w-auto">
+                <div className="grid grid-cols-3 gap-0.5 sm:gap-1 bg-[#D6CCB4] p-1 rounded-xl border border-black/15 shadow-inner w-full sm:w-auto">
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(1); }}
-                    className={`px-1 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 1 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                    className={`px-0.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[7px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 1 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
-                    <span className="sm:hidden">1. Данни</span>
+                    <span className="sm:hidden">1. ДАННИ</span>
                     <span className="hidden sm:inline">1. Идентичност</span>
                   </button>
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(2); }}
-                    className={`px-1 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 2 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                    className={`px-0.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[7px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 2 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
-                    <span className="sm:hidden">2. Престъп.</span>
+                    <span className="sm:hidden">2. ПРЕСТЪПЛЕНИЯ</span>
                     <span className="hidden sm:inline">2. Престъпления</span>
                   </button>
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(3); }}
-                    className={`px-1 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                    className={`px-0.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[7px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
-                    <span className="sm:hidden">3. Улики</span>
+                    <span className="sm:hidden">3. УЛИКИ</span>
                     <span className="hidden sm:inline">3. Доказателства</span>
                   </button>
                 </div>
