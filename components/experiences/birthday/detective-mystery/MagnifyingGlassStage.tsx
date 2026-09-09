@@ -218,7 +218,7 @@ export function MagnifyingGlassStage({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ duration: 0.25 }}
-            className="absolute inset-x-3 sm:inset-x-12 top-10 bottom-6 z-60 flex flex-col items-center justify-center pointer-events-none overflow-y-auto"
+            className="absolute inset-x-1 sm:inset-x-12 top-2 bottom-2 z-60 flex flex-col items-center justify-center pointer-events-none overflow-y-auto p-1 sm:p-4"
           >
             <div className="relative w-full max-w-2xl sm:max-w-3xl pointer-events-auto my-auto">
               <SuspectRecordStage 
