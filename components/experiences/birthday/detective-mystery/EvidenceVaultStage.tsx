@@ -160,18 +160,20 @@ export function EvidenceVaultStage({
 
   const allUnlocked = unlocked.every(Boolean) || unlocked.filter(Boolean).length >= evPhotos.length;
 
-  // Curated chaotic scatter positions across the cork board (independent random-like positions with varied rotations)
+  // Curated chaotic scatter positions across the cork board
+  // Mobile: Safe, non-overlapping vertical flow sequence (no mashing or overlapping)
+  // Desktop (md+): Free, independent scattered layout with varied rotations
   const scatterConfigs = [
-    { mobileLeft: 'left-[3%]', desktopLeft: 'md:left-[2%]', mobileTop: 'top-[2%]', desktopTop: 'md:top-[3%]', rotate: -8, width: 'w-[260px] max-w-[85vw]' },
-    { mobileLeft: 'left-[36%]', desktopLeft: 'md:left-[32%]', mobileTop: 'top-[10%]', desktopTop: 'md:top-[5%]', rotate: 6, width: 'w-[230px] max-w-[80vw]' },
-    { mobileLeft: 'left-[6%]', desktopLeft: 'md:left-[62%]', mobileTop: 'top-[21%]', desktopTop: 'md:top-[2%]', rotate: -12, width: 'w-[250px] max-w-[85vw]' },
-    { mobileLeft: 'left-[40%]', desktopLeft: 'md:left-[15%]', mobileTop: 'top-[32%]', desktopTop: 'md:top-[30%]', rotate: 10, width: 'w-[230px] max-w-[80vw]' },
-    { mobileLeft: 'left-[4%]', desktopLeft: 'md:left-[45%]', mobileTop: 'top-[44%]', desktopTop: 'md:top-[25%]', rotate: -4, width: 'w-[260px] max-w-[85vw]' },
-    { mobileLeft: 'left-[38%]', desktopLeft: 'md:left-[72%]', mobileTop: 'top-[55%]', desktopTop: 'md:top-[35%]', rotate: 8, width: 'w-[230px] max-w-[80vw]' },
-    { mobileLeft: 'left-[6%]', desktopLeft: 'md:left-[8%]', mobileTop: 'top-[67%]', desktopTop: 'md:top-[58%]', rotate: 5, width: 'w-[250px] max-w-[85vw]' },
-    { mobileLeft: 'left-[40%]', desktopLeft: 'md:left-[38%]', mobileTop: 'top-[78%]', desktopTop: 'md:top-[60%]', rotate: -10, width: 'w-[230px] max-w-[80vw]' },
-    { mobileLeft: 'left-[4%]', desktopLeft: 'md:left-[65%]', mobileTop: 'top-[89%]', desktopTop: 'md:top-[55%]', rotate: 13, width: 'w-[260px] max-w-[85vw]' },
-    { mobileLeft: 'left-[36%]', desktopLeft: 'md:left-[25%]', mobileTop: 'top-[97%]', desktopTop: 'md:top-[80%]', rotate: -3, width: 'w-[230px] max-w-[80vw]' },
+    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[2%]', mobileTop: 'top-[2%]', desktopTop: 'md:top-[3%]', rotate: -6, width: 'w-[90vw] max-w-[320px] md:w-[260px]' },
+    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[32%]', mobileTop: 'top-[14%]', desktopTop: 'md:top-[5%]', rotate: 5, width: 'w-[90vw] max-w-[320px] md:w-[230px]' },
+    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[62%]', mobileTop: 'top-[26%]', desktopTop: 'md:top-[2%]', rotate: -8, width: 'w-[90vw] max-w-[320px] md:w-[250px]' },
+    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[15%]', mobileTop: 'top-[38%]', desktopTop: 'md:top-[30%]', rotate: 7, width: 'w-[90vw] max-w-[320px] md:w-[230px]' },
+    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[45%]', mobileTop: 'top-[50%]', desktopTop: 'md:top-[25%]', rotate: -5, width: 'w-[90vw] max-w-[320px] md:w-[260px]' },
+    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[72%]', mobileTop: 'top-[62%]', desktopTop: 'md:top-[35%]', rotate: 6, width: 'w-[90vw] max-w-[320px] md:w-[230px]' },
+    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[8%]', mobileTop: 'top-[74%]', desktopTop: 'md:top-[58%]', rotate: 4, width: 'w-[90vw] max-w-[320px] md:w-[250px]' },
+    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[38%]', mobileTop: 'top-[86%]', desktopTop: 'md:top-[60%]', rotate: -7, width: 'w-[90vw] max-w-[320px] md:w-[230px]' },
+    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[65%]', mobileTop: 'top-[98%]', desktopTop: 'md:top-[55%]', rotate: 8, width: 'w-[90vw] max-w-[320px] md:w-[260px]' },
+    { mobileLeft: 'left-[5%]', desktopLeft: 'md:left-[25%]', mobileTop: 'top-[110%]', desktopTop: 'md:top-[80%]', rotate: -4, width: 'w-[90vw] max-w-[320px] md:w-[230px]' },
   ];
 
   return (

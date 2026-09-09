@@ -164,6 +164,8 @@ export function SuspectRecordStage({
     <div 
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
+      onTouchStart={handleTouchMove}
+      onTouchEnd={() => setActiveLaserKey(null)}
       onMouseLeave={() => setActiveLaserKey(null)}
       className={`relative ${isModal ? 'w-full h-auto bg-transparent p-0' : 'w-screen h-screen bg-[#0b0a09]'} text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-default`}
     >
@@ -230,22 +232,22 @@ export function SuspectRecordStage({
                 </div>
 
                 {/* Folder Page Navigation Buttons */}
-                <div className="flex items-center gap-1 bg-[#D6CCB4] p-1 rounded-xl border border-black/15 shadow-inner">
+                <div className="grid grid-cols-3 gap-1 bg-[#D6CCB4] p-1 rounded-xl border border-black/15 shadow-inner w-full sm:w-auto">
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(1); }}
-                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 1 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                    className={`px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 1 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
                     1. Идентичност
                   </button>
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(2); }}
-                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 2 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                    className={`px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 2 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
                     2. Престъпления
                   </button>
                   <button 
                     onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(3); }}
-                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-black uppercase tracking-wider transition cursor-pointer ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
+                    className={`px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
                     3. Доказателства
                   </button>
