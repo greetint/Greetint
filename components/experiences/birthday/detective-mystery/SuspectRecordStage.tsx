@@ -165,7 +165,7 @@ export function SuspectRecordStage({
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
       onMouseLeave={() => setActiveLaserKey(null)}
-      className="relative w-screen h-screen bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-default"
+      className={`relative ${isModal ? 'w-full h-auto bg-transparent p-0' : 'w-screen h-screen bg-[#0b0a09]'} text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-default`}
     >
       {/* Realistic Laser Pointer Effect */}
       {mouseScreen.x > -500 && (
@@ -190,6 +190,18 @@ export function SuspectRecordStage({
         <div className="absolute top-0 left-6 sm:left-10 w-52 sm:w-60 h-7 sm:h-8 bg-[#d2b48c] rounded-t-xl flex items-center justify-center text-[9px] sm:text-[10px] uppercase font-extrabold tracking-wider text-black/75 shadow-sm border-t-2 border-x-2 border-black/15 z-0">
           CLASSIFIED FILE // EYES ONLY
         </div>
+
+        {isModal && onClose && (
+          <button 
+            onClick={() => {
+              playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85);
+              onClose();
+            }}
+            className="absolute top-0 right-2 z-30 bg-red-700 hover:bg-red-800 text-white px-3.5 py-1 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-md border border-red-500 cursor-pointer transition"
+          >
+            [ ЗАТВОРИ ДОСИЕТО ✕ ]
+          </button>
+        )}
 
         <div className="relative bg-[#d2b48c] rounded-r-2xl rounded-bl-sm p-3.5 sm:p-5 lg:p-6 shadow-[20px_20px_45px_rgba(0,0,0,0.6)] border-l-6 sm:border-l-8 border-l-black/20 flex flex-col">
           {/* Vertical Crease Line */}

@@ -440,15 +440,9 @@ export function EvidenceVaultStage({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ duration: 0.25 }}
-            className="absolute inset-x-3 sm:inset-x-12 top-12 bottom-6 z-60 flex flex-col items-center justify-center pointer-events-none"
+            className="absolute inset-x-3 sm:inset-x-12 top-10 bottom-6 z-60 flex flex-col items-center justify-center pointer-events-none overflow-y-auto"
           >
-            <div className="relative w-full max-w-3xl max-h-[88vh] flex flex-col pointer-events-auto shadow-[0_25px_60px_rgba(0,0,0,0.7)] rounded-2xl overflow-hidden">
-              <button 
-                onClick={() => setIsDossierOpen(false)}
-                className="absolute top-2 right-2 z-70 bg-red-700 hover:bg-red-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-lg border border-red-500 cursor-pointer transition"
-              >
-                [ ЗАТВОРИ ДОСИЕТО ✕ ]
-              </button>
+            <div className="relative w-full max-w-2xl sm:max-w-3xl pointer-events-auto my-auto">
               <SuspectRecordStage 
                 recipient={recipient || 'Заподозрян'}
                 age={age || '30'}
