@@ -110,7 +110,7 @@ export function MagnifyingGlassStage({
   const finalMemory = secretMemory || 'Честит рожден ден! Бъди все така неуловим и успешен.';
 
   return (
-    <div ref={containerRef} onMouseMove={handleMove} onTouchMove={handleMove} onMouseEnter={() => setIsInside(true)} onMouseLeave={() => setIsInside(false)} className="relative w-full h-full bg-[#0D0B0A] text-[#F7F4EF] font-mono flex flex-col items-center justify-between p-6 select-none overflow-hidden cursor-crosshair">
+    <div ref={containerRef} onMouseMove={handleMove} onTouchMove={handleMove} onMouseEnter={() => setIsInside(true)} onMouseLeave={() => setIsInside(false)} className="relative w-full h-full bg-[#0D0B0A] text-[#F7F4EF] font-mono flex flex-col items-center justify-between p-4 sm:p-6 select-none overflow-y-auto sm:overflow-hidden cursor-crosshair">
       <div className="relative z-20 text-center space-y-1 pt-2">
         <div className="flex items-center justify-between max-w-xl mx-auto w-full px-2">
           <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold">ФЕДЕРАЛЕН АРХИВ // СТЕЙДЖ 4</span>
