@@ -93,14 +93,11 @@ export function SuspectRecordStage({
     Object.entries(redactedRefs.current).forEach(([key, el]) => {
       if (el) {
         const rect = el.getBoundingClientRect();
-        const boxCenterX = rect.left + rect.width / 2;
-        const boxCenterY = rect.top + rect.height / 2;
-        const distance = Math.hypot(clientX - boxCenterX, clientY - boxCenterY);
 
-        // If cursor/flashlight light circle is over or illuminating the box (within rect or close radius)
+        // Reveal instantly and cleanly ONLY when the precise laser dot falls on the redacted bar
         if (
-          (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) ||
-          distance < 75
+          clientX >= rect.left && clientX <= rect.right && 
+          clientY >= rect.top && clientY <= rect.bottom
         ) {
           foundKey = key;
         }
@@ -170,22 +167,15 @@ export function SuspectRecordStage({
       onMouseLeave={() => setActiveLaserKey(null)}
       className="relative w-screen h-screen bg-[#0b0a09] text-[#1F1A17] font-mono flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-y-auto cursor-default"
     >
-      {/* Spreading Red Flashlight Light Beam Effect */}
+      {/* Realistic Laser Pointer Effect */}
       {mouseScreen.x > -500 && (
         <>
           <div 
-            className="pointer-events-none fixed z-55 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-75"
-            style={{
-              left: mouseScreen.x,
-              top: mouseScreen.y,
-              width: '200px',
-              height: '200px',
-              background: 'radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(220, 38, 38, 0.2) 40%, rgba(185, 28, 28, 0.05) 70%, transparent 100%)',
-              boxShadow: '0 0 50px 20px rgba(239, 68, 68, 0.35)',
-            }}
+            className="pointer-events-none fixed z-55 w-2 h-2 rounded-full bg-[#ff1a1a] shadow-[0_0_6px_2px_rgba(255,0,0,0.95),0_0_12px_4px_rgba(255,0,0,0.5)] -translate-x-1/2 -translate-y-1/2"
+            style={{ left: mouseScreen.x, top: mouseScreen.y }}
           />
           <div 
-            className="pointer-events-none fixed z-56 w-3.5 h-3.5 rounded-full bg-red-600 shadow-[0_0_20px_rgba(239,68,68,1)] -translate-x-1/2 -translate-y-1/2 border border-white/90"
+            className="pointer-events-none fixed z-56 w-1 h-1 rounded-full bg-white -translate-x-1/2 -translate-y-1/2"
             style={{ left: mouseScreen.x, top: mouseScreen.y }}
           />
         </>

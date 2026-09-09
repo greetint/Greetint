@@ -217,7 +217,7 @@ export function MagnifyingGlassStage({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-6 cursor-default"
+            className="fixed inset-0 z-60 bg-transparent flex items-center justify-center p-2 sm:p-6 cursor-default"
             onClick={() => setIsDossierOpen(false)}
           >
             <div 
