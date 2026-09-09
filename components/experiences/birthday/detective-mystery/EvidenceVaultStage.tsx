@@ -364,46 +364,39 @@ export function EvidenceVaultStage({
                     }`}
                   />
                   {!isUnl ? (
-                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white p-3 text-center">
-                      <span className="text-2xl mb-1 animate-pulse">🔒</span>
-                      <span className="text-[10px] font-black uppercase tracking-widest bg-red-950/90 px-2.5 py-1 rounded border border-red-700 shadow">
-                        КАДЪР №{idx + 1} ЗАСЕКРЕТЕН
-                      </span>
+                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white p-2 text-center">
+                      <span className="text-xl mb-1 animate-pulse">🔒</span>
                       {selectedFactId !== null ? (
-                        <span className="text-[10px] text-amber-300 mt-2 font-bold animate-bounce bg-black/80 px-2 py-1 rounded border border-amber-500">
-                          👉 Кликнете тук за свързване с конец!
+                        <span className="text-[9px] text-amber-300 font-bold animate-bounce bg-black/80 px-2 py-0.5 rounded border border-amber-500">
+                          👉 Кликнете тук за свързване!
                         </span>
                       ) : (
-                        <span className="text-[9px] text-neutral-300 mt-2">
+                        <span className="text-[9px] text-neutral-300">
                           Изберете улика от таблото
                         </span>
                       )}
                     </div>
                   ) : (
                     <div className="absolute inset-0 bg-green-950/20 backdrop-blur-[1px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-green-700 text-white font-black px-3 py-1.5 rounded-lg text-xs uppercase shadow-lg border border-green-400">
-                        [ УВЕЛИЧИ КАДЪРА 🔍 ]
+                      <div className="bg-green-700 text-white font-black px-2.5 py-1 rounded-lg text-[10px] uppercase shadow-lg border border-green-400">
+                        [ УВЕЛИЧИ 🔍 ]
                       </div>
                     </div>
                   )}
                 </div>
-                <div className="pt-3 text-center space-y-1.5">
-                  <div className="flex flex-col sm:flex-row items-center justify-between text-[10px] font-bold text-neutral-700 uppercase gap-1">
-                    <span>ФЕДЕРАЛЕН АРХИВ #{idx + 1}</span>
-                    {isUnl && connectedFact ? (
-                      <span className="text-green-800 bg-green-100 px-2 py-0.5 rounded border border-green-300 font-extrabold text-[10px] truncate max-w-full">
-                        ✓ {connectedFact.label}
-                      </span>
-                    ) : (
-                      <span className="text-red-700 bg-red-100 px-2 py-0.5 rounded border border-red-300">
-                        ОЧАКВА КОНЕЦ
-                      </span>
-                    )}
+                <div className="pt-2 text-center space-y-1">
+                  <div className="text-[9px] sm:text-xs font-serif font-bold text-neutral-900 italic px-0.5">
+                    ❓ {clues[idx % clues.length]}
                   </div>
                   {isErr && (
-                    <p className="text-[11px] text-red-700 font-black uppercase bg-red-200 py-1 rounded border border-red-400">
-                      ❌ Грешна връзка! Конецът се скъса.
+                    <p className="text-[9px] text-red-700 font-black uppercase bg-red-200 py-0.5 rounded border border-red-400">
+                      ❌ Опитай пак!
                     </p>
+                  )}
+                  {isUnl && connectedFact && (
+                    <span className="text-[9px] text-green-800 bg-green-100 px-1 py-0.5 rounded border border-green-300 font-bold block truncate">
+                      ✓ {connectedFact.value}
+                    </span>
                   )}
                 </div>
               </motion.div>
