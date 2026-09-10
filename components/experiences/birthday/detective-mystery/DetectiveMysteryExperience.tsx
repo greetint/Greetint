@@ -154,6 +154,9 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       photos={photos} 
       redactedWish={redactedWish} 
       suspectProfile={suspectProfile}
+      evidenceItems={data?.evidenceItems}
+      evidenceClues={data?.evidenceClues}
+      evidenceAnswers={data?.evidenceAnswers}
       isMuted={isMuted}
     />
   ];
