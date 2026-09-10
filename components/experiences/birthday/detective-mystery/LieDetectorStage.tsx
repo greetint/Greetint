@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playSoundEffect } from './utils/speech';
 
@@ -57,8 +57,39 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
   const [isScreenFlashing, setIsScreenFlashing] = useState(false);
   const [isTestFinished, setIsTestFinished] = useState(false);
 
+  const narratorRef = useRef<HTMLAudioElement | null>(null);
+  const typewriterRef = useRef<HTMLAudioElement | null>(null);
+
   const currentQ = testQuestions[currentQIndex] || testQuestions[0];
 
+  // Voice Narrator audio strictly from /audio/detective/voice_stage_3.mp3
+  useEffect(() => {
+    const audio = narratorRef.current;
+    if (!audio) return;
+
+    if (isMuted) {
+      audio.pause();
+      audio.currentTime = 0;
+    } else {
+      audio.currentTime = 0;
+      audio.play().catch((e) => console.log("Narrator play blocked:", e));
+    }
+
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
+  }, [isMuted]);
+
+  // Global mute watcher for typewriter
+  useEffect(() => {
+    if (isMuted && typewriterRef.current) {
+      typewriterRef.current.pause();
+      typewriterRef.current.currentTime = 0;
+    }
+  }, [isMuted]);
+
+  // Typing effect with typewriter sound that stops instantly when typing completes
   useEffect(() => {
     setTypedQuestion('');
     setSelectedOption(null);
@@ -68,25 +99,78 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
     let charIndex = 0;
     let timer: NodeJS.Timeout;
 
+    const typewriter = typewriterRef.current;
+    if (typewriter && !isMuted) {
+      typewriter.loop = true;
+      typewriter.currentTime = 0;
+      typewriter.play().catch(() => {});
+    }
+
     const typeNextChar = () => {
       if (charIndex < fullText.length) {
         setTypedQuestion(fullText.substring(0, charIndex + 1));
-        if (charIndex % 3 === 0) {
-          playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.3);
-        }
         charIndex++;
         timer = setTimeout(typeNextChar, 25);
+      } else {
+        // Typing finished -> stop typewriter sound instantly
+        if (typewriter) {
+          typewriter.pause();
+          typewriter.currentTime = 0;
+        }
       }
     };
 
     timer = setTimeout(typeNextChar, 100);
 
-    if (currentQIndex === 0) {
-      // no speech
-    }
-
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (typewriter) {
+        typewriter.pause();
+        typewriter.currentTime = 0;
+      }
+    };
   }, [currentQIndex, recipient, isMuted]);
+
+  // Dynamic Web Audio API sound generator for correct/incorrect answers
+  const playWebAudioSound = (type: 'correct' | 'incorrect') => {
+    if (isMuted || typeof window === 'undefined') return;
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+
+      if (type === 'correct') {
+        const now = ctx.currentTime;
+        [523.25, 659.25, 783.99].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.08);
+          gain.gain.setValueAtTime(0.15, now + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.3);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.08);
+          osc.stop(now + i * 0.08 + 0.3);
+        });
+      } else {
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.setValueAtTime(110, now + 0.15);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      }
+    } catch (e) {
+      console.log("Web Audio API error:", e);
+    }
+  };
 
   const handleSelectOption = (idx: number) => {
     if (selectedOption !== null || answerStatus !== 'idle') return;
@@ -96,10 +180,12 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
 
     if (isCorrect) {
       setAnswerStatus('truth');
+      playWebAudioSound('correct');
       playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.7);
     } else {
       setAnswerStatus('lie');
       setIsScreenFlashing(true);
+      playWebAudioSound('incorrect');
       playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.85);
 
       if (typeof window !== 'undefined' && 'vibrate' in navigator) {
@@ -127,6 +213,10 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
 
   return (
     <div className="relative w-full h-full bg-[#080808] text-[#F7F4EF] font-mono flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-y-auto">
+      
+      {/* Audio Elements */}
+      <audio ref={narratorRef} src="/audio/detective/voice_stage_3.mp3" preload="auto" />
+      <audio ref={typewriterRef} src="/audio/detective/typewriter.mp3" preload="auto" />
       
       <AnimatePresence>
         {isScreenFlashing && (
