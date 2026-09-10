@@ -117,9 +117,19 @@ export function EvidenceVaultStage({
 
   useEffect(() => {
     updateLines();
+    const t1 = setTimeout(updateLines, 20);
+    const t2 = setTimeout(updateLines, 100);
+    const t3 = setTimeout(updateLines, 300);
+    const t4 = setTimeout(updateLines, 600);
     window.addEventListener('resize', updateLines);
-    return () => window.removeEventListener('resize', updateLines);
-  }, [connections, updateLines]);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+      window.removeEventListener('resize', updateLines);
+    };
+  }, [connections, unlocked, updateLines]);
 
   const handleSelectFact = (factId: number) => {
     const isAlreadyConnected = Object.values(connections).includes(factId);
@@ -150,7 +160,10 @@ export function EvidenceVaultStage({
       setUnlocked(newUnlocked);
       setSelectedFactId(null);
       setErrorPhotoIdx(null);
+      setTimeout(updateLines, 10);
       setTimeout(updateLines, 50);
+      setTimeout(updateLines, 150);
+      setTimeout(updateLines, 300);
     } else {
       playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.9);
       setErrorPhotoIdx(photoIdx);
@@ -165,16 +178,16 @@ export function EvidenceVaultStage({
   // Mobile: Safe, non-overlapping vertical flow sequence (no mashing or overlapping)
   // Desktop (md+): Free, independent scattered layout with varied rotations
   const scatterConfigs = [
-    { left: 'left-[3%]', mdLeft: 'md:left-[4%]', top: 'top-[2%]', mdTop: 'md:top-[3%]', rotate: -4, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
-    { left: 'left-[52%]', mdLeft: 'md:left-[27%]', top: 'top-[2%]', mdTop: 'md:top-[5%]', rotate: 3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { left: 'left-[15%]', mdLeft: 'md:left-[52%]', top: 'top-[17%]', mdTop: 'md:top-[2%]', rotate: -5, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
-    { left: 'left-[58%]', mdLeft: 'md:left-[75%]', top: 'top-[19%]', mdTop: 'md:top-[4%]', rotate: 4, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { left: 'left-[4%]', mdLeft: 'md:left-[14%]', top: 'top-[34%]', mdTop: 'md:top-[30%]', rotate: -3, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
-    { left: 'left-[52%]', mdLeft: 'md:left-[39%]', top: 'top-[36%]', mdTop: 'md:top-[32%]', rotate: 5, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { left: 'left-[22%]', mdLeft: 'md:left-[64%]', top: 'top-[51%]', mdTop: 'md:top-[30%]', rotate: 3, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
-    { left: 'left-[60%]', mdLeft: 'md:left-[8%]', top: 'top-[53%]', mdTop: 'md:top-[48%]', rotate: -6, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { left: 'left-[8%]', mdLeft: 'md:left-[31%]', top: 'top-[68%]', mdTop: 'md:top-[45%]', rotate: 6, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
-    { left: 'left-[52%]', mdLeft: 'md:left-[58%]', top: 'top-[70%]', mdTop: 'md:top-[46%]', rotate: -3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[4%]', mdLeft: 'md:left-[4%]', top: 'top-[3%]', mdTop: 'md:top-[3%]', rotate: -4, width: 'w-[92px] max-w-[95px] md:w-[200px] md:max-w-none' },
+    { left: 'left-[46%]', mdLeft: 'md:left-[27%]', top: 'top-[10%]', mdTop: 'md:top-[5%]', rotate: 3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[22%]', mdLeft: 'md:left-[52%]', top: 'top-[22%]', mdTop: 'md:top-[2%]', rotate: -5, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { left: 'left-[52%]', mdLeft: 'md:left-[75%]', top: 'top-[32%]', mdTop: 'md:top-[4%]', rotate: 4, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[8%]', mdLeft: 'md:left-[14%]', top: 'top-[42%]', mdTop: 'md:top-[30%]', rotate: -3, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
+    { left: 'left-[38%]', mdLeft: 'md:left-[39%]', top: 'top-[52%]', mdTop: 'md:top-[32%]', rotate: 5, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[15%]', mdLeft: 'md:left-[64%]', top: 'top-[62%]', mdTop: 'md:top-[30%]', rotate: 3, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
+    { left: 'left-[55%]', mdLeft: 'md:left-[8%]', top: 'top-[70%]', mdTop: 'md:top-[48%]', rotate: -6, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[5%]', mdLeft: 'md:left-[31%]', top: 'top-[80%]', mdTop: 'md:top-[45%]', rotate: 6, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
+    { left: 'left-[42%]', mdLeft: 'md:left-[58%]', top: 'top-[88%]', mdTop: 'md:top-[46%]', rotate: -3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
   ];
 
   return (
@@ -299,7 +312,7 @@ export function EvidenceVaultStage({
                 onClick={() => !used && handleSelectFact(fact.id)}
                 className={`absolute p-4 sm:p-5 rounded-xl shadow-2xl border-2 cursor-pointer transition-all duration-300 ${config.left} ${config.mdLeft} ${config.top} ${config.mdTop} ${config.width} ${
                   used 
-                    ? 'bg-neutral-800/90 text-neutral-500 line-through opacity-50 border-neutral-700 rotate-0 z-10' 
+                    ? 'bg-[#fef08a] text-neutral-900 border-green-600 ring-2 ring-green-500/40 shadow-[0_0_15px_rgba(34,197,94,0.3)] z-30' 
                     : isSelected 
                     ? 'bg-amber-100 text-red-950 border-red-600 ring-4 ring-red-600/50 scale-105 shadow-[0_0_25px_rgba(220,38,38,0.5)] z-50' 
                     : 'bg-[#fef08a] hover:bg-[#fef9c3] text-neutral-900 border-[#ca8a04] z-30'
