@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>prompt-img-cache</BucketName><RequestId>XW0WRQSFAFPPPW1P</RequestId><HostId>OPzk61nR+Qm6pJPoGvtm/4ph1Btsc+FqEIx3opL3X7s6k/IlcHHCf+A/X19vdYd9LN4IFafPpAE=</HostId></Error>
