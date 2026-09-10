@@ -40,43 +40,160 @@ export function MagnifyingGlassStage({
   const [subStage, setSubStage] = useState<1 | 2 | 3>(1);
   const [frequency, setFrequency] = useState<number>(10);
   const [isLocked, setIsLocked] = useState<boolean>(false);
-  const [inputCode, setInputCode] = useState<string>('');
+  
+  const [questionIndex, setQuestionIndex] = useState<number>(0);
+  const [questionInput, setQuestionInput] = useState<string>('');
   const [hasError, setHasError] = useState<boolean>(false);
+
   const [mousePos, setMousePos] = useState({ x: 200, y: 200 });
   const [isInside, setIsInside] = useState(false);
-  const [revealed, setRevealed] = useState(false);
   const [msgCoords, setMsgCoords] = useState({ x: 0, y: 0 });
   const [isDossierOpen, setIsDossierOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const msgRef = useRef<HTMLDivElement | null>(null);
 
+  const radioAudioRef = useRef<{ ctx: AudioContext; gain: GainNode; noise: AudioNode } | null>(null);
+
+  const updateRadioAudio = useCallback((freq: number, target: number, muted: boolean) => {
+    if (muted || typeof window === 'undefined') {
+      if (radioAudioRef.current) {
+        try { radioAudioRef.current.ctx.close(); } catch(e){}
+        radioAudioRef.current = null;
+      }
+      return;
+    }
+
+    if (freq === target) {
+      if (radioAudioRef.current) {
+        try { radioAudioRef.current.ctx.close(); } catch(e){}
+        radioAudioRef.current = null;
+      }
+      return;
+    }
+
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+
+      if (!radioAudioRef.current) {
+        const ctx = new AudioCtx();
+        const bufferSize = ctx.sampleRate * 2;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        const dist = Math.abs(freq - target);
+        filter.frequency.setValueAtTime(800 + dist * 50, ctx.currentTime);
+        filter.Q.setValueAtTime(4.0, ctx.currentTime);
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(Math.min(0.08, 0.02 + dist * 0.002), ctx.currentTime);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        noise.start(0);
+        radioAudioRef.current = { ctx, gain, noise };
+      } else {
+        const dist = Math.abs(freq - target);
+        if (radioAudioRef.current.ctx.state === 'suspended') {
+          radioAudioRef.current.ctx.resume();
+        }
+        radioAudioRef.current.gain.gain.setValueAtTime(Math.min(0.08, 0.02 + dist * 0.002), radioAudioRef.current.ctx.currentTime);
+      }
+    } catch (e) {
+      console.log("Radio static audio error:", e);
+    }
+  }, []);
+
   useEffect(() => {
-    // No speech
-  }, [subStage, targetAge, isMuted]);
+    return () => {
+      if (radioAudioRef.current) {
+        try { radioAudioRef.current.ctx.close(); } catch(e){}
+        radioAudioRef.current = null;
+      }
+    };
+  }, []);
 
   const handleFreq = (val: number) => {
     setFrequency(val);
+    updateRadioAudio(val, targetAge, isMuted);
     if (val === targetAge && !isLocked) {
       setIsLocked(true);
+      updateRadioAudio(val, targetAge, true);
       playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.9);
     }
   };
 
-  const handleVerify = (e: React.FormEvent) => {
+  const profile = suspectProfile || {
+    alias: recipient || 'Заподозрян',
+    mainCrime: charges?.[0] || 'Превишена скорост на празнуване',
+    distinguishingMark: charges?.[1] || 'Заразно добро настроение',
+    lastSeen: 'На дансинга в петък вечер',
+    specialSkill: charges?.[2] || 'Неоторизирано ядене на торта'
+  };
+
+  const questions = [
+    {
+      id: 'mainCrime',
+      title: 'СТЪПКА 1 от 4: ГЛАВНО ПРЕСТЪПЛЕНИЕ',
+      question: 'Какво е официалното обвинение / главно престъпление?',
+      answer: profile.mainCrime,
+      hint: 'Проверете Страница 2 на досието.'
+    },
+    {
+      id: 'distinguishingMark',
+      title: 'СТЪПКА 2 от 4: ОТЛИЧИТЕЛЕН БЕЛЕГ',
+      question: 'Кой е отличителният белег на субекта?',
+      answer: profile.distinguishingMark,
+      hint: 'Проверете Страница 2 на досието.'
+    },
+    {
+      id: 'lastSeen',
+      title: 'СТЪПКА 3 от 4: ПОСЛЕДНО ЗАБЕЛЯЗАН',
+      question: 'Къде е забележан за последно субектът?',
+      answer: profile.lastSeen,
+      hint: 'Проверете Страница 2 на досието.'
+    },
+    {
+      id: 'specialSkill',
+      title: 'СТЪПКА 4 от 4: СПЕЦИАЛНО УМЕНИЕ',
+      question: 'Какво специално умение притежава заподозреният?',
+      answer: profile.specialSkill,
+      hint: 'Проверете Страница 2 на досието.'
+    }
+  ];
+
+  const handleQuestionVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanInput = inputCode.trim().toLowerCase().replace(/[^\wа-яѓѕјљњќџабвгдежзийклмнопрстуфхцчшщъьюя]/g, '');
-    const cleanSecret = (secretPassword || 'кафе').trim().toLowerCase().replace(/[^\wа-яѓѕјљњќџабвгдежзийклмнопрстуфхцчшщъьюя]/g, '');
+    const currentQ = questions[questionIndex];
+    const cleanInput = questionInput.trim().toLowerCase().replace(/[^\wа-яѓѕјљњќџабвгдежзийклмнопрстуфхцчшщъьюя]/g, '');
+    const cleanExpected = (currentQ.answer || '').trim().toLowerCase().replace(/[^\wа-яѓѕјљњќџабвгдежзийклмнопрстуфхцчшщъьюя]/g, '');
 
     const isMatch = 
-      cleanInput === cleanSecret ||
-      cleanInput.includes(cleanSecret) ||
-      cleanSecret.includes(cleanInput) ||
-      (cleanSecret === 'кафе' && ['кафе', 'coffee', 'espresso', 'кафенце', 'caffee'].some(s => cleanInput.includes(s)));
+      cleanInput === cleanExpected ||
+      cleanInput.includes(cleanExpected) ||
+      cleanExpected.includes(cleanInput) ||
+      (cleanInput.length >= 3 && cleanExpected.includes(cleanInput));
 
     if (isMatch) {
       playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.9);
       setHasError(false);
-      setTimeout(() => setSubStage(3), 800);
+      setQuestionInput('');
+      if (questionIndex < questions.length - 1) {
+        setQuestionIndex(prev => prev + 1);
+      } else {
+        setTimeout(() => setSubStage(3), 600);
+      }
     } else {
       setHasError(true);
       playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.9);
@@ -100,14 +217,14 @@ export function MagnifyingGlassStage({
       const my = mrect.top + mrect.height / 2 - rect.top;
       setMsgCoords({ x: mx, y: my });
 
-      if (Math.hypot(x - mx, y - my) < 160 && !revealed) {
-        setRevealed(true);
-        playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.4);
+      if (Math.hypot(x - mx, y - my) < 160) {
+        playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
       }
     }
-  }, [revealed, isMuted]);
+  }, [isMuted]);
 
   const finalMemory = secretMemory || 'Честит рожден ден! Бъди все така неуловим и успешен.';
+  const currentQ = questions[questionIndex];
 
   return (
     <div ref={containerRef} onMouseMove={handleMove} onTouchMove={handleMove} onMouseEnter={() => setIsInside(true)} onMouseLeave={() => setIsInside(false)} className="relative w-full h-full bg-[#0D0B0A] text-[#F7F4EF] font-mono flex flex-col items-center justify-between p-4 sm:p-6 select-none overflow-y-auto sm:overflow-hidden cursor-crosshair">
@@ -123,7 +240,7 @@ export function MagnifyingGlassStage({
         </div>
         <h2 className="text-xl font-serif font-bold text-white uppercase">
           {subStage === 1 && 'Етап 1: Радиостанция'}
-          {subStage === 2 && 'Етап 2: Верификация'}
+          {subStage === 2 && `Етап 2: Разследване (Стъпка ${questionIndex + 1}/4)`}
           {subStage === 3 && 'Етап 3: Химическа Лупа'}
         </h2>
         <div className="flex justify-center gap-2 pt-1">
@@ -146,24 +263,42 @@ export function MagnifyingGlassStage({
             </div>
             {isLocked ? (
               <div className="space-y-3">
-                <div className="text-green-400 text-xs font-bold uppercase bg-green-950/60 py-2 rounded-xl border border-green-500/40">✔ ЗАКЛЮЧЕНО!</div>
-                <button onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setSubStage(2); }} className="w-full bg-green-600 hover:bg-green-500 text-black py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">[ КЪМ ВЕРИФИКАЦИЯ → ]</button>
+                <div className="text-green-400 text-xs font-bold uppercase bg-green-950/60 py-2 rounded-xl border border-green-500/40">✔ ЗАКЛЮЧЕНО! СИГНАЛ УЛОВЕН</div>
+                <button onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setSubStage(2); }} className="w-full bg-green-600 hover:bg-green-500 text-black py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">[ КЪМ РАЗСЛЕДВАНЕТО НА ДОСИЕТО → ]</button>
               </div>
             ) : (
-              <div className="text-xs text-neutral-400 italic">Цел: {targetAge} MHz</div>
+              <div className="text-xs text-neutral-400 italic">Цел: {targetAge} MHz (Шум в ефира до улавяне)</div>
             )}
           </div>
         )}
 
         {subStage === 2 && (
-          <form onSubmit={handleVerify} className="bg-[#161412] p-6 rounded-3xl border-2 border-red-700/60 shadow-2xl space-y-6 text-center">
+          <form onSubmit={handleQuestionVerify} className="bg-[#161412] p-6 rounded-3xl border-2 border-red-700/60 shadow-2xl space-y-6 text-center">
             <div className="space-y-2">
-              <span className="text-xs text-red-400 font-bold uppercase">🔐 Верификационен Терминал</span>
-              <p className="text-xs text-[#958679]">Въведете секретната улика от Досието:</p>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-red-400 font-bold uppercase">{currentQ.title}</span>
+                <span className="text-[10px] text-amber-400 font-mono">Въпрос {questionIndex + 1} от 4</span>
+              </div>
+              <p className="text-xs text-white font-medium">{currentQ.question}</p>
             </div>
-            <input type="text" value={inputCode} onChange={(e) => setInputCode(e.target.value)} placeholder="Секретен код..." className="w-full bg-black/80 border border-white/20 rounded-xl p-4 text-xs text-white text-center tracking-widest uppercase focus:outline-none focus:border-red-600 font-mono" />
-            {hasError && <p className="text-[11px] text-red-500 font-bold">[ ❌ ГРЕШЕН КОД ]</p>}
-            <button type="submit" className="w-full bg-red-700 hover:bg-red-600 text-white py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">[ ДЕШИФРИРАЙ 🔓 ]</button>
+            
+            <input 
+              type="text" 
+              value={questionInput} 
+              onChange={(e) => setQuestionInput(e.target.value)} 
+              placeholder="Въведете отговор от досието..." 
+              className="w-full bg-black/80 border border-white/20 rounded-xl p-4 text-xs text-white text-center tracking-widest uppercase focus:outline-none focus:border-red-600 font-mono" 
+              autoFocus
+            />
+
+            {hasError && <p className="text-[11px] text-red-500 font-bold">[ ❌ НЕВЯРЕН ОТГОВОР. ПРОВЕРЕТЕ СТРАНИЦА 2 НА ДОСИЕТО! ]</p>}
+            
+            <div className="space-y-2">
+              <button type="submit" className="w-full bg-red-700 hover:bg-red-600 text-white py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">
+                [ ПОТВЪРДИ ОТГОВОР 🔓 ]
+              </button>
+              <p className="text-[10px] text-neutral-400 italic">{currentQ.hint}</p>
+            </div>
           </form>
         )}
 
