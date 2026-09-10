@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playSoundEffect } from './utils/speech';
 
@@ -13,9 +13,24 @@ interface ArrestStageProps {
 
 export function ArrestStage({ recipient, age, isMuted = false, onComplete }: ArrestStageProps) {
   const [isFlashing, setIsFlashing] = useState(false);
+  const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    playSoundEffect('/audio/detective/stage1-arrest.mp3', isMuted, 0.85);
+    const audio = voiceAudioRef.current;
+    if (!audio) return;
+
+    if (isMuted) {
+      audio.pause();
+      audio.currentTime = 0;
+    } else {
+      audio.currentTime = 0;
+      audio.play().catch((e) => console.log("Voice audio play blocked:", e));
+    }
+
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
   }, [isMuted]);
 
   const handleUnlock = () => {
@@ -26,6 +41,9 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
 
   return (
     <div className="relative w-full h-full bg-[#0b0b0b] text-[#F7F4EF] font-mono flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-hidden">
+      {/* Voice Audio Element strictly from /audio/detective/voice_stage_1.mp3 */}
+      <audio ref={voiceAudioRef} src="/audio/detective/voice_stage_1.mp3" preload="auto" />
+
       <AnimatePresence>
         {isFlashing && (
           <motion.div 
@@ -89,10 +107,10 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
           </div>
         </div>
 
-        {/* Middle Text Section (All Caps, clean text) */}
+        {/* Middle Text Section (Exact neutral text without extra names) */}
         <div className="bg-neutral-900 border-2 border-neutral-700 p-5 text-left shadow-inner">
-          <p className="text-xs sm:text-sm leading-relaxed text-[#F7F4EF] font-mono font-bold tracking-wide uppercase">
-            {recipient.toUpperCase()} Е ОФИЦИАЛНО ОБЯВЕН ЗА ИЗДИРВАНЕ ПО ОБВИНЕНИЕ В ПОДОЗРИТЕЛНО ДОБРО НАСТРОЕНИЕ И ПРЕКАЛЕНО МНОГО ЧАР! РАЗСЛЕДВАНЕТО ЗАПОЧВА СЕГА. НАТИСНИ ЧЕРВЕНИЯ БУТОН ЗА ДА РАЗСЕКРЕТИШ ФАЙЛОВЕТЕ!
+          <p className="text-xs sm:text-sm leading-relaxed text-[#F7F4EF] font-mono font-bold tracking-wide">
+            Класифицирано досие. Обектът е под наблюдение. Всички улики са събрани, но делото остава неразкрито. Натиснете червения бутон, за да отворите архива и да започнете разследването.
           </p>
         </div>
 
@@ -108,14 +126,14 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
           </div>
         </div>
 
-        {/* Action Button embedded in board (smaller size & font) */}
+        {/* Action Button embedded in board (Dynamic name from data.recipient) */}
         <motion.button 
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleUnlock}
           className="w-full max-w-sm mx-auto bg-red-700 hover:bg-red-800 text-white py-2.5 sm:py-3 px-4 uppercase tracking-[0.15em] text-[10px] sm:text-xs font-black shadow-[0_3px_0_#000] transition border-2 border-black cursor-pointer flex items-center justify-center gap-2 relative overflow-hidden group"
         >
-          <span>[ 🔓 РАЗКРИЙ ДОСИЕТО ]</span>
+          <span>[ 🔓 РАЗКРИЙ ДОСИЕТО НА {recipient.toUpperCase()} ]</span>
         </motion.button>
       </motion.div>
     </div>
