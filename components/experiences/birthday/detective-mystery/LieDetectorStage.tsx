@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { playSoundEffect } from './utils/speech';
 
 interface QuestionItem {
   question: string;
@@ -181,12 +180,10 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
     if (isCorrect) {
       setAnswerStatus('truth');
       playWebAudioSound('correct');
-      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.7);
     } else {
       setAnswerStatus('lie');
       setIsScreenFlashing(true);
       playWebAudioSound('incorrect');
-      playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.85);
 
       if (typeof window !== 'undefined' && 'vibrate' in navigator) {
         try {
@@ -205,7 +202,6 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
       setCurrentQIndex(currentQIndex + 1);
     } else {
       setIsTestFinished(true);
-      playSoundEffect('/audio/detective/stamp.mp3', isMuted, 0.9);
     }
   };
 

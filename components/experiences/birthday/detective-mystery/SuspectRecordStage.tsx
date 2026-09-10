@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { playSoundEffect } from './utils/speech';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SuspectRecordProps {
@@ -43,6 +42,43 @@ export function SuspectRecordStage({
   const [mouseScreen, setMouseScreen] = useState({ x: -1000, y: -1000 });
   const [activeLaserKey, setActiveLaserKey] = useState<string | null>(null);
   const redactedRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // Web Audio API paper flip / rustling sound effect
+  const playPaperFlipSound = (muted: boolean) => {
+    if (muted || typeof window === 'undefined') return;
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      
+      const bufferSize = ctx.sampleRate * 0.12;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = ctx.createBufferSource();
+      whiteNoise.buffer = buffer;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(1200, ctx.currentTime);
+      filter.Q.setValueAtTime(3.0, ctx.currentTime);
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+
+      whiteNoise.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      whiteNoise.start(ctx.currentTime);
+    } catch (e) {
+      console.log("Paper flip audio error:", e);
+    }
+  };
 
   const profile = suspectProfile || {
     alias: 'Шеф на купона',
@@ -118,10 +154,6 @@ export function SuspectRecordStage({
         }
       }
     });
-
-    if (foundKey !== activeLaserKey && foundKey !== null) {
-      playSoundEffect('/audio/detective/typewriter.mp3', isMuted, 0.2);
-    }
 
     setActiveLaserKey(foundKey);
   }, [isMuted, activeLaserKey]);
@@ -222,7 +254,7 @@ export function SuspectRecordStage({
         {isModal && onClose && (
           <button 
             onClick={() => {
-              playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85);
+              playPaperFlipSound(isMuted);
               onClose();
             }}
             className="absolute top-0 right-2 z-30 bg-red-700 hover:bg-red-800 text-white px-2.5 py-1 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-wider shadow-md border border-red-500 cursor-pointer transition"
@@ -249,21 +281,21 @@ export function SuspectRecordStage({
                 {/* Folder Page Navigation Buttons */}
                 <div className="grid grid-cols-3 gap-0.5 sm:gap-1 bg-[#D6CCB4] p-1 rounded-xl border border-black/15 shadow-inner w-full sm:w-auto">
                   <button 
-                    onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(1); }}
+                    onClick={() => { playPaperFlipSound(isMuted); setCurrentPage(1); }}
                     className={`px-0.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[7px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 1 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
                     <span className="sm:hidden">1. ДАННИ</span>
                     <span className="hidden sm:inline">1. Идентичност</span>
                   </button>
                   <button 
-                    onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(2); }}
+                    onClick={() => { playPaperFlipSound(isMuted); setCurrentPage(2); }}
                     className={`px-0.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[7px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 2 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
                     <span className="sm:hidden">2. ПРЕСТЪПЛЕНИЯ</span>
                     <span className="hidden sm:inline">2. Престъпления</span>
                   </button>
                   <button 
-                    onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(3); }}
+                    onClick={() => { playPaperFlipSound(isMuted); setCurrentPage(3); }}
                     className={`px-0.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[7px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
                     <span className="sm:hidden">3. УЛИКИ</span>
@@ -340,7 +372,7 @@ export function SuspectRecordStage({
               <div className="flex items-center gap-2.5">
                 {currentPage > 1 && (
                   <button 
-                    onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(prev => Math.max(1, prev - 1) as any); }}
+                    onClick={() => { playPaperFlipSound(isMuted); setCurrentPage(prev => Math.max(1, prev - 1) as any); }}
                     className="bg-[#D6CCB4] hover:bg-[#c2b59b] text-black px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm uppercase tracking-wider font-black transition cursor-pointer border border-black/20 shadow-sm"
                   >
                     ← Предишна
@@ -349,7 +381,7 @@ export function SuspectRecordStage({
 
                 {currentPage < 3 ? (
                   <button 
-                    onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setCurrentPage(prev => Math.min(3, prev + 1) as any); }}
+                    onClick={() => { playPaperFlipSound(isMuted); setCurrentPage(prev => Math.min(3, prev + 1) as any); }}
                     className="flex-1 bg-[#2B2723] hover:bg-black text-[#F7F4EF] py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.12em] font-black transition cursor-pointer border border-neutral-700 shadow"
                   >
                     Следваща страница →
@@ -359,7 +391,7 @@ export function SuspectRecordStage({
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => {
-                      playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85);
+                      playPaperFlipSound(isMuted);
                       if (isModal && onClose) onClose();
                       else onComplete();
                     }}
