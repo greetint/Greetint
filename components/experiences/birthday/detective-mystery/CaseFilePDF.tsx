@@ -41,18 +41,22 @@ export function CaseFilePDF({
   const normalizedPhotos: string[] = (photos || []).map(p => typeof p === 'string' ? p : p.fileUrl).filter(Boolean);
   
   const defaultClues = [
-    'Кой е псевдонимът на заподозрения?',
-    'Какво е основното престъпление?',
-    'Кой е отличителният белег?',
-    'Къде е забележан за последно?',
-    'Какво е специалното умение?'
+    '1. Най-голямото ти престъпление (изцепка) през годината?',
+    '2. Кой приятел ти помогна най-много през последните 12 месеца?',
+    '3. Най-ценният трофей / спомен, който отнасяш със себе си?',
+    '4. Каква е голямата цел за следващата година на свобода?',
+    '5. Коя държава/град подготвяш за следващия си голям обир?',
+    '6. Какъв специален план имаш за следващия рожден ден?',
+    '7. Какво е твоето лично послание към теб самия / инспекторите?'
   ];
   const defaultAnswers = [
-    suspectProfile.alias || 'Шеф на купона',
     suspectProfile.mainCrime || 'Превишена скорост на празнуване',
     suspectProfile.distinguishingMark || 'Заразно добро настроение',
     suspectProfile.lastSeen || 'На дансинга в петък вечер',
-    suspectProfile.specialSkill || 'Неоторизирано ядене на торта'
+    suspectProfile.specialSkill || 'Неоторизирано ядене на торта',
+    'Пълно съдействие на купона',
+    'Завладяване на нови дансинги',
+    redactedWish
   ];
 
   const items = evidenceItems && evidenceItems.length > 0
@@ -62,6 +66,10 @@ export function CaseFilePDF({
         clue: evidenceClues[idx] || clue,
         answer: evidenceAnswers[idx] || defaultAnswers[idx] || 'Фактическа улика'
       }));
+
+  const photoSources = normalizedPhotos.length > 0 
+    ? normalizedPhotos 
+    : items.map(i => i.fileUrl).filter(Boolean);
 
   return (
     <div id="detective-pdf-print-area" className="hidden print:block fixed inset-0 z-[9999] bg-[#f4ecd8] overflow-hidden">
@@ -126,62 +134,61 @@ export function CaseFilePDF({
         </div>
 
         {/* Middle Content: Subject Data & Fingerprint */}
-        <div className="space-y-6 relative z-10 my-auto py-4">
-          <div className="text-center space-y-2 bg-[#e6dcc5] border-2 border-[#2b241d] p-6 shadow-inner relative">
-            <div className="absolute -top-3 right-8 border-2 border-red-800 text-red-800 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest transform rotate-3">
-              [ CONFIDENTIAL ]
+        <div className="space-y-4 relative z-10 my-auto py-2">
+          {/* Main Subject Identification Box */}
+          <div className="bg-[#e6dcc5] border-2 border-[#2b241d] p-5 shadow-inner relative space-y-3">
+            <div className="absolute -top-3 right-8 border-2 border-red-800 text-red-800 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest transform rotate-3 bg-[#f4ecd8]">
+              [ VERIFIED SUBJECT ]
             </div>
-            <span className="text-xs font-mono uppercase tracking-[0.25em] text-[#615446] block font-bold">
-              OFFICIAL INVESTIGATION DOSSIER
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black font-mono uppercase tracking-widest text-[#1a1714]">
-              BIRTHDAY INVESTIGATION CASE FILE
-            </h2>
-            <p className="text-xs font-mono italic text-[#54483a]">
-              Случаят е заведен във връзка с навършване на {age} години федерален празник.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-4 shadow-sm">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#615446] block font-bold mb-1">
-                [ SUBJECT // ИМЕ НА СУБЕКТА ]
-              </span>
-              <div className="text-xl font-mono font-black uppercase text-[#1a1714]">
-                {recipient}
+            <div className="border-b border-[#2b241d]/30 pb-2 flex justify-between items-center">
+              <div>
+                <span className="text-[9px] font-mono uppercase tracking-widest text-[#615446] block font-bold">СУБЕКТ (FULL NAME)</span>
+                <div className="text-xl font-mono font-black uppercase text-[#1a1714]">{recipient.toUpperCase()}</div>
+              </div>
+              <div className="text-right">
+                <span className="text-[9px] font-mono uppercase tracking-widest text-[#615446] block font-bold">ВЪЗРАСТ (AGE)</span>
+                <div className="text-xl font-mono font-black text-[#1a1714]">{age} ГОДИНИ</div>
               </div>
             </div>
 
-            <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-4 shadow-sm">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#615446] block font-bold mb-1">
-                [ ALIAS // КОДОВО ИМЕ ]
-              </span>
-              <div className="text-xl font-mono font-black uppercase text-[#1a1714]">
-                {suspectProfile.alias || 'Шеф на купона'}
+            <div className="grid grid-cols-2 gap-3 font-mono text-xs">
+              <div className="bg-[#FAF6EE] border border-[#2b241d]/40 p-2.5 rounded">
+                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">ПСЕВДОНИМ (ALIAS):</span>
+                <span className="font-black text-red-900">{suspectProfile.alias || 'Шеф на купона'}</span>
+              </div>
+              <div className="bg-[#FAF6EE] border border-[#2b241d]/40 p-2.5 rounded">
+                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">ГЛАВНО ПРЕСТЪПЛЕНИЕ:</span>
+                <span className="font-bold text-[#1a1714]">{suspectProfile.mainCrime || 'Превишена скорост на празнуване'}</span>
+              </div>
+              <div className="bg-[#FAF6EE] border border-[#2b241d]/40 p-2.5 rounded">
+                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">ОТЛИЧИТЕЛЕН БЕЛЕГ:</span>
+                <span className="font-bold text-[#1a1714]">{suspectProfile.distinguishingMark || 'Заразно добро настроение'}</span>
+              </div>
+              <div className="bg-[#FAF6EE] border border-[#2b241d]/40 p-2.5 rounded">
+                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">ПОСЛЕДНО ЗАБЕЛЯЗАН:</span>
+                <span className="font-bold text-[#1a1714]">{suspectProfile.lastSeen || 'На дансинга в петък вечер'}</span>
               </div>
             </div>
 
-            <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-4 shadow-sm">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#615446] block font-bold mb-1">
-                [ DATE OPENED // ДАТА НА ОТКРИВАНЕ ]
-              </span>
-              <div className="text-lg font-mono font-bold text-[#1a1714]">
-                2026.03.09 ({age} години)
-              </div>
-            </div>
-
-            <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-4 shadow-sm">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#615446] block font-bold mb-1">
-                [ INVESTIGATION OFFICER // ИНСПЕКТОР ]
-              </span>
-              <div className="text-lg font-mono font-black uppercase text-[#1a1714]">
-                {sender}
-              </div>
+            <div className="bg-[#FAF6EE] border border-[#2b241d]/40 p-2.5 rounded font-mono text-xs">
+              <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">СПЕЦИАЛНО УМЕНИЕ:</span>
+              <span className="font-black text-[#1a1714]">{suspectProfile.specialSkill || 'Неоторизирано ядене на торта'}</span>
             </div>
           </div>
 
-          <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-5 flex items-center gap-6 shadow-sm">
-            <div className="w-20 h-20 bg-[#2b241d] text-[#f4ecd8] rounded-xl flex items-center justify-center font-mono font-black text-3xl shadow-inner shrink-0 border border-amber-500/30">
+          <div className="grid grid-cols-2 gap-4 font-mono text-xs">
+            <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-3 shadow-sm">
+              <span className="text-[9px] text-[#615446] font-bold uppercase tracking-widest block">ИНСПЕКТОР НА ДЕЛОТО:</span>
+              <div className="font-black uppercase text-[#1a1714] text-sm mt-0.5">{sender}</div>
+            </div>
+            <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-3 shadow-sm">
+              <span className="text-[9px] text-[#615446] font-bold uppercase tracking-widest block">ДАТА НА ОТКРИВАНЕ:</span>
+              <div className="font-bold uppercase text-[#1a1714] text-sm mt-0.5">2026.03.09</div>
+            </div>
+          </div>
+
+          <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-4 flex items-center gap-4 shadow-sm">
+            <div className="w-16 h-16 bg-[#2b241d] text-amber-300 rounded-lg flex items-center justify-center font-mono font-black text-2xl shadow-inner shrink-0 border border-amber-500/40">
               <span>🫲</span>
             </div>
             <div className="space-y-1 font-mono text-xs">
@@ -193,7 +200,7 @@ export function CaseFilePDF({
           </div>
 
           {redactedWish && (
-            <div className="bg-red-950/5 border-l-4 border-red-700 p-4 font-mono text-xs text-[#2b241d]">
+            <div className="bg-red-950/5 border-l-4 border-red-700 p-3.5 font-mono text-xs text-[#2b241d]">
               <span className="font-bold uppercase tracking-wider text-red-800 block mb-1">СЕКРЕТНО ПОСЛАНИЕ НА ИНСПЕКТОРА:</span>
               <p className="italic font-serif text-sm">"{redactedWish}"</p>
             </div>
@@ -252,22 +259,23 @@ export function CaseFilePDF({
               📸 ПОЛАРОИДНИ РАЗСЕКРЕТЕНИ ДОКАЗАТЕЛСТВА (POLICE PHOTO EVIDENCE)
             </span>
 
-            <div className="grid grid-cols-3 gap-4">
-              {items.slice(0, 3).map((item, idx) => {
-                const photoSrc = item.fileUrl || normalizedPhotos[idx] || `/images/cards/card-${(idx % 3) + 1}.png`;
-                const rotations = [-3, 2, -2];
+            <div className="grid grid-cols-3 gap-3">
+              {photoSources.slice(0, 3).map((photoUrl, idx) => {
+                const rotations = [-2, 3, -1];
+                const itemMatch = items[idx];
+                const caption = itemMatch?.answer || `Доказателство #${idx + 1}`;
                 return (
                   <div 
                     key={idx}
-                    className="bg-[#FAF6EE] p-3 pt-3 pb-4 shadow-md border-2 border-[#2b241d] flex flex-col items-center"
+                    className="bg-[#FAF6EE] p-2.5 pt-2.5 pb-3 shadow-md border-2 border-[#2b241d] flex flex-col items-center"
                     style={{ transform: `rotate(${rotations[idx % rotations.length]}deg)` }}
                   >
-                    <div className="w-full h-[110px] bg-neutral-900 border border-[#2b241d]/40 overflow-hidden mb-2">
-                      <img src={photoSrc} alt={`Evidence #${idx + 1}`} className="w-full h-full object-cover" />
+                    <div className="w-full h-[105px] bg-neutral-900 border border-[#2b241d]/40 overflow-hidden mb-1.5">
+                      <img src={photoUrl} alt={`Evidence photo #${idx + 1}`} className="w-full h-full object-cover" />
                     </div>
                     <div className="text-center font-mono w-full">
-                      <span className="text-[8px] font-bold uppercase tracking-widest text-red-800 block">ДОКАЗАТЕЛСТВО #{idx + 1}</span>
-                      <p className="text-[10px] font-bold text-[#1a1714] truncate mt-0.5">"{item.answer}"</p>
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-red-800 block">ФОТО ДОКАЗАТЕЛСТВО #{idx + 1}</span>
+                      <p className="text-[9px] font-bold text-[#1a1714] truncate mt-0.5">"{caption}"</p>
                     </div>
                   </div>
                 );
