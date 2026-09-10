@@ -73,12 +73,14 @@ export function SuspectRecordStage({
 
   const cluesList = evidenceItems?.length ? evidenceItems.map(item => item.clue) : (evidenceClues?.length ? evidenceClues : defaultClues);
 
+  // Page 1: Identity & Security Data
   const page1Fields = [
-    { key: 'alias', label: '[ КОДОВО ИМЕ / АЛИАС ]', value: profile.alias, note: 'Важна улика за Стейдж 5' },
-    { key: 'age', label: '[ ВЪЗРАСТ НА СУБЕКТА ]', value: age, note: 'Ключ за радио честотата в Стейдж 4' },
-    { key: 'secretPassword', label: '[ СЕКРЕТНА ПАРОЛА ]', value: secretPassVal, note: 'Ключ за верификационния терминал в Стейдж 4' },
+    { key: 'alias', label: '[ КОДОВО ИМЕ / АЛИАС ]', value: profile.alias, note: 'Важна улика за разследването' },
+    { key: 'age', label: '[ ВЪЗРАСТ НА СУБЕКТА ]', value: age, note: 'Ключ за радиочестотния скенер' },
+    { key: 'secretPassword', label: '[ СЕКРЕТНА ПАРОЛА ]', value: secretPassVal, note: 'Ключ за верификационния терминал' },
   ];
 
+  // Page 2: Crimes & Profile Data
   const page2Fields = [
     { key: 'mainCrime', label: '[ ГЛАВНО ПРЕСТЪПЛЕНИЕ ]', value: profile.mainCrime, note: 'Улика за корковото табло' },
     { key: 'distinguishingMark', label: '[ ОТЛИЧИТЕЛЕН БЕЛЕГ ]', value: profile.distinguishingMark, note: 'Улика за корковото табло' },
@@ -86,11 +88,12 @@ export function SuspectRecordStage({
     { key: 'specialSkill', label: '[ СПЕЦИАЛНО УМЕНИЕ ]', value: profile.specialSkill, note: 'Улика за корковото табло' },
   ];
 
+  // Page 3: Strictly Clues / Evidence for corkboard
   const page3Fields = answers.map((ans, idx) => ({
     key: `ev${idx}`,
     label: `[ ${cluesList[idx % cluesList.length] || `ВЪПРОС №${idx + 1}`} ]`,
     value: ans,
-    note: 'Улика / Отговор за Стейдж 5'
+    note: 'Улика за корковото табло'
   }));
 
   useEffect(() => {
@@ -133,35 +136,35 @@ export function SuspectRecordStage({
     }
   };
   const renderFields = (fields: typeof page1Fields) => (
-    <div className="space-y-2 sm:space-y-2.5">
+    <div className="space-y-1 sm:space-y-2">
       {fields.map((field) => {
         const isRevealed = activeLaserKey === field.key;
         return (
           <div 
             key={field.key}
-            className="bg-[#F5F1E8] border border-black/20 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-xs relative transition-colors duration-200 hover:border-black/40"
+            className="bg-[#F5F1E8] border border-black/20 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg flex flex-row items-center justify-between gap-2 shadow-xs relative transition-colors duration-200 hover:border-black/40"
           >
-            <div className="leading-tight">
-              <div className="text-xs font-black text-red-900 tracking-wider uppercase">
+            <div className="leading-tight truncate pr-1">
+              <div className="text-[10px] sm:text-xs font-black text-red-900 tracking-wider uppercase truncate">
                 {field.label}
               </div>
-              <div className="text-[10px] text-neutral-600 italic mt-0.5">
+              <div className="text-[9px] sm:text-[10px] text-neutral-600 italic mt-0.5 truncate">
                 {field.note}
               </div>
             </div>
 
             <div 
               ref={el => { redactedRefs.current[field.key] = el; }}
-              className={`relative px-3 py-1.5 rounded-md overflow-hidden min-w-[150px] sm:min-w-[190px] text-center bg-[#24201D] shadow-inner self-stretch sm:self-auto flex items-center justify-center h-8 sm:h-9 ${isRevealed ? 'ring-2 ring-red-500 shadow-[0_0_10px_rgba(255,0,0,0.8)]' : ''}`}
+              className={`relative px-2.5 py-1 rounded-md overflow-hidden min-w-[120px] sm:min-w-[180px] text-center bg-[#24201D] shadow-inner shrink-0 flex items-center justify-center h-7 sm:h-9 ${isRevealed ? 'ring-2 ring-red-500 shadow-[0_0_10px_rgba(255,0,0,0.8)]' : ''}`}
             >
-              <span className={`text-xs sm:text-sm font-black font-mono tracking-wider uppercase transition-none ${isRevealed ? 'text-amber-200 opacity-100' : 'text-transparent opacity-0 select-none'}`}>
+              <span className={`text-[11px] sm:text-sm font-black font-mono tracking-wider uppercase transition-none truncate max-w-[140px] sm:max-w-none ${isRevealed ? 'text-amber-200 opacity-100' : 'text-transparent opacity-0 select-none'}`}>
                 {field.value}
               </span>
 
               <div 
                 className={`absolute inset-0 bg-[#24201D] transition-none rounded flex items-center justify-center z-10 ${isRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
               >
-                <span className="text-[10px] text-neutral-400 font-mono tracking-[0.2em] select-none font-black">
+                <span className="text-[9px] sm:text-[10px] text-neutral-400 font-mono tracking-[0.2em] select-none font-black">
                   [ REDACTED ]
                 </span>
               </div>
@@ -264,7 +267,7 @@ export function SuspectRecordStage({
                     className={`px-0.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[7px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
                     <span className="sm:hidden">3. УЛИКИ</span>
-                    <span className="hidden sm:inline">3. Доказателства</span>
+                    <span className="hidden sm:inline">3. Улики</span>
                   </button>
                 </div>
               </div>
@@ -317,8 +320,8 @@ export function SuspectRecordStage({
                     className="space-y-2 sm:space-y-3"
                   >
                     <div className="flex items-center justify-between text-[10px] sm:text-xs uppercase font-black text-black/80 px-1 border-b border-black/10 pb-1">
-                      <span>СТРАНИЦА 3: СЕКРЕТНИ ДОКАЗАТЕЛСТВА</span>
-                      <span className="text-red-700 font-bold">[ УЛИКИ ЗА СТЕЙДЖ 5 ]</span>
+                      <span>СТРАНИЦА 3: СЕКРЕТНИ УЛИКИ</span>
+                      <span className="text-red-700 font-bold">[ ОСНОВНИ УЛИКИ ]</span>
                     </div>
                     {renderFields(page3Fields)}
                   </motion.div>
@@ -362,7 +365,7 @@ export function SuspectRecordStage({
                     }}
                     className="flex-1 bg-red-700 hover:bg-red-800 text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.12em] font-black shadow-lg transition cursor-pointer border border-red-500 flex items-center justify-center gap-2 group"
                   >
-                    <span>{isModal ? '[ ЗАТВОРИ ДОСИЕТО ✕ ]' : '[ ПРЕМИН КЪМ ДЕТЕКТОРА НА ЛЪЖАТА → ]'}</span>
+                    <span>{isModal ? '[ ЗАТВОРИ ДОСИЕТО ✕ ]' : '[ КЪМ ДЕТЕКТОРА НА ЛЪЖАТА → ]'}</span>
                   </motion.button>
                 )}
               </div>

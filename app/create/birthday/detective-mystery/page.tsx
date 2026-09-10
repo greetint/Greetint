@@ -156,7 +156,7 @@ export default function DetectiveMysteryCreatePage() {
 
             <div className="space-y-4">
               <h3 className="text-xs font-black uppercase tracking-widest text-red-800 border-b border-black/20 pb-2">
-                2. Профил на престъпника и парола (Секретни данни за Стейдж 2 & 4)
+                2. Профил на престъпника и парола
               </h3>
               
               <div>
@@ -185,7 +185,7 @@ export default function DetectiveMysteryCreatePage() {
               </div>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-red-700 block mb-1 font-bold">Секретна парола / Ключова дума (за Верификационния терминал в Стейдж 4):</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-red-700 block mb-1 font-bold">Секретна парола / Ключова дума:</label>
                 <input type="text" required value={secretPassword} onChange={e => setSecretPassword(e.target.value)} placeholder="напр. кафе" className="w-full bg-black/10 border-b border-black/50 py-2 text-sm text-black placeholder:text-black/30 font-mono focus:outline-none px-2 rounded" />
               </div>
             </div>
@@ -266,17 +266,17 @@ export default function DetectiveMysteryCreatePage() {
 
             <div className="space-y-4">
               <h3 className="text-xs font-black uppercase tracking-widest text-red-800 border-b border-black/20 pb-2">
-                5. Финално послание и 5 доказателства (за Стейдж 4 и 5)
+                5. Финално послание и 5 доказателства
               </h3>
 
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 block mb-1">Послание под цензура (Redacted Wish - разкрива се под лупата в Стейдж 4):</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-black/60 block mb-1">Послание под цензура (Redacted Wish):</label>
                 <textarea rows={3} required value={redactedWish} onChange={e => setRedactedWish(e.target.value)} placeholder="Честит рожден ден! Бъди все така..." className="w-full bg-transparent border-b border-black/50 py-2 text-sm text-black placeholder:text-black/30 font-mono focus:outline-none resize-none" />
               </div>
 
               <div className="space-y-3 pt-2">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-red-700 block">
-                  📌 5 Двойки (Снимка + Въпрос/Улика) за Корковото табло в Стейдж 5:
+                  📌 5 Двойки (Снимка + Въпрос/Улика) за Корковото табло:
                 </label>
                 <p className="text-[10px] text-black/70 italic">
                   За всяка от 5-те бележки качете снимка И изберете готов въпрос от шаблоните ИЛИ напишете собствен уникален текст.

@@ -113,7 +113,7 @@ export function MagnifyingGlassStage({
     <div ref={containerRef} onMouseMove={handleMove} onTouchMove={handleMove} onMouseEnter={() => setIsInside(true)} onMouseLeave={() => setIsInside(false)} className="relative w-full h-full bg-[#0D0B0A] text-[#F7F4EF] font-mono flex flex-col items-center justify-between p-4 sm:p-6 select-none overflow-y-auto sm:overflow-hidden cursor-crosshair">
       <div className="relative z-20 text-center space-y-1 pt-2">
         <div className="flex items-center justify-between max-w-xl mx-auto w-full px-2">
-          <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold">ФЕДЕРАЛЕН АРХИВ // СТЕЙДЖ 4</span>
+          <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold">ФЕДЕРАЛЕН АРХИВ // АРХИВЕН СКЕНЕР</span>
           <button 
             onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setIsDossierOpen(true); }}
             className="bg-[#2B2723] hover:bg-black text-amber-200 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider border border-amber-500/40 shadow cursor-pointer transition flex items-center gap-1.5"
@@ -184,7 +184,7 @@ export function MagnifyingGlassStage({
               onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); onComplete(); }} 
               className="max-w-xs w-full bg-amber-600 hover:bg-amber-500 text-black py-4 rounded-2xl text-xs uppercase tracking-widest font-black cursor-pointer border-2 border-amber-400 shadow-xl transition"
             >
-              [ КЪМ ТАБЛОТО (СТЕЙДЖ 5) → ]
+              [ КЪМ КОРКОВОТО ТАБЛО → ]
             </button>
           </div>
         )}
@@ -209,7 +209,7 @@ export function MagnifyingGlassStage({
         </div>
       )}
 
-      <div className="relative z-20 pb-2 text-[10px] text-neutral-500 uppercase tracking-widest">ФЕДЕРАЛЕН АРХИВ // СТЕЙДЖ 4</div>
+      <div className="relative z-20 pb-2 text-[10px] text-neutral-500 uppercase tracking-widest">ФЕДЕРАЛЕН АРХИВ // АРХИВЕН СКЕНЕР</div>
 
       <AnimatePresence>
         {isDossierOpen && (

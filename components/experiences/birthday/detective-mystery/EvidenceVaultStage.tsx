@@ -279,7 +279,7 @@ export function EvidenceVaultStage({
             <span>📁 ПРЕГЛЕД НА ДОСИЕТО</span>
           </button>
         </div>
-        <h2 className="text-sm sm:text-lg font-serif font-bold text-black uppercase tracking-wide">Стейдж 5: Разследване на уликите</h2>
+        <h2 className="text-sm sm:text-lg font-serif font-bold text-black uppercase tracking-wide">Разследване на уликите</h2>
         <p className="text-[10px] sm:text-xs text-[#5c3317] font-semibold truncate">
           {selectedFactId !== null 
             ? "📌 Уликата е избрана! Кликнете на съответната Polaroid снимка." 
