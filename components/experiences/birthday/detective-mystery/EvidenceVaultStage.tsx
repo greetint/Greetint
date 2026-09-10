@@ -178,16 +178,16 @@ export function EvidenceVaultStage({
   // Mobile: Safe, non-overlapping vertical flow sequence (no mashing or overlapping)
   // Desktop (md+): Free, independent scattered layout with varied rotations
   const scatterConfigs = [
-    { left: 'left-[4%]', mdLeft: 'md:left-[4%]', top: 'top-[3%]', mdTop: 'md:top-[3%]', rotate: -4, width: 'w-[92px] max-w-[95px] md:w-[200px] md:max-w-none' },
-    { left: 'left-[46%]', mdLeft: 'md:left-[27%]', top: 'top-[10%]', mdTop: 'md:top-[5%]', rotate: 3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { left: 'left-[22%]', mdLeft: 'md:left-[52%]', top: 'top-[22%]', mdTop: 'md:top-[2%]', rotate: -5, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
-    { left: 'left-[52%]', mdLeft: 'md:left-[75%]', top: 'top-[32%]', mdTop: 'md:top-[4%]', rotate: 4, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { left: 'left-[8%]', mdLeft: 'md:left-[14%]', top: 'top-[42%]', mdTop: 'md:top-[30%]', rotate: -3, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
-    { left: 'left-[38%]', mdLeft: 'md:left-[39%]', top: 'top-[52%]', mdTop: 'md:top-[32%]', rotate: 5, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { left: 'left-[15%]', mdLeft: 'md:left-[64%]', top: 'top-[62%]', mdTop: 'md:top-[30%]', rotate: 3, width: 'w-[90px] max-w-[95px] md:w-[190px] md:max-w-none' },
-    { left: 'left-[55%]', mdLeft: 'md:left-[8%]', top: 'top-[70%]', mdTop: 'md:top-[48%]', rotate: -6, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
-    { left: 'left-[5%]', mdLeft: 'md:left-[31%]', top: 'top-[80%]', mdTop: 'md:top-[45%]', rotate: 6, width: 'w-[90px] max-w-[95px] md:w-[200px] md:max-w-none' },
-    { left: 'left-[42%]', mdLeft: 'md:left-[58%]', top: 'top-[88%]', mdTop: 'md:top-[46%]', rotate: -3, width: 'w-[88px] max-w-[92px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[4%]', mdLeft: 'md:left-[4%]', top: 'top-[3%]', mdTop: 'md:top-[3%]', rotate: -4, width: 'w-[84px] max-w-[88px] md:w-[200px] md:max-w-none' },
+    { left: 'left-[48%]', mdLeft: 'md:left-[27%]', top: 'top-[8%]', mdTop: 'md:top-[5%]', rotate: 3, width: 'w-[82px] max-w-[86px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[24%]', mdLeft: 'md:left-[52%]', top: 'top-[20%]', mdTop: 'md:top-[2%]', rotate: -5, width: 'w-[84px] max-w-[88px] md:w-[190px] md:max-w-none' },
+    { left: 'left-[54%]', mdLeft: 'md:left-[75%]', top: 'top-[26%]', mdTop: 'md:top-[4%]', rotate: 4, width: 'w-[82px] max-w-[86px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[10%]', mdLeft: 'md:left-[14%]', top: 'top-[40%]', mdTop: 'md:top-[30%]', rotate: -3, width: 'w-[84px] max-w-[88px] md:w-[200px] md:max-w-none' },
+    { left: 'left-[40%]', mdLeft: 'md:left-[39%]', top: 'top-[45%]', mdTop: 'md:top-[32%]', rotate: 5, width: 'w-[82px] max-w-[86px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[18%]', mdLeft: 'md:left-[64%]', top: 'top-[58%]', mdTop: 'md:top-[30%]', rotate: 3, width: 'w-[84px] max-w-[88px] md:w-[190px] md:max-w-none' },
+    { left: 'left-[52%]', mdLeft: 'md:left-[8%]', top: 'top-[62%]', mdTop: 'md:top-[48%]', rotate: -6, width: 'w-[82px] max-w-[86px] md:w-[180px] md:max-w-none' },
+    { left: 'left-[6%]', mdLeft: 'md:left-[31%]', top: 'top-[72%]', mdTop: 'md:top-[45%]', rotate: 6, width: 'w-[84px] max-w-[88px] md:w-[200px] md:max-w-none' },
+    { left: 'left-[44%]', mdLeft: 'md:left-[58%]', top: 'top-[76%]', mdTop: 'md:top-[46%]', rotate: -3, width: 'w-[82px] max-w-[86px] md:w-[180px] md:max-w-none' },
   ];
 
   return (
