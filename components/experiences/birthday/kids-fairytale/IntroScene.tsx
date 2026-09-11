@@ -35,7 +35,7 @@ export function IntroScene({ childName, onComplete }: IntroSceneProps) {
         scale: stage === 'unlocking' ? [1, 2.5] : 1,
       }}
       transition={{ duration: stage === 'unlocking' ? 1.2 : 0.8, ease: "easeInOut" }}
-      className="w-full max-w-2xl sm:max-w-3xl h-[560px] sm:h-[620px] rounded-[2.5rem] shadow-[0_0_80px_rgba(168,85,247,0.5)] border-4 border-amber-300/90 text-center flex flex-col items-center justify-center relative overflow-hidden select-none"
+      className="w-full max-w-4xl h-[600px] sm:h-[680px] text-center flex flex-col items-center justify-center relative overflow-hidden select-none bg-black"
     >
       {/* 1. Background Layer (z-0) */}
       <div 
