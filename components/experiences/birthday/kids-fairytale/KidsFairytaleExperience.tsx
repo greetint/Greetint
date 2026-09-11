@@ -48,6 +48,7 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
             <IntroScene 
               key="intro" 
               childName={childName}
+              isMuted={isMuted}
               onComplete={() => setCurrentScene(1)} 
             />
           )}

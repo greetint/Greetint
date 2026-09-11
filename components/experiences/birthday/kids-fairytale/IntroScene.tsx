@@ -1,116 +1,123 @@
 'use client';
-
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 
-interface IntroSceneProps {
-  childName: string;
-  onComplete: () => void;
-}
+interface IntroProps { childName: string; isMuted?: boolean; onComplete: () => void; }
 
-export function IntroScene({ childName, onComplete }: IntroSceneProps) {
+export function IntroScene({ childName, isMuted = false, onComplete }: IntroProps) {
+  const v1 = useRef<HTMLVideoElement | null>(null);
+  const v2 = useRef<HTMLVideoElement | null>(null);
+  const audio = useRef<HTMLAudioElement | null>(null);
+  const [started, setStarted] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const [holding, setHolding] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [unlocked, setUnlocked] = useState(false);
+  const req = useRef<number | null>(null);
+  const startT = useRef<number>(0);
+
+  useEffect(() => {
+    if (audio.current) {
+      if (isMuted) audio.current.pause();
+      else if (started && !ended) audio.current.play().catch(() => {});
+    }
+  }, [isMuted, started, ended]);
+
+  useEffect(() => {
+    v1.current?.play().catch(() => {
+      const fn = () => {
+        if (v1.current?.paused) v1.current.play().catch(() => {});
+        window.removeEventListener('click', fn);
+        window.removeEventListener('touchstart', fn);
+      };
+      window.addEventListener('click', fn);
+      window.addEventListener('touchstart', fn);
+    });
+  }, []);
+
+  const timeUpdate = () => {
+    if (!v1.current || started) return;
+    if (v1.current.currentTime >= 2.0) {
+      setStarted(true);
+      if (!isMuted) audio.current?.play().catch(() => {});
+    }
+  };
+
+  const v1Ended = () => {
+    if (v1.current) {
+      v1.current.pause();
+      v1.current.currentTime = v1.current.duration - 0.05;
+    }
+  };
+
+  const startHold = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    if (!ended || unlocked) return;
+    setHolding(true);
+    startT.current = Date.now();
+    const animate = () => {
+      const elapsed = Date.now() - startT.current;
+      const p = Math.min((elapsed / 1500) * 100, 100);
+      setProgress(p);
+      if (p >= 100) {
+        setUnlocked(true);
+        setHolding(false);
+        audio.current?.pause();
+        v2.current?.play().catch(() => {});
+      } else {
+        req.current = requestAnimationFrame(animate);
+      }
+    };
+    req.current = requestAnimationFrame(animate);
+  };
+
+  const cancelHold = () => {
+    if (unlocked) return;
+    if (req.current) cancelAnimationFrame(req.current);
+    setHolding(false);
+    setProgress(0);
+  };
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50">
-      {/* 1. ФОН */}
-      <img
-        src="/images/birthday/kids_fairytale/stage1/background.jpeg"
-        alt="Background"
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      />
-
-      {/* 2. ЗАМЪК (Горе вляво) */}
-      <motion.img
-        src="/images/birthday/kids_fairytale/stage1/castle.png"
-        alt="Castle"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1, y: [-4, 4, -4] }}
-        transition={{ 
-          opacity: { duration: 1 },
-          y: { duration: 5, repeat: Infinity, ease: "easeInOut" }
-        }}
-        className="absolute top-[8%] left-[4%] w-[280px] md:w-[420px] h-auto object-contain z-10 drop-shadow-2xl"
-      />
-
-      {/* 3. ОСТРОВ (Долу вдясно) */}
-      <motion.img
-        src="/images/birthday/kids_fairytale/stage1/island.png"
-        alt="Island"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1, y: [4, -4, 4] }}
-        transition={{ 
-          opacity: { duration: 1, delay: 0.2 },
-          y: { duration: 6, repeat: Infinity, ease: "easeInOut" }
-        }}
-        className="absolute bottom-[5%] right-[2%] w-[300px] md:w-[460px] h-auto object-contain z-10 drop-shadow-2xl"
-      />
-
-      {/* 4. ОБЛАЧЕН ПОД ДОЛУ (Използва реалния cloude.png) */}
-      <div className="absolute bottom-0 left-0 w-full h-[35%] pointer-events-none z-15 flex justify-between items-end opacity-90">
-        <img
-          src="/images/birthday/kids_fairytale/stage1/cloude.png"
-          alt="Cloud Floor Left"
-          className="w-[60vw] md:w-[45vw] h-auto object-contain -mb-10 -ml-20 blur-[1px]"
-        />
-        <img
-          src="/images/birthday/kids_fairytale/stage1/cloude.png"
-          alt="Cloud Floor Right"
-          className="w-[60vw] md:w-[45vw] h-auto object-contain -mb-10 -mr-20 blur-[1px] scale-x-[-1]"
-        />
-      </div>
-
-      {/* 5. НАЧАЛНИ ЗАВЕСИ ОТ ОБЛАЦИ (Разстилат се встрани) */}
-      <motion.img
-        src="/images/birthday/kids_fairytale/stage1/cloude.png"
-        alt="Cloud Curtain Left"
-        initial={{ x: '0%', opacity: 1 }}
-        animate={{ x: '-110%', opacity: 0 }}
-        transition={{ duration: 2, ease: [0.25, 1, 0.5, 1], delay: 0.5 }}
-        className="absolute inset-y-0 left-0 w-[70vw] h-full object-cover z-40 pointer-events-none"
-      />
-      <motion.img
-        src="/images/birthday/kids_fairytale/stage1/cloude.png"
-        alt="Cloud Curtain Right"
-        initial={{ x: '0%', opacity: 1 }}
-        animate={{ x: '110%', opacity: 0 }}
-        transition={{ duration: 2, ease: [0.25, 1, 0.5, 1], delay: 0.5 }}
-        className="absolute inset-y-0 right-0 w-[70vw] h-full object-cover z-40 pointer-events-none scale-x-[-1]"
-      />
-
-      {/* 6. ТЕКСТ И ИМЕ */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 1.5 }}
-        className="absolute top-[10%] left-1/2 -translate-x-1/2 text-center z-30 w-full px-4"
-      >
-        <p className="text-white/90 text-lg md:text-2xl font-serif drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-          Имало едно време едно вълшебно царство...
-        </p>
-        <h1 className="text-amber-300 text-3xl md:text-5xl font-bold mt-2 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
-          ✦ {childName} ✦
-        </h1>
-      </motion.div>
-
-      {/* 7. ЗЛАТЕН КЛЮЧ (Център) */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, delay: 2 }}
-        onClick={onComplete}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 cursor-pointer flex flex-col items-center group"
-      >
-        <motion.img
-          src="/images/birthday/kids_fairytale/stage1/key.png"
-          alt="Golden Key"
-          animate={{ y: [-8, 8, -8], rotate: [-2, 2, -2] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          className="w-28 md:w-40 h-auto object-contain drop-shadow-[0_0_35px_rgba(255,215,0,0.8)] group-hover:scale-110 transition-transform"
-        />
-        <span className="mt-4 px-6 py-2 rounded-full bg-black/40 backdrop-blur-md border border-amber-400/40 text-amber-200 text-sm md:text-base font-medium drop-shadow-md">
-          🗝️ Докосни ключа, за да отключиш празника!
-        </span>
-      </motion.div>
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none">
+      <audio ref={audio} src="/audio/kids_fairytale/stage_1/voice.mp3" onEnded={() => setEnded(true)} />
+      <video ref={v1} src="/images/birthday/kids_fairytale/stage_1/stage1_part1.mp4" playsInline muted onTimeUpdate={timeUpdate} onEnded={v1Ended} className={`absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000 ${unlocked ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} />
+      <video ref={v2} src="/images/birthday/kids_fairytale/stage_1/stage1_part2.mp4" playsInline muted onEnded={onComplete} className={`absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-700 ${unlocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} />
+      {!unlocked && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-between py-12 px-4 pointer-events-auto">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center z-30 mt-6">
+            <p className="text-white/90 text-lg md:text-2xl font-serif drop-shadow-md">Имало едно време вълшебно царство...</p>
+            <h1 className="text-amber-300 text-3xl md:text-5xl font-bold mt-2 drop-shadow-lg">✦ {childName} ✦</h1>
+          </motion.div>
+          <div className="relative flex flex-col items-center justify-center my-auto">
+            <div className={`relative cursor-pointer flex items-center justify-center p-6 rounded-full select-none ${!ended ? 'cursor-not-allowed opacity-75' : 'hover:scale-105 active:scale-95'}`} onMouseDown={ended ? startHold : undefined} onMouseUp={ended ? cancelHold : undefined} onMouseLeave={ended ? cancelHold : undefined} onTouchStart={ended ? startHold : undefined} onTouchEnd={ended ? cancelHold : undefined}>
+              {ended && (
+                <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 140 140">
+                  <circle cx="70" cy="70" r="60" fill="none" stroke="rgba(255, 215, 0, 0.2)" strokeWidth="8" />
+                  <circle cx="70" cy="70" r="60" fill="none" stroke="#FFD700" strokeWidth="8" strokeDasharray="376.99" strokeDashoffset={376.99 - (376.99 * progress) / 100} strokeLinecap="round" />
+                </svg>
+              )}
+              <motion.img src="/images/birthday/kids_fairytale/stage1/key.png" alt="Golden Key" animate={ended && !holding ? { y: [-6, 6, -6], rotate: [-2, 2, -2] } : {}} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }} className="w-32 md:w-44 h-auto object-contain drop-shadow-[0_0_30px_rgba(255,215,0,0.9)] select-none pointer-events-none" />
+              {holding && <div className="absolute inset-0 rounded-full bg-amber-400/30 blur-xl animate-pulse pointer-events-none" />}
+            </div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 text-center z-30">
+              {!ended ? (
+                <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/30 text-amber-200 text-sm md:text-base font-medium shadow-xl">
+                  <Sparkles className="w-4 h-4 text-amber-400 animate-spin" />
+                  <span>Слушай разказвача...</span>
+                </div>
+              ) : (
+                <div className="inline-flex flex-col items-center gap-1">
+                  <span className="px-6 py-3 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/60 text-amber-300 text-sm md:text-base font-bold shadow-xl animate-bounce">🗝️ Задръж пръст върху ключа, за да отключиш портите!</span>
+                  {holding && <span className="text-amber-200 text-xs mt-1 font-semibold">Отключване: {Math.round(progress)}%</span>}
+                </div>
+              )}
+            </motion.div>
+          </div>
+          <div className="h-10" />
+        </div>
+      )}
     </div>
   );
 }
-
 export default IntroScene;
