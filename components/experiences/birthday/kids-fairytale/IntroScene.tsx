@@ -29,13 +29,14 @@ export function IntroScene({ childName, onComplete }: IntroSceneProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0 }}
       animate={{ 
         opacity: stage === 'unlocking' ? [1, 1, 0] : 1,
         scale: stage === 'unlocking' ? [1, 2.5] : 1,
       }}
       transition={{ duration: stage === 'unlocking' ? 1.2 : 0.8, ease: "easeInOut" }}
-      className="w-full max-w-4xl h-[600px] sm:h-[680px] text-center flex flex-col items-center justify-center relative overflow-hidden select-none bg-black"
+      style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 50, overflow: 'hidden', background: 'black' }}
+      className="flex flex-col items-center justify-center select-none"
     >
       {/* 1. Background Layer (z-0) */}
       <div 
@@ -93,22 +94,19 @@ export function IntroScene({ childName, onComplete }: IntroSceneProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="absolute top-16 sm:top-20 left-0 right-0 z-30 px-6 max-w-lg mx-auto flex flex-col items-center space-y-1 sm:space-y-2 pointer-events-none"
+            className="absolute top-20 sm:top-24 left-0 right-0 z-30 px-6 max-w-2xl mx-auto flex flex-col items-center space-y-2 sm:space-y-3 pointer-events-none text-center"
           >
-            <span className="text-xs sm:text-sm uppercase tracking-[0.25em] bg-amber-400/90 text-indigo-950 px-4 py-1 rounded-full font-black shadow-lg">
-              ✨ Приказна магия ✨
-            </span>
-            <h1 className="text-xl sm:text-2xl font-serif font-black text-amber-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] leading-tight">
+            <h1 className="text-2xl sm:text-4xl font-serif font-bold text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-tight">
               Имало едно време едно вълшебно царство...
             </h1>
-            <div className="text-2xl sm:text-4xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-300 to-amber-200 drop-shadow-[0_4px_16px_rgba(251,191,36,0.8)] py-1">
+            <div className="text-3xl sm:text-6xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-100 drop-shadow-[0_4px_20px_rgba(251,191,36,0.9)] py-1">
               ✦ {childName} ✦
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 5. Golden Key Interaction (z-40) */}
+      {/* 5. Golden Key Asset (z-35) */}
       <AnimatePresence>
         {stage !== 'curtain' && (
           <motion.div
@@ -124,28 +122,20 @@ export function IntroScene({ childName, onComplete }: IntroSceneProps) {
                 ? { duration: 1.1, ease: "easeInOut" }
                 : { y: { duration: 0.8, delay: 0.5 }, rotate: { repeat: Infinity, duration: 3, ease: "easeInOut" }, scale: { duration: 0.8, delay: 0.5 } }
             }
-            className="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center cursor-pointer group"
+            className="absolute bottom-20 sm:bottom-24 left-1/2 -translate-x-1/2 z-[35] flex flex-col items-center cursor-pointer group"
             onClick={handleKeyClick}
           >
-            <div className="absolute inset-0 rounded-full bg-amber-400/55 blur-2xl group-hover:bg-amber-300/80 transition-all duration-300 animate-pulse" />
-
-            <motion.div
-              whileHover={{ scale: 1.18, rotate: 10 }}
+            <motion.img 
+              src="/images/birthday/kids_fairytale/stage1/key.png" 
+              alt="Golden Key" 
+              whileHover={{ scale: 1.15, rotate: 10 }}
               whileTap={{ scale: 0.85 }}
-              className="relative p-4 sm:p-5 bg-gradient-to-br from-yellow-300 via-amber-400 to-orange-500 rounded-full shadow-[0_0_40px_rgba(251,191,36,0.9)] border-4 border-white flex items-center justify-center cursor-pointer"
-            >
-              <img 
-                src="/images/birthday/kids_fairytale/stage1/key.png" 
-                alt="Golden Key" 
-                className="w-auto h-auto max-w-[56px] sm:max-w-[72px] object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300"
-              />
-              <Sparkles className="w-5 h-5 text-white absolute -top-1 -right-1 animate-ping" />
-            </motion.div>
-
+              className="w-32 sm:w-40 h-auto cursor-pointer drop-shadow-[0_0_25px_rgba(255,215,0,0.8)] object-contain"
+            />
             <motion.div
               animate={{ opacity: [0.7, 1, 0.7] }}
               transition={{ repeat: Infinity, duration: 2 }}
-              className="mt-3 bg-indigo-950/80 backdrop-blur-md px-4 py-1.5 rounded-2xl border border-amber-300/60 shadow-xl text-amber-200 text-xs sm:text-sm font-bold tracking-wide pointer-events-none"
+              className="mt-2 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-amber-300/40 text-amber-200 text-xs sm:text-sm font-bold tracking-wide pointer-events-none"
             >
               🗝️ Докосни ключа, за да отключиш празника!
             </motion.div>
@@ -153,8 +143,8 @@ export function IntroScene({ childName, onComplete }: IntroSceneProps) {
         )}
       </AnimatePresence>
 
-      {/* 6. Cloud Curtain Layers (z-50) */}
-      <div className="absolute inset-0 z-50 pointer-events-none overflow-hidden flex items-center justify-between">
+      {/* 6. Cloud Curtain Layers (z-40) */}
+      <div className="absolute inset-0 z-40 pointer-events-none overflow-hidden flex items-center justify-between">
         <motion.div
           initial={{ x: 0 }}
           animate={{ x: stage !== 'curtain' ? '-100%' : 0 }}
