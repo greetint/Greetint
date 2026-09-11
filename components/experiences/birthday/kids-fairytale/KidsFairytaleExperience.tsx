@@ -4,10 +4,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { IntroScene } from './IntroScene';
-import { BalloonMeadowScene } from './BalloonMeadowScene';
-import { StarValleyScene } from './StarValleyScene';
+import { PartyHallScene } from './PartyHallScene';
 import { CakeScene } from './CakeScene';
-import { FinaleScene } from './FinaleScene';
+import { GiftFinaleScene } from './GiftFinaleScene';
 
 interface KidsFairytaleExperienceProps {
   data: {
@@ -53,26 +52,24 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
             />
           )}
           {currentScene === 1 && (
-            <BalloonMeadowScene 
-              key="balloons" 
+            <PartyHallScene 
+              key="party-hall" 
+              childName={childName}
+              isMuted={isMuted}
               onComplete={() => setCurrentScene(2)} 
             />
           )}
           {currentScene === 2 && (
-            <StarValleyScene 
-              key="stars" 
+            <CakeScene 
+              key="cake" 
+              childAge={childAge}
+              childName={childName}
+              isMuted={isMuted}
               onComplete={() => setCurrentScene(3)} 
             />
           )}
           {currentScene === 3 && (
-            <CakeScene 
-              key="cake" 
-              childAge={childAge}
-              onComplete={() => setCurrentScene(4)} 
-            />
-          )}
-          {currentScene === 4 && (
-            <FinaleScene 
+            <GiftFinaleScene 
               key="finale" 
               childName={childName}
               senderName={senderName}
@@ -90,4 +87,4 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
   );
 }
 
-
+export default KidsFairytaleExperience;

@@ -1,45 +1,56 @@
 'use client';
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Cake, Flame, Wind, Sparkles } from 'lucide-react';
+import { Flame, Wind, Sparkles } from 'lucide-react';
 
 interface CakeSceneProps {
   childAge: number;
+  childName: string;
+  isMuted?: boolean;
   onComplete: () => void;
 }
 
-export function CakeScene({ childAge, onComplete }: CakeSceneProps) {
+export function CakeScene({ childAge, childName, isMuted = false, onComplete }: CakeSceneProps) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [mobile, setMobile] = useState(false);
   const [candlesBlown, setCandlesBlown] = useState(false);
   const [listening, setListening] = useState(false);
-  const [statusText, setStatusText] = useState('Намисли си желание, поеми въздух и духни към свещичките!');
   const streamRef = useRef<MediaStream | null>(null);
 
   const candleCount = Math.max(1, Math.min(15, childAge || 6));
 
+  useEffect(() => {
+    const check = () => setMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.muted = isMuted;
+  }, [isMuted]);
+
+  useEffect(() => {
+    videoRef.current?.play().catch(() => {});
+  }, []);
+
   const blowOut = () => {
+    if (candlesBlown) return;
     setCandlesBlown(true);
-    setStatusText('✨ Желанието излете към звездите с фойерверки!');
     if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
-    setTimeout(() => {
-      onComplete();
-    }, 2000);
   };
 
   const startListening = async () => {
     try {
       setListening(true);
-      setStatusText('🎤 Слушаме те... Духни силно към микрофона!');
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       const audioContext = new AudioCtx();
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 512;
       const microphone = audioContext.createMediaStreamSource(stream);
       microphone.connect(analyser);
-
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       const checkAudioVolume = () => {
         analyser.getByteFrequencyData(dataArray);
@@ -53,7 +64,6 @@ export function CakeScene({ childAge, onComplete }: CakeSceneProps) {
       checkAudioVolume();
     } catch {
       setListening(false);
-      setStatusText('Микрофонът не е достъпен. Докосни тортата, за да духнеш! ✨');
     }
   };
 
@@ -63,81 +73,52 @@ export function CakeScene({ childAge, onComplete }: CakeSceneProps) {
     };
   }, []);
 
+  const cakeVideoSrc = mobile ? '/images/birthday/kids_fairytale/stage_2/stage2_part3_phone.mp4' : '/images/birthday/kids_fairytale/stage_2/stage2_part3_desktop.mp4';
+
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 1.05 }}
-      transition={{ duration: 0.8 }}
-      className="w-full max-w-2xl bg-white/90 backdrop-blur-2xl p-8 sm:p-14 rounded-[2.5rem] shadow-2xl border-4 border-pink-300 text-center space-y-6 relative overflow-hidden"
-    >
-      <div className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.25em] bg-pink-100 text-pink-800 px-3 py-1 rounded-full font-bold">
-          🎂 Вълшебната торта
-        </span>
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#2C241D]">
-          Кулминацията на празника!
-        </h2>
-        <p className="text-xs sm:text-sm text-[#2C241D]/70 max-w-md mx-auto font-sans">
-          {statusText}
-        </p>
-      </div>
-
-      {/* Cake Display */}
-      <div 
-        onClick={!candlesBlown ? blowOut : undefined}
-        className="py-6 relative flex flex-col items-center justify-center bg-gradient-to-b from-pink-50 via-amber-50 to-orange-50 rounded-3xl border-2 border-pink-200 shadow-inner cursor-pointer"
-      >
-        <div className="flex gap-2 mb-3 items-end flex-wrap justify-center max-w-xs">
-          {[...Array(candleCount)].map((_, i) => (
-            <div key={i} className="flex flex-col items-center">
-              {!candlesBlown ? (
-                <motion.div
-                  animate={{ scale: [1, 1.25, 1], rotate: [0, -8, 8, 0] }}
-                  transition={{ repeat: Infinity, duration: 0.7 + (i % 3) * 0.2 }}
-                  className="text-amber-500 mb-1"
-                >
-                  <Flame className="w-6 h-6 fill-amber-400" />
-                </motion.div>
-              ) : (
-                <div className="h-6 flex items-center justify-center text-sm">💨</div>
-              )}
-              <div className="w-3 h-10 bg-gradient-to-r from-pink-300 to-rose-400 rounded-sm shadow-sm border border-pink-400"></div>
-            </div>
-          ))}
-        </div>
-
-        <motion.div 
-          whileHover={{ scale: 1.03 }}
-          className="p-6 bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400 rounded-[2rem] text-white shadow-2xl flex items-center justify-center w-52 sm:w-72"
-        >
-          <Cake className="w-20 h-20" />
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none">
+      <video ref={videoRef} src={cakeVideoSrc} playsInline autoPlay muted={isMuted} preload="auto" onEnded={onComplete} className="absolute inset-0 w-full h-full object-cover z-0" />
+      <div className="absolute inset-0 z-30 flex flex-col items-center justify-between py-12 px-4 pointer-events-auto">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center z-30 mt-6">
+          <p className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 drop-shadow-[0_0_20px_rgba(255,215,0,0.8)] font-serif text-3xl md:text-5xl font-bold tracking-wide">
+            {candlesBlown ? `Честит рожден ден, ${childName}! 🎉` : `Намисли си желание, ${childName}! 🎂`}
+          </p>
         </motion.div>
-      </div>
 
-      {!candlesBlown && (
-        <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-          {!listening ? (
-            <button
-              onClick={startListening}
-              className="bg-purple-600 text-white px-6 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-purple-700 shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Wind className="w-4 h-4" /> Включи микрофона за духане
-            </button>
-          ) : (
-            <div className="bg-purple-100 text-purple-800 px-6 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest animate-pulse flex items-center justify-center gap-2">
-              🎤 Слушаме те... Духни сега!
+        {!candlesBlown ? (
+          <div onClick={blowOut} className="my-auto flex flex-col items-center justify-center cursor-pointer group p-8 rounded-full bg-black/40 backdrop-blur-md border border-amber-400/40 shadow-2xl hover:scale-105 transition-transform">
+            <div className="flex gap-2 mb-4 items-end flex-wrap justify-center">
+              {[...Array(candleCount)].map((_, i) => (
+                <div key={i} className="flex flex-col items-center">
+                  <motion.div animate={{ scale: [1, 1.25, 1], rotate: [0, -8, 8, 0] }} transition={{ repeat: Infinity, duration: 0.7 + (i % 3) * 0.2 }} className="text-amber-400 mb-1">
+                    <Flame className="w-6 h-6 fill-amber-300" />
+                  </motion.div>
+                  <div className="w-3 h-10 bg-gradient-to-r from-pink-300 to-rose-400 rounded-sm shadow-sm border border-pink-400"></div>
+                </div>
+              ))}
             </div>
-          )}
+            <span className="text-amber-200 text-base md:text-lg font-serif font-bold drop-shadow-md">Духни свещичките или докосни тук! 💨</span>
+          </div>
+        ) : (
+          <div className="my-auto text-center">
+            <span className="px-8 py-4 rounded-full bg-black/70 backdrop-blur-md border border-amber-400/60 text-amber-300 text-xl md:text-2xl font-bold font-serif shadow-2xl animate-bounce">✨ Желанието отлетя към звездите! ✨</span>
+          </div>
+        )}
 
-          <button
-            onClick={blowOut}
-            className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-6 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest hover:opacity-90 shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <Sparkles className="w-4 h-4" /> Духни с докосване ✨
-          </button>
-        </div>
-      )}
-    </motion.div>
+        {!candlesBlown && (
+          <div className="flex gap-4 pb-8">
+            {!listening && (
+              <button onClick={startListening} className="px-6 py-3 rounded-full bg-purple-600/95 text-white font-bold text-sm shadow-lg backdrop-blur-md transition flex items-center gap-2 cursor-pointer">
+                <Wind className="w-4 h-4" /> Духни с микрофон 🎤
+              </button>
+            )}
+            <button onClick={blowOut} className="px-6 py-3 rounded-full bg-amber-500/95 text-slate-950 font-bold text-sm shadow-lg backdrop-blur-md transition flex items-center gap-2 cursor-pointer">
+              <Sparkles className="w-4 h-4" /> Духни с клик ✨
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
+export default CakeScene;
