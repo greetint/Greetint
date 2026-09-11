@@ -31,7 +31,7 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-yellow-200 via-emerald-100 to-sky-300 text-[#1E293B] font-sans overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6 select-none">
-      <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
         <button
           onClick={() => setIsMuted(!isMuted)}
           className="bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-full text-[#1E293B] hover:bg-white shadow-lg border border-white/60 transition cursor-pointer flex items-center gap-2 text-xs font-bold"
