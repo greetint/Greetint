@@ -139,13 +139,13 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
           <div className="absolute -left-3 bottom-6 w-0 h-0 border-t-[8px] border-t-transparent border-r-[14px] border-r-amber-200 border-b-[8px] border-b-transparent filter drop-shadow-sm"></div>
 
           {subStage === 1 && (
-            <p>Вече сме в празничната зала на замъка! Всички са в очакване на празника, но виж — залата има нужда от малко вълшебен блясък! Прокарай пръстче по тавана, за да сложим празничните гирлянди! ✨ ({Math.round(garlandProgress)}%)</p>
+            <p>Вече сме в празничната зала на замъка! Всички са в очакване на празника, но виж — залата има нужда от малко вълшебен блясък! Прокарай пръстче по тавана, за да сложим празничните гирлянди! ({Math.round(garlandProgress)}%)</p>
           )}
           {subStage === 2 && (
-            <p>Стана невероятно! Сега имаме красиви светлини и гирлянди... но какво е рожден ден без балони? Нарисувай вълшебни кръгчета във въздуха, за да ги пуснем! 🎈 ({completedCirclesCount}/3)</p>
+            <p>Стана невероятно! Сега имаме красиви светлини и гирлянди... но какво е рожден ден без балони? Нарисувай вълшебни кръгчета във въздуха, за да ги пуснем! ({completedCirclesCount}/3)</p>
           )}
           {subStage === 3 && (
-            <p>Празникът оживява! Камерата се насочва към празничната маса за вълшебната торта... 🎂✨</p>
+            <p>Празникът оживява! Камерата се насочва към празничната маса за вълшебната торта...</p>
           )}
         </motion.div>
       </motion.div>
@@ -154,7 +154,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
         <div onMouseMove={handlePointerMove} onTouchMove={handlePointerMove} className="absolute top-0 inset-x-0 h-48 z-30 cursor-pointer pointer-events-auto flex flex-col items-center justify-center pt-8">
           <div className="absolute inset-x-12 top-6 border-b-4 border-dashed border-amber-300/80 rounded-[50%] h-24 pointer-events-none shadow-[0_0_20px_rgba(255,215,0,0.8)] animate-pulse"></div>
           <span className="px-6 py-2 rounded-full bg-amber-400/90 text-slate-950 font-bold text-xs shadow-2xl backdrop-blur-md animate-bounce border border-white/80">
-            👉 Трейсни цялата линия по арките горе ({Math.round(garlandProgress)}%)
+            Трейсни цялата линия по арките горе ({Math.round(garlandProgress)}%)
           </span>
         </div>
       )}
@@ -171,7 +171,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
               className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 backdrop-blur-md cursor-pointer flex flex-col items-center justify-center shadow-[0_0_35px_rgba(255,215,0,0.9)] transition-all ${circleProgress[i] >= 100 ? 'bg-emerald-500/40 border-emerald-300 scale-105' : 'bg-amber-400/40 border-amber-300 animate-pulse'}`}
             >
               {circleProgress[i] >= 100 ? (
-                <span className="text-emerald-100 font-bold text-lg font-serif">Готово! ✨</span>
+                <span className="text-emerald-100 font-bold text-lg font-serif">Готово!</span>
               ) : (
                 <>
                   <Sparkles className="w-8 h-8 text-amber-200 animate-spin" />

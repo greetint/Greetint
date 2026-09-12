@@ -1,46 +1,54 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Wand2 } from 'lucide-react';
 
 export function MagicCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 });
-  const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [trails, setTrails] = useState<{ id: number; x: number; y: number }[]>([]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setPos({ x: e.clientX, y: e.clientY });
-      if (Math.random() < 0.35) {
-        setSparkles(prev => [...prev.slice(-12), { id: Date.now() + Math.random(), x: e.clientX, y: e.clientY }]);
+      if (Math.random() < 0.4) {
+        setTrails(prev => [...prev.slice(-10), { id: Date.now() + Math.random(), x: e.clientX, y: e.clientY }]);
       }
     };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        setPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+        if (Math.random() < 0.4) {
+          setTrails(prev => [...prev.slice(-10), { id: Date.now() + Math.random(), x: e.touches[0].clientX, y: e.touches[0].clientY }]);
+        }
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
   }, []);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
       <motion.div
-        className="absolute w-8 h-8 text-amber-300 flex items-center justify-center drop-shadow-[0_0_12px_rgba(255,215,0,0.9)]"
-        style={{ left: pos.x - 6, top: pos.y - 6 }}
-        animate={{ scale: [1, 1.25, 1], rotate: [0, 15, -15, 0] }}
-        transition={{ repeat: Infinity, duration: 2.5 }}
-      >
-        <Wand2 className="w-7 h-7 text-amber-300 fill-yellow-200" />
-      </motion.div>
+        className="absolute w-5 h-5 rounded-full bg-amber-300/90 backdrop-blur-md shadow-[0_0_15px_#ffd700] border border-white/60 pointer-events-none"
+        style={{ left: pos.x - 10, top: pos.y - 10 }}
+        animate={{ scale: [1, 1.3, 1] }}
+        transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+      />
 
       <AnimatePresence>
-        {sparkles.map(s => (
+        {trails.map(t => (
           <motion.div
-            key={s.id}
-            initial={{ opacity: 1, scale: 0.4, x: s.x, y: s.y }}
-            animate={{ opacity: 0, scale: 1.6, y: s.y - 30, x: s.x + (Math.random() * 24 - 12) }}
+            key={t.id}
+            initial={{ opacity: 0.8, scale: 0.8, x: t.x - 4, y: t.y - 4 }}
+            animate={{ opacity: 0, scale: 0.2, y: t.y - 20 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.9, ease: "easeOut" }}
-            className="absolute pointer-events-none"
-          >
-            <Sparkles className="w-4 h-4 text-amber-300 fill-yellow-200 drop-shadow-[0_0_10px_rgba(255,215,0,0.95)]" />
-          </motion.div>
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="absolute w-2.5 h-2.5 rounded-full bg-yellow-200 shadow-[0_0_10px_#ffd700] pointer-events-none"
+          />
         ))}
       </AnimatePresence>
     </div>

@@ -29,7 +29,7 @@ export default function KidsFairytaleCreatePage() {
         </div>
 
         <div className="text-center space-y-2">
-          <span className="text-[10px] uppercase tracking-[0.25em] bg-pink-100 text-pink-700 px-3 py-1 rounded-full font-bold">✨ Sandbox рут</span>
+          <span className="text-[10px] uppercase tracking-[0.25em] bg-pink-100 text-pink-700 px-3 py-1 rounded-full font-bold">Sandbox рут</span>
           <h1 className="text-2xl font-serif font-bold text-[#2C241D]">Kids Fairytale: Създай Магията</h1>
         </div>
 
@@ -54,13 +54,13 @@ export default function KidsFairytaleCreatePage() {
               <textarea rows={3} required value={fd.personalMessage} onChange={e => setFd({...fd, personalMessage: e.target.value})} className="w-full bg-pink-50/50 border border-pink-200 p-3 rounded-xl text-sm resize-none" />
             </div>
             <button type="submit" className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-4 rounded-2xl text-xs font-bold uppercase tracking-[0.25em] shadow-lg hover:opacity-90 transition flex items-center justify-center gap-2 cursor-pointer">
-              <Sparkles className="w-4 h-4" /> Генерирай приказката ✨
+              <Sparkles className="w-4 h-4" /> Генерирай приказката
             </button>
           </form>
         ) : (
           <div className="space-y-6 text-center py-6">
             <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-xs font-medium">
-              🎉 Приказката е успешно създадена!
+              Приказката е успешно създадена!
             </div>
             <div className="space-y-2">
               <label className="text-xs uppercase tracking-widest text-[#2C241D]/60 font-bold block">Линк:</label>

@@ -214,10 +214,10 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
         <div onClick={handleTableClick} onTouchStart={handleTableClick} className="absolute inset-0 z-30 cursor-pointer pointer-events-auto flex items-center justify-center">
           <div className="absolute bottom-24 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 font-serif font-bold px-8 py-4 rounded-full shadow-[0_0_30px_rgba(255,215,0,0.8)] border-2 border-white animate-bounce flex items-center gap-2 text-sm sm:text-base">
             <Sparkles className="w-5 h-5 text-amber-950" />
-            {subStage === 1 && "Натисни масата, за да я постелим ✨"}
-            {subStage === 2 && "Докосни покривката, за да подредим чиниите 🍽️"}
-            {subStage === 3 && "Докосни масата, за да поканим приятелите 🦊"}
-            {subStage === 4 && "Покани вълшебната торта в центъра на масата 🎂"}
+            {subStage === 1 && "Натисни масата, за да я постелим"}
+            {subStage === 2 && "Докосни покривката, за да подредим чиниите"}
+            {subStage === 3 && "Докосни масата, за да поканим приятелите"}
+            {subStage === 4 && "Покани вълшебната торта в центъра на масата"}
           </div>
         </div>
       )}
@@ -226,7 +226,7 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-between py-12 px-4 pointer-events-auto bg-black/20 backdrop-blur-[2px]">
           <div className="text-center mt-6 z-40">
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 drop-shadow-[0_0_20px_rgba(255,215,0,0.8)]">
-              Намисли си вълшебно желание, {childName}! 🎂
+              Намисли си вълшебно желание, {childName}!
             </h2>
           </div>
 
@@ -234,13 +234,13 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={startSpeechRecognition} className="cursor-pointer group flex flex-col items-center justify-center p-8 rounded-full bg-gradient-to-br from-amber-500/90 via-yellow-500/90 to-amber-600/90 backdrop-blur-md border-2 border-white shadow-[0_0_40px_rgba(255,215,0,0.7)] text-slate-950">
               <Mic className="w-12 h-12 mb-2 animate-pulse text-amber-950" />
               <span className="font-serif font-bold text-sm sm:text-base tracking-wide text-amber-950">
-                {listening ? "Слушам желанието ти... 🎙️" : "Натисни и кажи своето желание ✨"}
+                {listening ? "Слушам желанието ти..." : "Натисни и кажи своето желание"}
               </span>
             </motion.div>
 
             <div className="flex gap-4">
               <button onClick={() => triggerCulmination("Празнично вълшебно желание")} className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-md border border-amber-400/60 text-amber-300 font-serif font-bold text-sm shadow-xl hover:bg-black/85 transition flex items-center gap-2 cursor-pointer">
-                <Flame className="w-4 h-4 text-amber-400 fill-amber-400" /> Духни свещичката с клик ✨
+                <Flame className="w-4 h-4 text-amber-400 fill-amber-400" /> Духни свещичката с клик
               </button>
             </div>
           </div>
