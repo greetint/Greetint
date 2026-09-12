@@ -10,12 +10,13 @@ interface PartyHallSceneProps {
 }
 
 export function PartyHallScene({ childName, isMuted = false, onComplete }: PartyHallSceneProps) {
-  const part1Ref = useRef<HTMLVideoElement | null>(null);
-  const part2Ref = useRef<HTMLVideoElement | null>(null);
-
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [mobile, setMobile] = useState(false);
-  const [part1Ended, setPart1Ended] = useState(false);
-  const [playingPart2, setPlayingPart2] = useState(false);
+  const [subStage, setSubStage] = useState<1 | 2 | 3>(1);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const [garlandProgress, setGarlandProgress] = useState(0);
+  const [balloonsPopped, setBalloonsPopped] = useState(0);
+  const [lanternClicked, setLanternClicked] = useState(false);
 
   useEffect(() => {
     const check = () => setMobile(window.innerWidth < 768);
@@ -25,84 +26,86 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
   }, []);
 
   useEffect(() => {
-    if (part1Ref.current) part1Ref.current.muted = isMuted;
-    if (part2Ref.current) part2Ref.current.muted = isMuted;
+    if (videoRef.current) videoRef.current.muted = isMuted;
   }, [isMuted]);
 
   useEffect(() => {
-    part1Ref.current?.play().catch(() => {});
-  }, []);
+    videoRef.current?.play().catch(() => {});
+  }, [subStage]);
 
-  const handlePart1Ended = () => {
-    if (part1Ref.current) {
-      part1Ref.current.pause();
-      part1Ref.current.currentTime = part1Ref.current.duration - 0.05;
+  const handleVideoEnded = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = videoRef.current.duration - 0.05;
     }
-    setPart1Ended(true);
+    setVideoEnded(true);
   };
 
-  const handleInteract = () => {
-    if (!part1Ended || playingPart2) return;
-    setPlayingPart2(true);
-    if (part2Ref.current) {
-      part2Ref.current.currentTime = 0;
-      part2Ref.current.muted = isMuted;
-      part2Ref.current.play().catch(() => {});
-    }
+  const handleTouchMove = () => {
+    if (subStage !== 1 || !videoEnded) return;
+    setGarlandProgress(prev => {
+      const next = prev + 25;
+      if (next >= 100) { setVideoEnded(false); setSubStage(2); }
+      return next;
+    });
   };
 
-  const p1Src = mobile ? '/images/birthday/kids_fairytale/stage_2/stage2_part1_phone.mp4' : '/images/birthday/kids_fairytale/stage_2/stage2_part1_desktop.mp4';
-  const p2Src = mobile ? '/images/birthday/kids_fairytale/stage_2/stage2_part2_phone.mp4' : '/images/birthday/kids_fairytale/stage_2/stage2_part2_desktop.mp4';
+  const handleBalloonTap = () => {
+    if (subStage !== 2 || !videoEnded) return;
+    setBalloonsPopped(prev => {
+      const next = prev + 1;
+      if (next >= 3) { setVideoEnded(false); setSubStage(3); }
+      return next;
+    });
+  };
+
+  const handleLanternTap = () => {
+    if (subStage !== 3 || !videoEnded || lanternClicked) return;
+    setLanternClicked(true);
+    setVideoEnded(false);
+    videoRef.current?.play().catch(() => {});
+  };
+
+  const s1 = mobile ? '/images/birthday/kids_fairytale/stage_2/stage2_part1_phone.mp4' : '/images/birthday/kids_fairytale/stage_2/stage2_part1_desktop.mp4';
+  const s2 = mobile ? '/images/birthday/kids_fairytale/stage_2/stage2_part2_phone.mp4' : '/images/birthday/kids_fairytale/stage_2/stage2_part2_desktop.mp4';
+  const s3 = mobile ? '/images/birthday/kids_fairytale/stage_2/stage2_part3_phone.mp4' : '/images/birthday/kids_fairytale/stage_2/stage2_part3_desktop.mp4';
+  const videoSrc = subStage === 1 ? s1 : subStage === 2 ? s2 : s3;
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none">
-      <video
-        ref={part1Ref}
-        src={p1Src}
-        playsInline
-        autoPlay
-        muted={isMuted}
-        preload="auto"
-        onEnded={handlePart1Ended}
-        className={`absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000 ${
-          playingPart2 ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        }`}
-      />
+    <div onMouseMove={subStage === 1 ? handleTouchMove : undefined} onTouchMove={subStage === 1 ? handleTouchMove : undefined} className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none">
+      <video ref={videoRef} key={subStage} src={videoSrc} playsInline autoPlay muted={isMuted} preload="auto" onEnded={subStage === 3 && lanternClicked ? onComplete : handleVideoEnded} className="absolute inset-0 w-full h-full object-cover z-0" />
 
-      <video
-        ref={part2Ref}
-        src={p2Src}
-        playsInline
-        muted={isMuted}
-        preload="auto"
-        onEnded={onComplete}
-        className={`absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-700 ${
-          playingPart2 ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-      />
+      <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="absolute bottom-4 left-4 z-40 flex items-end gap-3 pointer-events-none max-w-sm md:max-w-md">
+        <img src="/images/birthday/kids_fairytale/hero.png" alt="Искрица" className="w-24 h-24 md:w-36 md:h-36 object-contain drop-shadow-[0_0_20px_rgba(255,215,0,0.8)] animate-bounce" />
+        <motion.div key={subStage} initial={{ opacity: 0, y: 10, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="bg-white/95 backdrop-blur-md border-2 border-amber-400 p-4 rounded-2xl shadow-2xl text-slate-950 font-serif text-xs md:text-sm mb-6 pointer-events-auto relative">
+          {subStage === 1 && <p>Добре дошли в празничната зала, {childName}! Залата има нужда от вълшебен блясък. Прокарай пръст по тавана, за да окачим гирляндите! ({garlandProgress}%)</p>}
+          {subStage === 2 && <p>О, стана невероятно! Сега светлините греят... но какво е рожден ден без балони? Докосни 3 вълшебни места във въздуха, за да ги пуснем! ({balloonsPopped}/3)</p>}
+          {subStage === 3 && <p>Празникът оживява! А сега докосни вълшебния фенер, за да отидем при празничната маса! ✨</p>}
+        </motion.div>
+      </motion.div>
 
-      {part1Ended && !playingPart2 && (
-        <div
-          onClick={handleInteract}
-          className="absolute inset-0 z-30 flex flex-col items-center justify-between py-12 px-4 cursor-pointer pointer-events-auto"
-        >
-          <div className="h-10" />
-          <div className="my-auto w-40 h-40 rounded-full flex items-center justify-center">
-            <Sparkles className="w-16 h-16 text-amber-300 animate-bounce drop-shadow-[0_0_20px_rgba(255,215,0,0.9)]" />
-          </div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-12 text-center z-30 px-4"
-          >
-            <p className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 drop-shadow-[0_0_20px_rgba(255,215,0,0.8)] font-serif text-3xl md:text-5xl font-bold tracking-wide animate-pulse">
-              Съживи залата за {childName}! ✨
-            </p>
-          </motion.div>
+      {videoEnded && subStage === 1 && (
+        <div onClick={handleTouchMove} className="absolute top-0 inset-x-0 h-40 z-30 cursor-pointer pointer-events-auto flex items-center justify-center">
+          <span className="px-6 py-2 rounded-full bg-amber-400/90 text-slate-950 font-bold text-xs shadow-lg animate-pulse">👉 Прокарай пръст по тавана тук ({garlandProgress}%)</span>
+        </div>
+      )}
+
+      {videoEnded && subStage === 2 && (
+        <div className="absolute inset-0 z-30 flex items-center justify-around pointer-events-auto">
+          {[...Array(3 - balloonsPopped)].map((_, i) => (
+            <motion.div key={i} whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.8 }} onClick={handleBalloonTap} className="w-20 h-20 rounded-full bg-amber-400/50 border-2 border-amber-300 backdrop-blur-sm cursor-pointer flex items-center justify-center shadow-[0_0_25px_rgba(255,215,0,0.8)] animate-pulse">
+              <Sparkles className="w-8 h-8 text-amber-200" />
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {videoEnded && subStage === 3 && !lanternClicked && (
+        <div onClick={handleLanternTap} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 z-30 cursor-pointer pointer-events-auto flex items-center justify-center rounded-full bg-amber-400/40 border border-amber-300/80 shadow-[0_0_35px_rgba(255,215,0,0.9)] animate-ping">
+          <Sparkles className="w-12 h-12 text-amber-200" />
         </div>
       )}
     </div>
   );
 }
-
 export default PartyHallScene;
