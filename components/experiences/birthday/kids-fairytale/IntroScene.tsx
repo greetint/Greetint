@@ -49,7 +49,7 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
       setHolding(false);
       audio.current?.pause();
       if (v2.current) { v2.current.currentTime = 0; v2.current.muted = isMuted; v2.current.play().catch(() => {}); }
-    }, 400);
+    }, 900);
   };
 
   const cancelHold = () => {
@@ -62,36 +62,32 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
   const v2Src = mobile ? '/images/birthday/kids_fairytale/stage_1/stage1_part2_phone.mp4' : '/images/birthday/kids_fairytale/stage_1/stage1_part2_desktop.mp4';
 
   return (
-    <div onClick={!hasStarted ? handleStartMagic : undefined} onTouchStart={!hasStarted ? handleStartMagic : undefined} className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none cursor-pointer">
+    <div onClick={!hasStarted ? handleStartMagic : undefined} onTouchStart={!hasStarted ? handleStartMagic : undefined} className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none cursor-none">
       <audio ref={audio} src="/audio/kids_fairytale/stage_1/voice.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
-      <video ref={v1} src={v1Src} playsInline muted={isMuted} preload="auto" onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${unlocked ? 'opacity-0' : 'opacity-100'}`} />
-      <video ref={v2} src={v2Src} playsInline muted={isMuted} preload="auto" onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none transition-opacity duration-300 ${unlocked ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v1} src={v1Src} playsInline muted={isMuted} preload="auto" onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-500 ${unlocked ? 'opacity-0' : 'opacity-100'}`} />
+      <video ref={v2} src={v2Src} playsInline muted={isMuted} preload="auto" onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none transition-opacity duration-500 ${unlocked ? 'opacity-100' : 'opacity-0'}`} />
 
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="absolute top-8 inset-x-0 z-30 text-center px-4 pointer-events-none">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-300 to-amber-600 drop-shadow-[0_4px_15px_rgba(0,0,0,0.9)]">
+      <motion.div initial={{ opacity: 0, y: -25 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }} className="absolute top-10 inset-x-0 z-30 text-center px-4 pointer-events-none">
+        <h1 className="font-cinzel text-2xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-300 to-amber-600 drop-shadow-[0_4px_16px_rgba(255,215,0,0.7)]">
           Вълшебната приказка за {childName} започва сега...
         </h1>
-        {!hasStarted && (
-          <motion.p animate={{ opacity: [0.7, 1, 0.7] }} transition={{ repeat: Infinity, duration: 2 }} className="mt-3 text-amber-200 text-sm sm:text-base font-serif font-bold drop-shadow">
-            ✨ Докосни навсякъде по екрана, за да започнеш ✨
-          </motion.p>
-        )}
       </motion.div>
 
       {audioEnded && !unlocked && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-between py-12 px-4 pointer-events-auto cursor-default" onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-between py-16 px-4 pointer-events-auto cursor-none" onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
           <div className="h-10" />
-          <div className="relative flex items-center justify-center w-36 h-36 md:w-48 md:h-48 cursor-pointer rounded-full my-auto" onMouseDown={startHold} onMouseUp={cancelHold} onMouseLeave={cancelHold} onTouchStart={startHold} onTouchEnd={cancelHold}>
+          <div className="relative flex items-center justify-center w-40 h-40 md:w-56 md:h-56 cursor-none rounded-full my-auto group" onMouseDown={startHold} onMouseUp={cancelHold} onMouseLeave={cancelHold} onTouchStart={startHold} onTouchEnd={cancelHold}>
+            <motion.div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 opacity-40 blur-2xl" animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.7, 0.3] }} transition={{ repeat: Infinity, duration: 2 }} />
             {holding && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <Sparkles className="absolute -top-6 -left-6 w-10 h-10 text-amber-300 animate-ping" />
-                <Sparkles className="absolute -bottom-6 -right-6 w-10 h-10 text-yellow-300 animate-bounce" />
-              </div>
+              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1.8, opacity: [0.8, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} className="absolute inset-0 rounded-full border-4 border-amber-300 bg-amber-300/30 blur-sm pointer-events-none shadow-[0_0_50px_rgba(255,215,0,0.9)]" />
             )}
+            <div className="relative z-10 w-28 h-28 rounded-full bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-600 p-1 shadow-[0_0_35px_rgba(255,215,0,0.8)] flex items-center justify-center border-2 border-white">
+              <Sparkles className="w-12 h-12 text-slate-950 animate-spin" />
+            </div>
           </div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="mb-12 text-center z-30 px-4 pointer-events-none">
-            <p className="text-3xl md:text-5xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-300 to-amber-600 drop-shadow">
-              Вземи ключа, {childName}!
+            <p className="font-cinzel text-2xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-300 to-amber-600 drop-shadow-[0_2px_10px_rgba(255,215,0,0.8)]">
+              Задръж и вземи ключа, {childName}! ✨
             </p>
           </motion.div>
         </div>

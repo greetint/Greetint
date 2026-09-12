@@ -179,7 +179,7 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
   };
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none">
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none cursor-none">
       <audio ref={audio1Ref} src="/audio/kids_fairytale/stage3_voice_part1.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
       <audio ref={audio2Ref} src="/audio/kids_fairytale/stage3_voice_part2.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
       <audio ref={audio3Ref} src="/audio/kids_fairytale/stage3_voice_part3.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />

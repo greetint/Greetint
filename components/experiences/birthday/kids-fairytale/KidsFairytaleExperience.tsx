@@ -7,6 +7,7 @@ import { IntroScene } from './IntroScene';
 import { PartyHallScene } from './PartyHallScene';
 import { CakeScene } from './CakeScene';
 import { GiftFinaleScene } from './GiftFinaleScene';
+import { MagicCursor } from './MagicCursor';
 
 interface KidsFairytaleExperienceProps {
   data: {
@@ -33,7 +34,7 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
   useEffect(() => {
     if (bgAudioRef.current) {
       bgAudioRef.current.muted = isMuted;
-      bgAudioRef.current.volume = 0.3;
+      bgAudioRef.current.volume = 0.35;
       bgAudioRef.current.loop = true;
       const playBg = () => {
         bgAudioRef.current?.play().catch(() => {});
@@ -55,8 +56,9 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
   }, [isMuted]);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-yellow-200 via-emerald-100 to-sky-300 text-[#1E293B] font-sans overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6 select-none">
-      <audio ref={bgAudioRef} src="/audio/background-music.mp3" preload="auto" loop />
+    <div className="relative min-h-screen bg-gradient-to-br from-amber-950 via-slate-950 to-indigo-950 text-amber-100 font-serif overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6 select-none cursor-none">
+      <MagicCursor />
+      <audio ref={bgAudioRef} src="/audio/kids_fairytale/background_kids_fairytale.mp3" preload="auto" loop />
 
       <div className="w-full max-w-4xl mx-auto flex-1 flex items-center justify-center relative my-auto">
         <AnimatePresence mode="wait">
@@ -101,18 +103,18 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
         </AnimatePresence>
       </div>
 
-      <div className="text-center text-xs text-[#1E293B]/70 font-serif pb-2 flex items-center justify-center gap-2 z-40">
-        <Sparkles className="w-4 h-4 text-amber-500 animate-spin" /> Вълшебното пътешествие на празника • Създадено за {childName}
+      <div className="text-center text-xs text-amber-200/70 font-serif pb-2 flex items-center justify-center gap-2 z-40 pointer-events-none">
+        <Sparkles className="w-4 h-4 text-amber-400 animate-spin" /> Вълшебното пътешествие на празника • Създадено за {childName}
       </div>
 
       {/* Central and global Sound button rendered on top with z-[100] */}
       <div className="fixed top-4 right-4 z-[100] flex items-center gap-3 pointer-events-auto">
         <button
           onClick={() => setIsMuted(!isMuted)}
-          className="bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-full text-[#1E293B] hover:bg-white shadow-2xl border border-white/85 transition cursor-pointer flex items-center gap-2 text-xs font-bold"
+          className="bg-amber-950/80 backdrop-blur-md px-4 py-2.5 rounded-full text-amber-200 hover:bg-amber-900 shadow-2xl border border-amber-400/60 transition cursor-none flex items-center gap-2 text-xs font-bold font-serif"
           title={isMuted ? "Включи звука" : "Спри звука"}
         >
-          {isMuted ? <VolumeX className="w-5 h-5 text-rose-500" /> : <Volume2 className="w-5 h-5 text-emerald-600" />}
+          {isMuted ? <VolumeX className="w-5 h-5 text-rose-400" /> : <Volume2 className="w-5 h-5 text-emerald-400" />}
           <span className="hidden sm:inline">{isMuted ? "Тихо" : "Магически звук"}</span>
         </button>
       </div>
@@ -121,3 +123,4 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
 }
 
 export default KidsFairytaleExperience;
+
