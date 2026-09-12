@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
 interface IntroSceneProps {
@@ -40,10 +40,6 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
     if (v1.current) { v1.current.muted = isMuted; v1.current.currentTime = 0; v1.current.play().catch(() => {}); }
   };
 
-  const v1Ended = () => {
-    if (v1.current) { v1.current.pause(); v1.current.currentTime = v1.current.duration - 0.05; }
-  };
-
   const startHold = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
     if (!audioEnded || unlocked) return;
@@ -66,43 +62,21 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
   const v2Src = mobile ? '/images/birthday/kids_fairytale/stage_1/stage1_part2_phone.mp4' : '/images/birthday/kids_fairytale/stage_1/stage1_part2_desktop.mp4';
 
   return (
-    <div 
-      onClick={!hasStarted ? handleStartMagic : undefined}
-      onTouchStart={!hasStarted ? handleStartMagic : undefined}
-      className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none cursor-pointer"
-    >
+    <div onClick={!hasStarted ? handleStartMagic : undefined} onTouchStart={!hasStarted ? handleStartMagic : undefined} className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none cursor-pointer">
       <audio ref={audio} src="/audio/kids_fairytale/stage_1/voice.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
-      <video 
-        ref={v1} 
-        src={v1Src} 
-        playsInline 
-        muted={isMuted} 
-        preload="auto" 
-        onEnded={v1Ended} 
-        onContextMenu={(e) => e.preventDefault()}
-        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-1000 ${unlocked ? 'opacity-0' : 'opacity-100'}`} 
-      />
-      <video 
-        ref={v2} 
-        src={v2Src} 
-        playsInline 
-        muted={isMuted} 
-        preload="auto" 
-        onEnded={onComplete} 
-        onContextMenu={(e) => e.preventDefault()}
-        className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none transition-opacity duration-700 ${unlocked ? 'opacity-100' : 'opacity-0'}`} 
-      />
+      <video ref={v1} src={v1Src} playsInline muted={isMuted} preload="auto" onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${unlocked ? 'opacity-0' : 'opacity-100'}`} />
+      <video ref={v2} src={v2Src} playsInline muted={isMuted} preload="auto" onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none transition-opacity duration-300 ${unlocked ? 'opacity-100' : 'opacity-0'}`} />
 
-      <div className="absolute top-6 inset-x-0 z-30 text-center px-4 pointer-events-none">
-        <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 drop-shadow-[0_0_20px_rgba(255,215,0,0.8)] font-serif text-2xl sm:text-4xl font-bold tracking-wide">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="absolute top-8 inset-x-0 z-30 text-center px-4 pointer-events-none">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-300 to-amber-600 drop-shadow-[0_4px_15px_rgba(0,0,0,0.9)]">
           Вълшебната приказка за {childName} започва сега...
         </h1>
         {!hasStarted && (
-          <p className="mt-2 text-amber-100/90 text-sm sm:text-base font-serif drop-shadow animate-pulse">
-            Докосни навсякъде по екрана, за да започнеш ✨
-          </p>
+          <motion.p animate={{ opacity: [0.7, 1, 0.7] }} transition={{ repeat: Infinity, duration: 2 }} className="mt-3 text-amber-200 text-sm sm:text-base font-serif font-bold drop-shadow">
+            ✨ Докосни навсякъде по екрана, за да започнеш ✨
+          </motion.p>
         )}
-      </div>
+      </motion.div>
 
       {audioEnded && !unlocked && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-between py-12 px-4 pointer-events-auto cursor-default" onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
@@ -112,13 +86,11 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <Sparkles className="absolute -top-6 -left-6 w-10 h-10 text-amber-300 animate-ping" />
                 <Sparkles className="absolute -bottom-6 -right-6 w-10 h-10 text-yellow-300 animate-bounce" />
-                <Sparkles className="absolute top-0 right-[-30px] w-8 h-8 text-amber-200 animate-pulse" />
-                <Sparkles className="absolute bottom-0 left-[-30px] w-8 h-8 text-yellow-200 animate-spin" />
               </div>
             )}
           </div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="mb-12 text-center z-30 px-4 pointer-events-none">
-            <p className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 drop-shadow-[0_0_20px_rgba(255,215,0,0.8)] font-serif text-3xl md:text-5xl font-bold tracking-wide">
+            <p className="text-3xl md:text-5xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-300 to-amber-600 drop-shadow">
               Вземи ключа, {childName}!
             </p>
           </motion.div>
