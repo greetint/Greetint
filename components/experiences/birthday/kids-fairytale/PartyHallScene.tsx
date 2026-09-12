@@ -13,10 +13,13 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
   const v1Ref = useRef<HTMLVideoElement | null>(null);
   const v2Ref = useRef<HTMLVideoElement | null>(null);
   const v3Ref = useRef<HTMLVideoElement | null>(null);
+  const audio1Ref = useRef<HTMLAudioElement | null>(null);
+  const audio2Ref = useRef<HTMLAudioElement | null>(null);
 
   const [mobile, setMobile] = useState(false);
   const [subStage, setSubStage] = useState<1 | 2 | 3>(1);
   const [videoEnded, setVideoEnded] = useState(false);
+  const [audioEnded, setAudioEnded] = useState(false);
   const [garlandProgress, setGarlandProgress] = useState(0);
   const [circleProgress, setCircleProgress] = useState<number[]>([0, 0, 0]);
   const [sparks, setSparks] = useState<{ id: number; x: number; y: number }[]>([]);
@@ -32,10 +35,17 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
     if (v1Ref.current) v1Ref.current.muted = isMuted;
     if (v2Ref.current) v2Ref.current.muted = isMuted;
     if (v3Ref.current) v3Ref.current.muted = isMuted;
+    if (audio1Ref.current) audio1Ref.current.muted = isMuted;
+    if (audio2Ref.current) audio2Ref.current.muted = isMuted;
   }, [isMuted]);
 
   useEffect(() => {
     v1Ref.current?.play().catch(() => {});
+    if (audio1Ref.current) {
+      audio1Ref.current.muted = isMuted;
+      audio1Ref.current.currentTime = 0;
+      audio1Ref.current.play().catch(() => {});
+    }
   }, []);
 
   const handleVideoEnded = (stageNum: number) => {
@@ -54,7 +64,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
   };
 
   const handlePointerMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!videoEnded) return;
+    if (!videoEnded || !audioEnded) return;
     const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
     addSpark(clientX, clientY);
@@ -64,8 +74,14 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
         const next = Math.min(100, prev + 2.5);
         if (next >= 100) {
           setVideoEnded(false);
+          setAudioEnded(false);
           setSubStage(2);
           v2Ref.current?.play().catch(() => {});
+          if (audio2Ref.current) {
+            audio2Ref.current.muted = isMuted;
+            audio2Ref.current.currentTime = 0;
+            audio2Ref.current.play().catch(() => {});
+          }
         }
         return next;
       });
@@ -73,7 +89,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
   };
 
   const handleCircleTraceMove = (index: number, e: React.MouseEvent | React.TouchEvent) => {
-    if (subStage !== 2 || !videoEnded || circleProgress[index] >= 100) return;
+    if (subStage !== 2 || !videoEnded || !audioEnded || circleProgress[index] >= 100) return;
     const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
     addSpark(clientX, clientY);
@@ -94,15 +110,19 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
   const s3 = mobile ? '/images/birthday/kids_fairytale/stage_2/stage2_part3_phone.mp4' : '/images/birthday/kids_fairytale/stage_2/stage2_part3_desktop.mp4';
 
   const completedCirclesCount = circleProgress.filter(p => p >= 100).length;
+
   return (
     <div
       onMouseMove={handlePointerMove}
       onTouchMove={handlePointerMove}
       className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none"
     >
-      <video ref={v1Ref} src={s1} playsInline muted={isMuted} preload="auto" onEnded={() => handleVideoEnded(1)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${subStage === 1 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v2Ref} src={s2} playsInline muted={isMuted} preload="auto" onEnded={() => handleVideoEnded(2)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${subStage === 2 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v3Ref} src={s3} playsInline muted={isMuted} preload="auto" onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${subStage === 3 ? 'opacity-100' : 'opacity-0'}`} />
+      <audio ref={audio1Ref} src="/audio/kids_fairytale/stage2_voice_part1.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
+      <audio ref={audio2Ref} src="/audio/kids_fairytale/stage2_voice_part2.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
+
+      <video ref={v1Ref} src={s1} playsInline muted={isMuted} preload="auto" onEnded={() => handleVideoEnded(1)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-350 ${subStage === 1 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v2Ref} src={s2} playsInline muted={isMuted} preload="auto" onEnded={() => handleVideoEnded(2)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-350 ${subStage === 2 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v3Ref} src={s3} playsInline muted={isMuted} preload="auto" onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-350 ${subStage === 3 ? 'opacity-100' : 'opacity-0'}`} />
 
       {sparks.map(spark => (
         <motion.div key={spark.id} initial={{ opacity: 1, scale: 1, x: spark.x - 12, y: spark.y - 12 }} animate={{ opacity: 0, scale: 0.3, y: spark.y - 45, x: spark.x + (Math.random() * 30 - 15) }} transition={{ duration: 0.7, ease: 'easeOut' }} className="fixed pointer-events-none z-[60] text-amber-300 drop-shadow-[0_0_12px_rgba(255,215,0,0.9)]">
@@ -119,17 +139,18 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
           <div className="absolute -left-3 bottom-6 w-0 h-0 border-t-[8px] border-t-transparent border-r-[14px] border-r-amber-200 border-b-[8px] border-b-transparent filter drop-shadow-sm"></div>
 
           {subStage === 1 && (
-            <p>Добре дошли в празничната зала, {childName}! Залата има нужда от вълшебен блясък. Прокарай пръст **по цялата дължина на арките** по тавана, за да окачим гирляндите! ✨ ({Math.round(garlandProgress)}%)</p>
+            <p>Вече сме в празничната зала на замъка! Всички са в очакване на празника, но виж — залата има нужда от малко вълшебен блясък! Прокарай пръстче по тавана, за да сложим празничните гирлянди! ✨ ({Math.round(garlandProgress)}%)</p>
           )}
           {subStage === 2 && (
-            <p>О, стана невероятно! Сега светлините греят... но какво е рожден ден без балони? Очертай (трейсни) кръговете във въздуха с пръст или мишка! 🎈 ({completedCirclesCount}/3)</p>
+            <p>Стана невероятно! Сега имаме красиви светлини и гирлянди... но какво е рожден ден без балони? Нарисувай вълшебни кръгчета във въздуха, за да ги пуснем! 🎈 ({completedCirclesCount}/3)</p>
           )}
           {subStage === 3 && (
             <p>Празникът оживява! Камерата се насочва към празничната маса за вълшебната торта... 🎂✨</p>
           )}
         </motion.div>
       </motion.div>
-      {videoEnded && subStage === 1 && (
+
+      {videoEnded && audioEnded && subStage === 1 && (
         <div onMouseMove={handlePointerMove} onTouchMove={handlePointerMove} className="absolute top-0 inset-x-0 h-48 z-30 cursor-pointer pointer-events-auto flex flex-col items-center justify-center pt-8">
           <div className="absolute inset-x-12 top-6 border-b-4 border-dashed border-amber-300/80 rounded-[50%] h-24 pointer-events-none shadow-[0_0_20px_rgba(255,215,0,0.8)] animate-pulse"></div>
           <span className="px-6 py-2 rounded-full bg-amber-400/90 text-slate-950 font-bold text-xs shadow-2xl backdrop-blur-md animate-bounce border border-white/80">
@@ -138,7 +159,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
         </div>
       )}
 
-      {videoEnded && subStage === 2 && (
+      {videoEnded && audioEnded && subStage === 2 && (
         <div className="absolute inset-0 z-30 flex items-center justify-around pointer-events-auto px-12">
           {[0, 1, 2].map((i) => (
             <motion.div 
