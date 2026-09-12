@@ -45,12 +45,12 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
   }, []);
 
   useEffect(() => {
-    if (v1Ref.current) v1Ref.current.muted = isMuted;
-    if (v2Ref.current) v2Ref.current.muted = isMuted;
-    if (v3Ref.current) v3Ref.current.muted = isMuted;
-    if (v4Ref.current) v4Ref.current.muted = isMuted;
-    if (v5Ref.current) v5Ref.current.muted = isMuted;
-    if (v6Ref.current) v6Ref.current.muted = isMuted;
+    if (v1Ref.current) v1Ref.current.muted = true;
+    if (v2Ref.current) v2Ref.current.muted = true;
+    if (v3Ref.current) v3Ref.current.muted = true;
+    if (v4Ref.current) v4Ref.current.muted = true;
+    if (v5Ref.current) v5Ref.current.muted = true;
+    if (v6Ref.current) v6Ref.current.muted = true;
     if (audio1Ref.current) audio1Ref.current.muted = isMuted;
     if (audio2Ref.current) audio2Ref.current.muted = isMuted;
     if (audio3Ref.current) audio3Ref.current.muted = isMuted;
@@ -186,12 +186,12 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
       <audio ref={audio4Ref} src="/audio/kids_fairytale/stage3_voice_part4.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
       <audio ref={audio5Ref} src="/audio/kids_fairytale/stage3_voice_part5.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
 
-      <video ref={v1Ref} src={s1} playsInline muted={isMuted} preload="auto" onEnded={() => handleVideoEnded(1)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-350 ${subStage === 1 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v2Ref} src={s2} playsInline muted={isMuted} preload="auto" onEnded={() => handleVideoEnded(2)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-350 ${subStage === 2 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v3Ref} src={s3} playsInline muted={isMuted} preload="auto" onEnded={() => handleVideoEnded(3)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-350 ${subStage === 3 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v4Ref} src={s4} playsInline muted={isMuted} preload="auto" onEnded={() => handleVideoEnded(4)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-350 ${subStage === 4 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v5Ref} src={s5} playsInline muted={isMuted} preload="auto" onEnded={() => handleVideoEnded(5)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-350 ${subStage === 5 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v6Ref} src={s6} playsInline muted={isMuted} preload="auto" onEnded={handlePart6Ended} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-350 ${subStage === 6 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v1Ref} src={s1} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(1)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v2Ref} src={s2} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(2)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v3Ref} src={s3} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(3)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v4Ref} src={s4} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(4)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 4 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v5Ref} src={s5} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(5)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 5 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v6Ref} src={s6} playsInline autoPlay muted={true} preload="auto" onEnded={handlePart6Ended} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 6 ? 'opacity-100' : 'opacity-0'}`} />
 
       {sparks.map(spark => (
         <motion.div key={spark.id} initial={{ opacity: 1, scale: 1, x: spark.x - 12, y: spark.y - 12 }} animate={{ opacity: 0, scale: 0.3, y: spark.y - 50, x: spark.x + (Math.random() * 40 - 20) }} transition={{ duration: 0.7, ease: 'easeOut' }} className="fixed pointer-events-none z-[70] text-amber-300 drop-shadow-[0_0_15px_rgba(255,215,0,0.9)]">

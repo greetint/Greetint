@@ -28,15 +28,15 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
 
   useEffect(() => {
     if (audio.current) audio.current.muted = isMuted;
-    if (v1.current) v1.current.muted = isMuted;
-    if (v2.current) v2.current.muted = isMuted;
+    if (v1.current) v1.current.muted = true;
+    if (v2.current) v2.current.muted = true;
   }, [isMuted]);
 
   const handleOpenBook = () => {
     if (bookOpened) return;
     setBookOpened(true);
     if (audio.current) { audio.current.muted = isMuted; audio.current.currentTime = 0; audio.current.play().catch(() => {}); }
-    if (v1.current) { v1.current.muted = isMuted; v1.current.currentTime = 0; v1.current.play().catch(() => {}); }
+    if (v1.current) { v1.current.muted = true; v1.current.currentTime = 0; v1.current.play().catch(() => {}); }
   };
 
   const startHold = (e: React.MouseEvent | React.TouchEvent) => {
@@ -47,7 +47,11 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
       setUnlocked(true);
       setHolding(false);
       audio.current?.pause();
-      if (v2.current) { v2.current.currentTime = 0; v2.current.muted = isMuted; v2.current.play().catch(() => {}); }
+      if (v2.current) { 
+        v2.current.currentTime = 0; 
+        v2.current.muted = true; 
+        v2.current.play().catch(() => {}); 
+      }
     }, 900);
   };
 
@@ -64,8 +68,8 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-gradient-to-br from-amber-950 via-slate-950 to-indigo-950 z-50 flex items-center justify-center select-none cursor-none">
       <audio ref={audio} src="/audio/kids_fairytale/stage_1/voice.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
       
-      <video ref={v1} src={v1Src} playsInline muted={isMuted} preload="auto" onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-700 ${bookOpened && !unlocked ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v2} src={v2Src} playsInline muted={isMuted} preload="auto" onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none transition-opacity duration-700 ${unlocked ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v1} src={v1Src} playsInline autoPlay muted={true} preload="auto" onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${bookOpened && !unlocked ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v2} src={v2Src} playsInline autoPlay muted={true} preload="auto" onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none transition-opacity duration-300 ${unlocked ? 'opacity-100' : 'opacity-0'}`} />
 
       <AnimatePresence>
         {!bookOpened && (
@@ -119,18 +123,38 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
       {audioEnded && !unlocked && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-between py-16 px-4 pointer-events-auto cursor-none" onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
           <div className="h-10" />
-          <div className="relative flex items-center justify-center w-40 h-40 md:w-56 md:h-56 cursor-none rounded-full my-auto group" onMouseDown={startHold} onMouseUp={cancelHold} onMouseLeave={cancelHold} onTouchStart={startHold} onTouchEnd={cancelHold}>
-            <motion.div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 opacity-40 blur-2xl" animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.7, 0.3] }} transition={{ repeat: Infinity, duration: 2 }} />
+          
+          {/* Interactive Key area directly on/over the key with ethereal cinematic golden radial-gradient glow blur-[8px] */}
+          <div 
+            className="absolute bottom-24 sm:bottom-32 left-1/2 -translate-x-1/2 w-32 h-32 md:w-48 md:h-48 cursor-none flex items-center justify-center group z-40" 
+            onMouseDown={startHold} 
+            onMouseUp={cancelHold} 
+            onMouseLeave={cancelHold} 
+            onTouchStart={startHold} 
+            onTouchEnd={cancelHold}
+          >
+            {/* Ethereal cinematic golden light with blur-[8px] / radial-gradient glow */}
+            <motion.div 
+              className="absolute inset-0 rounded-full bg-[radial-gradient(circle,_rgba(255,215,0,0.95)_0%,_rgba(255,170,0,0.5)_45%,_transparent_80%)] blur-[8px] pointer-events-none"
+              animate={{ 
+                scale: holding ? [1, 2.4, 2.2] : [1, 1.2, 1], 
+                opacity: holding ? [0.6, 1, 0.9] : [0.2, 0.5, 0.2] 
+              }}
+              transition={{ repeat: Infinity, duration: holding ? 1.2 : 2.5, ease: 'easeInOut' }}
+            />
             {holding && (
-              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1.8, opacity: [0.8, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} className="absolute inset-0 rounded-full border-4 border-amber-300 bg-amber-300/30 blur-sm pointer-events-none shadow-[0_0_50px_rgba(255,215,0,0.9)]" />
+              <motion.div 
+                initial={{ scale: 0.7, opacity: 0 }} 
+                animate={{ scale: 2.8, opacity: [0.9, 0] }} 
+                transition={{ repeat: Infinity, duration: 0.85, ease: 'easeOut' }} 
+                className="absolute inset-0 rounded-full border-4 border-amber-300 bg-[radial-gradient(circle,_rgba(255,215,0,0.8)_0%,_transparent_70%)] blur-[10px] pointer-events-none shadow-[0_0_60px_rgba(255,215,0,1)]" 
+              />
             )}
-            <div className="relative z-10 w-28 h-28 rounded-full bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-600 p-1 shadow-[0_0_35px_rgba(255,215,0,0.8)] flex items-center justify-center border-2 border-white">
-              <div className="w-10 h-10 rounded-full bg-slate-950 flex items-center justify-center text-amber-300 font-bold text-xs shadow-inner">КЛЮЧ</div>
-            </div>
           </div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="mb-12 text-center z-30 px-4 pointer-events-none">
-            <p className="font-cinzel text-2xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-300 to-amber-600 drop-shadow-[0_2px_10px_rgba(255,215,0,0.8)]">
-              Задръж и вземи ключа, {childName}!
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="mb-12 text-center z-30 px-4 pointer-events-none mt-auto">
+            <p className="font-cinzel text-xl sm:text-2xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-yellow-300 to-amber-600 drop-shadow-[0_2px_10px_rgba(255,215,0,0.8)]">
+              Докосни и задръж върху ключа, {childName}!
             </p>
           </motion.div>
         </div>
