@@ -73,7 +73,18 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
 
   return (
     <div onMouseMove={subStage === 1 ? handleTouchMove : undefined} onTouchMove={subStage === 1 ? handleTouchMove : undefined} className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none">
-      <video ref={videoRef} key={subStage} src={videoSrc} playsInline autoPlay muted={isMuted} preload="auto" onEnded={subStage === 3 && lanternClicked ? onComplete : handleVideoEnded} className="absolute inset-0 w-full h-full object-cover z-0" />
+      <video 
+        ref={videoRef} 
+        key={subStage} 
+        src={videoSrc} 
+        playsInline 
+        autoPlay 
+        muted={isMuted} 
+        preload="auto" 
+        onEnded={subStage === 3 && lanternClicked ? onComplete : handleVideoEnded} 
+        onContextMenu={(e) => e.preventDefault()}
+        className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none" 
+      />
 
       <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="absolute bottom-4 left-4 z-40 flex items-end gap-3 pointer-events-none max-w-sm md:max-w-md">
         <img src="/images/birthday/kids_fairytale/hero.png" alt="Искрица" className="w-24 h-24 md:w-36 md:h-36 object-contain drop-shadow-[0_0_20px_rgba(255,215,0,0.8)] animate-bounce" />

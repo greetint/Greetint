@@ -77,7 +77,17 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none">
-      <video ref={videoRef} src={cakeVideoSrc} playsInline autoPlay muted={isMuted} preload="auto" onEnded={onComplete} className="absolute inset-0 w-full h-full object-cover z-0" />
+      <video 
+        ref={videoRef} 
+        src={cakeVideoSrc} 
+        playsInline 
+        autoPlay 
+        muted={isMuted} 
+        preload="auto" 
+        onEnded={onComplete} 
+        onContextMenu={(e) => e.preventDefault()}
+        className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none" 
+      />
       <div className="absolute inset-0 z-30 flex flex-col items-center justify-between py-12 px-4 pointer-events-auto">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center z-30 mt-6">
           <p className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 drop-shadow-[0_0_20px_rgba(255,215,0,0.8)] font-serif text-3xl md:text-5xl font-bold tracking-wide">
