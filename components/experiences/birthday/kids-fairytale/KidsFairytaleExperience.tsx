@@ -56,18 +56,6 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-yellow-200 via-emerald-100 to-sky-300 text-[#1E293B] font-sans overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6 select-none">
       <audio ref={bgAudioRef} src="/audio/background-music.mp3" preload="auto" loop />
-      
-      {/* Central and global Sound button in parent container */}
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
-        <button
-          onClick={() => setIsMuted(!isMuted)}
-          className="bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-full text-[#1E293B] hover:bg-white shadow-lg border border-white/60 transition cursor-pointer flex items-center gap-2 text-xs font-bold z-50"
-          title={isMuted ? "Включи звука" : "Спри звука"}
-        >
-          {isMuted ? <VolumeX className="w-5 h-5 text-rose-500" /> : <Volume2 className="w-5 h-5 text-emerald-600" />}
-          <span className="hidden sm:inline">{isMuted ? "Тихо" : "Магически звук"}</span>
-        </button>
-      </div>
 
       <div className="w-full max-w-4xl mx-auto flex-1 flex items-center justify-center relative my-auto">
         <AnimatePresence mode="wait">
@@ -110,6 +98,18 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
 
       <div className="text-center text-xs text-[#1E293B]/70 font-serif pb-2 flex items-center justify-center gap-2 z-40">
         <Sparkles className="w-4 h-4 text-amber-500 animate-spin" /> Вълшебното пътешествие на празника • Създадено за {childName}
+      </div>
+
+      {/* Central and global Sound button rendered on top with z-[100] */}
+      <div className="fixed top-4 right-4 z-[100] flex items-center gap-3 pointer-events-auto">
+        <button
+          onClick={() => setIsMuted(!isMuted)}
+          className="bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-full text-[#1E293B] hover:bg-white shadow-2xl border border-white/85 transition cursor-pointer flex items-center gap-2 text-xs font-bold"
+          title={isMuted ? "Включи звука" : "Спри звука"}
+        >
+          {isMuted ? <VolumeX className="w-5 h-5 text-rose-500" /> : <Volume2 className="w-5 h-5 text-emerald-600" />}
+          <span className="hidden sm:inline">{isMuted ? "Тихо" : "Магически звук"}</span>
+        </button>
       </div>
     </div>
   );
