@@ -10,9 +10,10 @@ interface GiftFinaleSceneProps {
   senderName: string;
   personalMessage: string;
   favoriteAnimal: string;
+  childWish?: string;
 }
 
-export function GiftFinaleScene({ childName, senderName, personalMessage, favoriteAnimal }: GiftFinaleSceneProps) {
+export function GiftFinaleScene({ childName, senderName, personalMessage, favoriteAnimal, childWish }: GiftFinaleSceneProps) {
   const [letterOpen, setLetterOpen] = useState(false);
 
   return (
@@ -38,6 +39,11 @@ export function GiftFinaleScene({ childName, senderName, personalMessage, favori
           <p className="text-xs sm:text-sm text-[#2C241D]/70 font-sans">
             Желанието ти отлетя към звездите! Сега те очаква последната вълшебна изненада от твоите близки.
           </p>
+          {childWish && (
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 font-serif italic">
+              ✨ Твоето желание: „{childWish}“
+            </div>
+          )}
         </div>
 
         {!letterOpen ? (

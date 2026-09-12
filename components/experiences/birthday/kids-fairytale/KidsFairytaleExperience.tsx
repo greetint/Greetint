@@ -21,6 +21,7 @@ interface KidsFairytaleExperienceProps {
 export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) {
   const [currentScene, setCurrentScene] = useState<number>(0);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [childWish, setChildWish] = useState<string>('');
   const bgAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const childName = data?.childName || 'Габи';
@@ -81,7 +82,10 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
               childAge={childAge}
               childName={childName}
               isMuted={isMuted}
-              onComplete={() => setCurrentScene(3)} 
+              onComplete={(wish) => {
+                if (wish) setChildWish(wish);
+                setCurrentScene(3);
+              }} 
             />
           )}
           {currentScene === 3 && (
@@ -91,6 +95,7 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
               senderName={senderName}
               personalMessage={personalMessage}
               favoriteAnimal={favoriteAnimal}
+              childWish={childWish}
             />
           )}
         </AnimatePresence>
