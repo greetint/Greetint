@@ -176,25 +176,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
         </motion.div>
       ))}
 
-      <motion.div initial={{ opacity: 0, x: -60, y: 30, scale: 0.8 }} animate={{ opacity: 1, x: 0, y: 0, scale: 1 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="absolute bottom-6 left-6 md:bottom-10 md:left-10 z-40 flex items-end gap-3 pointer-events-none max-w-sm md:max-w-md">
-        <motion.img src="/images/birthday/kids_fairytale/hero.png" alt="Искрица" animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }} className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 object-contain drop-shadow-[0_12px_25px_rgba(255,215,0,0.6)]" />
-        <motion.div key={subStage} initial={{ opacity: 0, y: 15, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.5, ease: 'easeOut' }} className="relative bg-gradient-to-br from-amber-50/95 via-yellow-50/90 to-amber-100/95 backdrop-blur-xl border-2 border-amber-300/90 p-5 rounded-3xl shadow-[0_15px_40px_rgba(180,130,20,0.35)] text-[#2C241D] font-serif text-xs sm:text-sm md:text-base mb-4 pointer-events-auto leading-relaxed">
-          <div className="absolute -top-2.5 -right-2.5 w-6 h-6 rounded-full bg-gradient-to-br from-amber-300 to-yellow-500 border border-white flex items-center justify-center shadow-md">
-            <Sparkles className="w-3.5 h-3.5 text-amber-950" />
-          </div>
-          <div className="absolute -left-3 bottom-6 w-0 h-0 border-t-[8px] border-t-transparent border-r-[14px] border-r-amber-200 border-b-[8px] border-b-transparent filter drop-shadow-sm"></div>
 
-          {subStage === 1 && (
-            <p>Вече сме в празничната зала на замъка! Всички са в очакване на празника, но виж — залата има нужда от малко вълшебен блясък! Прокарай пръстче по тавана, за да сложим празничните гирлянди! ({Math.round(garlandProgress)}%)</p>
-          )}
-          {subStage === 2 && (
-            <p>Стана невероятно! Сега имаме красиви светлини и гирлянди... но какво е рожден ден без балони? Нарисувай вълшебни кръгчета във въздуха, за да ги пуснем! ({completedCirclesCount}/3)</p>
-          )}
-          {subStage === 3 && (
-            <p>Празникът оживява! Камерата се насочва към празничната маса за вълшебната торта...</p>
-          )}
-        </motion.div>
-      </motion.div>
 
       {videoEnded && audioEnded && subStage === 1 && (
         <div onMouseMove={handlePointerMove} onTouchMove={handlePointerMove} onContextMenu={(e) => e.preventDefault()} className="absolute top-0 inset-x-0 h-48 z-50 touch-none select-none cursor-pointer pointer-events-auto flex flex-col items-center justify-center pt-8">
