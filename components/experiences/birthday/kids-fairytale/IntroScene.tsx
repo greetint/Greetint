@@ -118,6 +118,7 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
         controls={false}
         preload="auto"
         disablePictureInPicture={true}
+        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
         onContextMenu={(e) => e.preventDefault()} 
         className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${bookOpened && !unlocked && !v2Playing ? 'opacity-100' : 'opacity-0'}`} 
       />
@@ -131,6 +132,7 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
         controls={false}
         preload="auto"
         disablePictureInPicture={true}
+        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
         onPlaying={() => setV2Playing(true)} 
         onEnded={onComplete} 
         onContextMenu={(e) => e.preventDefault()} 

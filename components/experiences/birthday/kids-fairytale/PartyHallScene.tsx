@@ -132,6 +132,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
         controls={false}
         preload="auto"
         disablePictureInPicture={true}
+        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
         onEnded={() => handleVideoEnded(1)} 
         onContextMenu={(e) => e.preventDefault()} 
         className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 && !v2Playing ? 'opacity-100' : 'opacity-0'}`} 
@@ -146,6 +147,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
         controls={false}
         preload="auto"
         disablePictureInPicture={true}
+        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
         onPlaying={() => setV2Playing(true)} 
         onEnded={() => handleVideoEnded(2)} 
         onContextMenu={(e) => e.preventDefault()} 
@@ -161,6 +163,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
         controls={false}
         preload="auto"
         disablePictureInPicture={true}
+        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
         onPlaying={() => setV3Playing(true)} 
         onEnded={onComplete} 
         onContextMenu={(e) => e.preventDefault()} 
