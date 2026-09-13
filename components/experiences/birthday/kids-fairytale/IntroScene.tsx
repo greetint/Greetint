@@ -42,6 +42,18 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
     unlockMedia();
     setBookOpened(true);
 
+    const firstVideo = document.getElementById('main-video-player') as HTMLVideoElement;
+    if (firstVideo) {
+      firstVideo.muted = true;
+      firstVideo.currentTime = 0;
+      const playPromise = firstVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log("Auto-play prevented, waiting for trigger", error);
+        });
+      }
+    }
+
     if (v1.current) {
       v1.current.muted = true;
       v1.current.currentTime = 0;
@@ -97,6 +109,7 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
       
       <video 
         ref={v1} 
+        id="main-video-player"
         src={v1Src} 
         muted={true}
         playsInline={true}

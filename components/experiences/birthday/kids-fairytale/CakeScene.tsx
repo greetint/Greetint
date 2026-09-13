@@ -158,12 +158,21 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
     onComplete(childWish);
   };
 
-  const s1 = '/images/birthday/kids_fairytale/stage3/stage3_part1_desctop.mp4';
-  const s2 = '/images/birthday/kids_fairytale/stage3/stage3_part2_desctop.mp4';
-  const s3 = '/images/birthday/kids_fairytale/stage3/stage3_part3_desctop.mp4';
-  const s4 = '/images/birthday/kids_fairytale/stage3/stage3_part4_desctop.mp4';
-  const s5 = '/images/birthday/kids_fairytale/stage3/stage3_part5_desctop.mp4';
-  const s6 = '/images/birthday/kids_fairytale/stage3/stage3_part6_desctop.mp4';
+  const [mobile, setMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  const s1 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part1_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part1_desctop.mp4';
+  const s2 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part2_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part2_desctop.mp4';
+  const s3 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part3_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part3_desctop.mp4';
+  const s4 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part4_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part4_desctop.mp4';
+  const s5 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part5_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part5_desctop.mp4';
+  const s6 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part6_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part6_desctop.mp4';
 
   const getDragonQuote = () => {
     switch (subStage) {
