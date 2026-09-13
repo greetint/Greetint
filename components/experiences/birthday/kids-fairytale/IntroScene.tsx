@@ -17,7 +17,16 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
   const [audioEnded, setAudioEnded] = useState(false);
   const [holding, setHolding] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
+  const [v2Playing, setV2Playing] = useState(false);
   const timer = useRef<NodeJS.Timeout | null>(null);
+
+  const unlockAllMedia = () => {
+    if (typeof window === 'undefined') return;
+    document.querySelectorAll('audio, video').forEach((el) => {
+      const m = el as HTMLMediaElement;
+      m.play().then(() => m.pause()).catch(() => {});
+    });
+  };
 
   useEffect(() => {
     const check = () => setMobile(window.innerWidth < 768);
@@ -34,6 +43,7 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
 
   const handleOpenBook = () => {
     if (bookOpened) return;
+    unlockAllMedia();
     setBookOpened(true);
     if (audio.current) { audio.current.muted = isMuted; audio.current.currentTime = 0; audio.current.play().catch(() => {}); }
     if (v1.current) { v1.current.muted = true; v1.current.currentTime = 0; v1.current.play().catch(() => {}); }
@@ -68,8 +78,8 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-gradient-to-br from-amber-950 via-slate-950 to-indigo-950 z-50 flex items-center justify-center select-none cursor-none">
       <audio ref={audio} src="/audio/kids_fairytale/stage_1/voice.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
       
-      <video ref={v1} src={v1Src} playsInline autoPlay muted={true} preload="auto" onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${bookOpened && !unlocked ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v2} src={v2Src} playsInline autoPlay muted={true} preload="auto" onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none transition-opacity duration-300 ${unlocked ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v1} src={v1Src} playsInline webkit-playsinline="true" autoPlay controls={false} preload="auto" onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${bookOpened && !unlocked && !v2Playing ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v2} src={v2Src} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV2Playing(true)} onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none transition-opacity duration-300 ${unlocked ? 'opacity-100' : 'opacity-0'}`} />
 
       <AnimatePresence>
         {!bookOpened && (
@@ -126,7 +136,8 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
           
           {/* Interactive Key area directly on/over the key with ethereal cinematic golden radial-gradient glow blur-[8px] */}
           <div 
-            className="absolute bottom-24 sm:bottom-32 left-1/2 -translate-x-1/2 w-32 h-32 md:w-48 md:h-48 cursor-none flex items-center justify-center group z-40" 
+            className="absolute bottom-24 sm:bottom-32 left-1/2 -translate-x-1/2 w-32 h-32 md:w-48 md:h-48 cursor-none flex items-center justify-center group z-50 touch-none select-none" 
+            onContextMenu={(e) => e.preventDefault()}
             onMouseDown={startHold} 
             onMouseUp={cancelHold} 
             onMouseLeave={cancelHold} 

@@ -185,6 +185,9 @@ export function MemoryWallStage({
                         autoPlay={isUnlocked && isActive} 
                         muted={!isUnlocked} 
                         playsInline 
+                        webkit-playsinline="true"
+                        preload="auto"
+                        onContextMenu={(e) => e.preventDefault()}
                         className={`relative z-10 w-full h-full object-contain transition-all duration-1000 ${isUnlocked ? 'filter-none opacity-100' : 'filter blur-[10px] brightness-110 opacity-70'}`} 
                       />
                     ) : (

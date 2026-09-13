@@ -23,6 +23,8 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
   const [garlandProgress, setGarlandProgress] = useState(0);
   const [circleProgress, setCircleProgress] = useState<number[]>([0, 0, 0]);
   const [sparks, setSparks] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [v2Playing, setV2Playing] = useState(false);
+  const [v3Playing, setV3Playing] = useState(false);
 
   useEffect(() => {
     const check = () => setMobile(window.innerWidth < 768);
@@ -120,9 +122,9 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
       <audio ref={audio1Ref} src="/audio/kids_fairytale/stage2_voice_part1.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
       <audio ref={audio2Ref} src="/audio/kids_fairytale/stage2_voice_part2.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
 
-      <video ref={v1Ref} src={s1} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(1)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v2Ref} src={s2} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(2)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v3Ref} src={s3} playsInline autoPlay muted={true} preload="auto" onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v1Ref} src={s1} playsInline webkit-playsinline="true" autoPlay controls={false} preload="auto" onEnded={() => handleVideoEnded(1)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 && !v2Playing ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v2Ref} src={s2} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV2Playing(true)} onEnded={() => handleVideoEnded(2)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 && !v3Playing ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v3Ref} src={s3} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV3Playing(true)} onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 ? 'opacity-100' : 'opacity-0'}`} />
 
       {sparks.map(spark => (
         <motion.div key={spark.id} initial={{ opacity: 1, scale: 1, x: spark.x - 12, y: spark.y - 12 }} animate={{ opacity: 0, scale: 0.3, y: spark.y - 45, x: spark.x + (Math.random() * 30 - 15) }} transition={{ duration: 0.7, ease: 'easeOut' }} className="fixed pointer-events-none z-[60] text-amber-300 drop-shadow-[0_0_12px_rgba(255,215,0,0.9)]">
@@ -151,7 +153,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
       </motion.div>
 
       {videoEnded && audioEnded && subStage === 1 && (
-        <div onMouseMove={handlePointerMove} onTouchMove={handlePointerMove} className="absolute top-0 inset-x-0 h-48 z-30 cursor-pointer pointer-events-auto flex flex-col items-center justify-center pt-8">
+        <div onMouseMove={handlePointerMove} onTouchMove={handlePointerMove} onContextMenu={(e) => e.preventDefault()} className="absolute top-0 inset-x-0 h-48 z-50 touch-none select-none cursor-pointer pointer-events-auto flex flex-col items-center justify-center pt-8">
           <div className="absolute inset-x-12 top-6 border-b-4 border-dashed border-amber-300/80 rounded-[50%] h-24 pointer-events-none shadow-[0_0_20px_rgba(255,215,0,0.8)] animate-pulse"></div>
           <span className="px-6 py-2 rounded-full bg-amber-400/90 text-slate-950 font-bold text-xs shadow-2xl backdrop-blur-md animate-bounce border border-white/80">
             Трейсни цялата линия по арките горе ({Math.round(garlandProgress)}%)
@@ -160,7 +162,7 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
       )}
 
       {videoEnded && audioEnded && subStage === 2 && (
-        <div className="absolute inset-0 z-30 flex items-center justify-around pointer-events-auto px-12">
+        <div onContextMenu={(e) => e.preventDefault()} className="absolute inset-0 z-50 touch-none select-none flex items-center justify-around pointer-events-auto px-12">
           {[0, 1, 2].map((i) => (
             <motion.div 
               key={i} 

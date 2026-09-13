@@ -32,6 +32,12 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
   const [listening, setListening] = useState(false);
   const [wishRecorded, setWishRecorded] = useState(false);
 
+  const [v2Playing, setV2Playing] = useState(false);
+  const [v3Playing, setV3Playing] = useState(false);
+  const [v4Playing, setV4Playing] = useState(false);
+  const [v5Playing, setV5Playing] = useState(false);
+  const [v6Playing, setV6Playing] = useState(false);
+
   useEffect(() => {
     if (v1Ref.current) {
       v1Ref.current.muted = isMuted;
@@ -186,12 +192,12 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
       <audio ref={audio4Ref} src="/audio/kids_fairytale/stage3_voice_part4.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
       <audio ref={audio5Ref} src="/audio/kids_fairytale/stage3_voice_part5.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
 
-      <video ref={v1Ref} src={s1} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(1)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v2Ref} src={s2} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(2)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v3Ref} src={s3} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(3)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v4Ref} src={s4} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(4)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 4 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v5Ref} src={s5} playsInline autoPlay muted={true} preload="auto" onEnded={() => handleVideoEnded(5)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 5 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v6Ref} src={s6} playsInline autoPlay muted={true} preload="auto" onEnded={handlePart6Ended} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 6 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v1Ref} src={s1} playsInline webkit-playsinline="true" autoPlay controls={false} preload="auto" onEnded={() => handleVideoEnded(1)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 && !v2Playing ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v2Ref} src={s2} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV2Playing(true)} onEnded={() => handleVideoEnded(2)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 && !v3Playing ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v3Ref} src={s3} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV3Playing(true)} onEnded={() => handleVideoEnded(3)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 && !v4Playing ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v4Ref} src={s4} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV4Playing(true)} onEnded={() => handleVideoEnded(4)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 4 && !v5Playing ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v5Ref} src={s5} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV5Playing(true)} onEnded={() => handleVideoEnded(5)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 5 && !v6Playing ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={v6Ref} src={s6} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV6Playing(true)} onEnded={handlePart6Ended} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 6 ? 'opacity-100' : 'opacity-0'}`} />
 
       {sparks.map(spark => (
         <motion.div key={spark.id} initial={{ opacity: 1, scale: 1, x: spark.x - 12, y: spark.y - 12 }} animate={{ opacity: 0, scale: 0.3, y: spark.y - 50, x: spark.x + (Math.random() * 40 - 20) }} transition={{ duration: 0.7, ease: 'easeOut' }} className="fixed pointer-events-none z-[70] text-amber-300 drop-shadow-[0_0_15px_rgba(255,215,0,0.9)]">
@@ -211,7 +217,7 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
       </motion.div>
 
       {videoEnded && audioEnded && subStage >= 1 && subStage <= 4 && (
-        <div onClick={handleTableClick} onTouchStart={handleTableClick} className="absolute inset-0 z-30 cursor-pointer pointer-events-auto flex items-center justify-center">
+        <div onClick={handleTableClick} onTouchStart={handleTableClick} onContextMenu={(e) => e.preventDefault()} className="absolute inset-0 z-50 touch-none select-none cursor-pointer pointer-events-auto flex items-center justify-center">
           <div className="absolute bottom-24 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 font-serif font-bold px-8 py-4 rounded-full shadow-[0_0_30px_rgba(255,215,0,0.8)] border-2 border-white animate-bounce flex items-center gap-2 text-sm sm:text-base">
             <Sparkles className="w-5 h-5 text-amber-950" />
             {subStage === 1 && "Натисни масата, за да я постелим"}

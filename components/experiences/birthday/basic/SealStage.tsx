@@ -16,6 +16,8 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isActionPlaying, setIsActionPlaying] = useState(false);
 
+  const [actionPlayingStarted, setActionPlayingStarted] = useState(false);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
@@ -23,6 +25,14 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
   const desktopActionRef = useRef<HTMLVideoElement>(null);
   const mobileIdleRef = useRef<HTMLVideoElement>(null);
   const mobileActionRef = useRef<HTMLVideoElement>(null);
+
+  const unlockAllMedia = () => {
+    if (typeof window === 'undefined') return;
+    document.querySelectorAll('audio, video').forEach((el) => {
+      const m = el as HTMLMediaElement;
+      m.play().then(() => m.pause()).catch(() => {});
+    });
+  };
 
   useEffect(() => {
     if (desktopIdleRef.current) desktopIdleRef.current.load();
@@ -32,6 +42,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
   }, []);
 
   const handleStartInteraction = () => {
+    unlockAllMedia();
     setHasStarted(true);
 
     if (desktopIdleRef.current) {
@@ -169,31 +180,40 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
           <video
             ref={desktopIdleRef}
             src="/videos/envelope-idle-desktop.mp4"
-            muted
+            muted={true}
             playsInline
+            webkit-playsinline="true"
             autoPlay
+            controls={false}
             preload="auto"
-            className={`absolute inset-0 w-full h-full object-contain z-0 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-0' : 'opacity-100'}`}
+            onContextMenu={(e) => e.preventDefault()}
+            className={`absolute inset-0 w-full h-full object-contain z-0 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying && actionPlayingStarted ? 'opacity-0' : 'opacity-100'}`}
           />
 
           <video
             ref={desktopActionRef}
             src="/videos/envelope-open-desktop.mp4"
-            muted
+            muted={true}
             playsInline
+            webkit-playsinline="true"
+            autoPlay={false}
+            controls={false}
             preload="auto"
-            className={`absolute inset-0 w-full h-full object-contain z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-100' : 'opacity-0'}`}
+            onPlaying={() => setActionPlayingStarted(true)}
+            onContextMenu={(e) => e.preventDefault()}
+            className={`absolute inset-0 w-full h-full object-contain z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying && actionPlayingStarted ? 'opacity-100' : 'opacity-0'}`}
           />
 
           {!isActionPlaying && !isUnlocked && hasStarted && (
             <div
-              className="absolute z-30 cursor-pointer touch-none -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full"
+              className="absolute z-50 cursor-pointer touch-none select-none -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full"
               style={{
                 top: '66%',      
                 left: '50.5%',   
                 width: '120px',  
                 height: '120px', 
               }}
+              onContextMenu={(e) => e.preventDefault()}
               onMouseDown={startHolding}
               onMouseUp={stopHolding}
               onMouseLeave={stopHolding}
@@ -232,31 +252,40 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
           <video
             ref={mobileIdleRef}
             src="/videos/envelope-idle-mobile.mp4"
-            muted
+            muted={true}
             playsInline
+            webkit-playsinline="true"
             autoPlay
+            controls={false}
             preload="auto"
-            className={`absolute inset-0 w-full h-full object-cover z-0 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-0' : 'opacity-100'}`}
+            onContextMenu={(e) => e.preventDefault()}
+            className={`absolute inset-0 w-full h-full object-cover z-0 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying && actionPlayingStarted ? 'opacity-0' : 'opacity-100'}`}
           />
 
           <video
             ref={mobileActionRef}
             src="/videos/envelope-open-mobile.mp4"
-            muted
+            muted={true}
             playsInline
+            webkit-playsinline="true"
+            autoPlay={false}
+            controls={false}
             preload="auto"
-            className={`absolute inset-0 w-full h-full object-cover z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying ? 'opacity-100' : 'opacity-0'}`}
+            onPlaying={() => setActionPlayingStarted(true)}
+            onContextMenu={(e) => e.preventDefault()}
+            className={`absolute inset-0 w-full h-full object-cover z-10 select-none pointer-events-none transition-opacity duration-700 ${isActionPlaying && actionPlayingStarted ? 'opacity-100' : 'opacity-0'}`}
           />
 
           {!isActionPlaying && !isUnlocked && hasStarted && (
             <div
-              className="absolute z-30 cursor-pointer touch-none -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full"
+              className="absolute z-50 cursor-pointer touch-none select-none -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-full"
               style={{
                 top: '59%',      
                 left: '50%',     
                 width: '100px',  
                 height: '100px', 
               }}
+              onContextMenu={(e) => e.preventDefault()}
               onMouseDown={startHolding}
               onMouseUp={stopHolding}
               onMouseLeave={stopHolding}
