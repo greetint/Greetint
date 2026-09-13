@@ -192,12 +192,95 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
       <audio ref={audio4Ref} src="/audio/kids_fairytale/stage3_voice_part4.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
       <audio ref={audio5Ref} src="/audio/kids_fairytale/stage3_voice_part5.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
 
-      <video ref={v1Ref} src={s1} playsInline webkit-playsinline="true" autoPlay controls={false} preload="auto" onEnded={() => handleVideoEnded(1)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 && !v2Playing ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v2Ref} src={s2} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV2Playing(true)} onEnded={() => handleVideoEnded(2)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 && !v3Playing ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v3Ref} src={s3} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV3Playing(true)} onEnded={() => handleVideoEnded(3)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 && !v4Playing ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v4Ref} src={s4} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV4Playing(true)} onEnded={() => handleVideoEnded(4)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 4 && !v5Playing ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v5Ref} src={s5} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV5Playing(true)} onEnded={() => handleVideoEnded(5)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 5 && !v6Playing ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v6Ref} src={s6} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV6Playing(true)} onEnded={handlePart6Ended} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 6 ? 'opacity-100' : 'opacity-0'}`} />
+      <video 
+        ref={v1Ref} 
+        src={s1} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={true}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onEnded={() => handleVideoEnded(1)} 
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 && !v2Playing ? 'opacity-100' : 'opacity-0'}`} 
+      />
+      <video 
+        ref={v2Ref} 
+        src={s2} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={false}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onPlaying={() => setV2Playing(true)} 
+        onEnded={() => handleVideoEnded(2)} 
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 && !v3Playing ? 'opacity-100' : 'opacity-0'}`} 
+      />
+      <video 
+        ref={v3Ref} 
+        src={s3} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={false}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onPlaying={() => setV3Playing(true)} 
+        onEnded={() => handleVideoEnded(3)} 
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 && !v4Playing ? 'opacity-100' : 'opacity-0'}`} 
+      />
+      <video 
+        ref={v4Ref} 
+        src={s4} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={false}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onPlaying={() => setV4Playing(true)} 
+        onEnded={() => handleVideoEnded(4)} 
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 4 && !v5Playing ? 'opacity-100' : 'opacity-0'}`} 
+      />
+      <video 
+        ref={v5Ref} 
+        src={s5} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={false}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onPlaying={() => setV5Playing(true)} 
+        onEnded={() => handleVideoEnded(5)} 
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 5 && !v6Playing ? 'opacity-100' : 'opacity-0'}`} 
+      />
+      <video 
+        ref={v6Ref} 
+        src={s6} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={false}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onPlaying={() => setV6Playing(true)} 
+        onEnded={handlePart6Ended} 
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 6 ? 'opacity-100' : 'opacity-0'}`} 
+      />
 
       {sparks.map(spark => (
         <motion.div key={spark.id} initial={{ opacity: 1, scale: 1, x: spark.x - 12, y: spark.y - 12 }} animate={{ opacity: 0, scale: 0.3, y: spark.y - 50, x: spark.x + (Math.random() * 40 - 20) }} transition={{ duration: 0.7, ease: 'easeOut' }} className="fixed pointer-events-none z-[70] text-amber-300 drop-shadow-[0_0_15px_rgba(255,215,0,0.9)]">

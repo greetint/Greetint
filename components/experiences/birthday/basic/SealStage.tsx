@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useMedia } from '@/components/MediaContext';
 
 interface SealStageProps {
   recipient?: string;
@@ -15,6 +16,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
   const [progress, setProgress] = useState(0);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isActionPlaying, setIsActionPlaying] = useState(false);
+  const { isMediaUnlocked, unlockMedia } = useMedia();
 
   const [actionPlayingStarted, setActionPlayingStarted] = useState(false);
 
@@ -26,14 +28,6 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
   const mobileIdleRef = useRef<HTMLVideoElement>(null);
   const mobileActionRef = useRef<HTMLVideoElement>(null);
 
-  const unlockAllMedia = () => {
-    if (typeof window === 'undefined') return;
-    document.querySelectorAll('audio, video').forEach((el) => {
-      const m = el as HTMLMediaElement;
-      m.play().then(() => m.pause()).catch(() => {});
-    });
-  };
-
   useEffect(() => {
     if (desktopIdleRef.current) desktopIdleRef.current.load();
     if (desktopActionRef.current) desktopActionRef.current.load();
@@ -42,21 +36,40 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
   }, []);
 
   const handleStartInteraction = () => {
-    unlockAllMedia();
+    // 1. Синхронно отключване на видеото и аудиото (User Gesture Trigger) в същата милисекунда
+    unlockMedia();
     setHasStarted(true);
 
     if (desktopIdleRef.current) {
+      desktopIdleRef.current.muted = true;
       desktopIdleRef.current.currentTime = 0;
       desktopIdleRef.current.play().catch(() => {});
+      // 4. Резервен механизъм (Fallback Start) след 500ms
+      setTimeout(() => {
+        if (desktopIdleRef.current && desktopIdleRef.current.paused) {
+          desktopIdleRef.current.play().catch(() => {});
+        }
+      }, 500);
     }
     if (mobileIdleRef.current) {
+      mobileIdleRef.current.muted = true;
       mobileIdleRef.current.currentTime = 0;
       mobileIdleRef.current.play().catch(() => {});
+      setTimeout(() => {
+        if (mobileIdleRef.current && mobileIdleRef.current.paused) {
+          mobileIdleRef.current.play().catch(() => {});
+        }
+      }, 500);
     }
 
     if (audioRef.current) {
       audioRef.current.volume = 1.0;
       audioRef.current.play().catch(() => {});
+      setTimeout(() => {
+        if (audioRef.current && audioRef.current.paused) {
+          audioRef.current.play().catch(() => {});
+        }
+      }, 500);
     }
   };
 

@@ -122,9 +122,50 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
       <audio ref={audio1Ref} src="/audio/kids_fairytale/stage2_voice_part1.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
       <audio ref={audio2Ref} src="/audio/kids_fairytale/stage2_voice_part2.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
 
-      <video ref={v1Ref} src={s1} playsInline webkit-playsinline="true" autoPlay controls={false} preload="auto" onEnded={() => handleVideoEnded(1)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 && !v2Playing ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v2Ref} src={s2} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV2Playing(true)} onEnded={() => handleVideoEnded(2)} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 && !v3Playing ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v3Ref} src={s3} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV3Playing(true)} onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 ? 'opacity-100' : 'opacity-0'}`} />
+      <video 
+        ref={v1Ref} 
+        src={s1} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={true}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onEnded={() => handleVideoEnded(1)} 
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 && !v2Playing ? 'opacity-100' : 'opacity-0'}`} 
+      />
+      <video 
+        ref={v2Ref} 
+        src={s2} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={false}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onPlaying={() => setV2Playing(true)} 
+        onEnded={() => handleVideoEnded(2)} 
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 && !v3Playing ? 'opacity-100' : 'opacity-0'}`} 
+      />
+      <video 
+        ref={v3Ref} 
+        src={s3} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={false}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onPlaying={() => setV3Playing(true)} 
+        onEnded={onComplete} 
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 ? 'opacity-100' : 'opacity-0'}`} 
+      />
 
       {sparks.map(spark => (
         <motion.div key={spark.id} initial={{ opacity: 1, scale: 1, x: spark.x - 12, y: spark.y - 12 }} animate={{ opacity: 0, scale: 0.3, y: spark.y - 45, x: spark.x + (Math.random() * 30 - 15) }} transition={{ duration: 0.7, ease: 'easeOut' }} className="fixed pointer-events-none z-[60] text-amber-300 drop-shadow-[0_0_12px_rgba(255,215,0,0.9)]">

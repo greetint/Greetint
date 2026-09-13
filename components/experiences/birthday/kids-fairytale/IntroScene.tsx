@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useMedia } from '@/components/MediaContext';
 
 interface IntroSceneProps {
   childName: string;
@@ -12,6 +13,8 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
   const v1 = useRef<HTMLVideoElement | null>(null);
   const v2 = useRef<HTMLVideoElement | null>(null);
   const audio = useRef<HTMLAudioElement | null>(null);
+  const { isMediaUnlocked, unlockMedia } = useMedia();
+
   const [mobile, setMobile] = useState(false);
   const [bookOpened, setBookOpened] = useState(false);
   const [audioEnded, setAudioEnded] = useState(false);
@@ -19,14 +22,6 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
   const [unlocked, setUnlocked] = useState(false);
   const [v2Playing, setV2Playing] = useState(false);
   const timer = useRef<NodeJS.Timeout | null>(null);
-
-  const unlockAllMedia = () => {
-    if (typeof window === 'undefined') return;
-    document.querySelectorAll('audio, video').forEach((el) => {
-      const m = el as HTMLMediaElement;
-      m.play().then(() => m.pause()).catch(() => {});
-    });
-  };
 
   useEffect(() => {
     const check = () => setMobile(window.innerWidth < 768);
@@ -43,10 +38,32 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
 
   const handleOpenBook = () => {
     if (bookOpened) return;
-    unlockAllMedia();
+    // 1. Синхронно отключване на видеото и аудиото (User Gesture Trigger) в същата милисекунда
+    unlockMedia();
     setBookOpened(true);
-    if (audio.current) { audio.current.muted = isMuted; audio.current.currentTime = 0; audio.current.play().catch(() => {}); }
-    if (v1.current) { v1.current.muted = true; v1.current.currentTime = 0; v1.current.play().catch(() => {}); }
+
+    if (v1.current) {
+      v1.current.muted = true;
+      v1.current.currentTime = 0;
+      v1.current.play().catch(() => {});
+      // 4. Резервен механизъм (Fallback Start) след 500ms
+      setTimeout(() => {
+        if (v1.current && v1.current.paused) {
+          v1.current.play().catch(() => {});
+        }
+      }, 500);
+    }
+
+    if (audio.current) {
+      audio.current.muted = isMuted;
+      audio.current.currentTime = 0;
+      audio.current.play().catch(() => {});
+      setTimeout(() => {
+        if (audio.current && audio.current.paused && !isMuted) {
+          audio.current.play().catch(() => {});
+        }
+      }, 500);
+    }
   };
 
   const startHold = (e: React.MouseEvent | React.TouchEvent) => {
@@ -78,8 +95,34 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-gradient-to-br from-amber-950 via-slate-950 to-indigo-950 z-50 flex items-center justify-center select-none cursor-none">
       <audio ref={audio} src="/audio/kids_fairytale/stage_1/voice.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
       
-      <video ref={v1} src={v1Src} playsInline webkit-playsinline="true" autoPlay controls={false} preload="auto" onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${bookOpened && !unlocked && !v2Playing ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={v2} src={v2Src} playsInline webkit-playsinline="true" autoPlay={false} controls={false} preload="auto" onPlaying={() => setV2Playing(true)} onEnded={onComplete} onContextMenu={(e) => e.preventDefault()} className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none transition-opacity duration-300 ${unlocked ? 'opacity-100' : 'opacity-0'}`} />
+      <video 
+        ref={v1} 
+        src={v1Src} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={false}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-300 ${bookOpened && !unlocked && !v2Playing ? 'opacity-100' : 'opacity-0'}`} 
+      />
+      <video 
+        ref={v2} 
+        src={v2Src} 
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={false}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onPlaying={() => setV2Playing(true)} 
+        onEnded={onComplete} 
+        onContextMenu={(e) => e.preventDefault()} 
+        className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none transition-opacity duration-300 ${unlocked ? 'opacity-100' : 'opacity-0'}`} 
+      />
 
       <AnimatePresence>
         {!bookOpened && (
