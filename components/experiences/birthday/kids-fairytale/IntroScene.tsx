@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { STAGE_VIDEOS } from './VideoPlayerManager';
 import { useMedia } from '@/components/MediaContext';
 
 interface IntroSceneProps {
@@ -100,8 +101,8 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
     setHolding(false);
   };
 
-  const v1Src = mobile ? '/images/birthday/kids_fairytale/stage_1/stage1_part1_phone.mp4' : '/images/birthday/kids_fairytale/stage_1/stage1_part1_desktop.mp4';
-  const v2Src = mobile ? '/images/birthday/kids_fairytale/stage_1/stage1_part2_phone.mp4' : '/images/birthday/kids_fairytale/stage_1/stage1_part2_desktop.mp4';
+  const v1Src = mobile ? STAGE_VIDEOS.stage1.phone : STAGE_VIDEOS.stage1.desktop;
+  const v2Src = mobile ? STAGE_VIDEOS.stage1.part2Phone : STAGE_VIDEOS.stage1.part2Desktop;
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-gradient-to-br from-amber-950 via-slate-950 to-indigo-950 z-50 flex items-center justify-center select-none cursor-none">

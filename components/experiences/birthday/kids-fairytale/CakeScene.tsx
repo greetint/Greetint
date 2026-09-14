@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { STAGE_VIDEOS } from './VideoPlayerManager';
 import { Sparkles, Mic, Flame, CheckCircle2 } from 'lucide-react';
 
 interface CakeSceneProps {
@@ -167,12 +168,12 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  const s1 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part1_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part1_desctop.mp4';
-  const s2 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part2_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part2_desctop.mp4';
-  const s3 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part3_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part3_desctop.mp4';
-  const s4 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part4_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part4_desctop.mp4';
-  const s5 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part5_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part5_desctop.mp4';
-  const s6 = mobile ? '/images/birthday/kids_fairytale/stage3/stage3_part6_phone.mp4' : '/images/birthday/kids_fairytale/stage3/stage3_part6_desctop.mp4';
+  const s1 = mobile ? STAGE_VIDEOS.stage3.part1Phone : STAGE_VIDEOS.stage3.part1Desktop;
+  const s2 = mobile ? STAGE_VIDEOS.stage3.part2Phone : STAGE_VIDEOS.stage3.part2Desktop;
+  const s3 = mobile ? STAGE_VIDEOS.stage3.part3Phone : STAGE_VIDEOS.stage3.part3Desktop;
+  const s4 = mobile ? STAGE_VIDEOS.stage3.part4Phone : STAGE_VIDEOS.stage3.part4Desktop;
+  const s5 = mobile ? STAGE_VIDEOS.stage3.part5Phone : STAGE_VIDEOS.stage3.part5Desktop;
+  const s6 = mobile ? STAGE_VIDEOS.stage3.part6Phone : STAGE_VIDEOS.stage3.part6Desktop;
 
   const getDragonQuote = () => {
     switch (subStage) {

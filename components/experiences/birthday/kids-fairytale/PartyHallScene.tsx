@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { STAGE_VIDEOS } from './VideoPlayerManager';
 import { Sparkles } from 'lucide-react';
 
 interface PartyHallSceneProps {
@@ -107,9 +108,9 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
     }
   };
 
-  const s1 = mobile ? '/images/birthday/kids_fairytale/stage_2/stage2_part1_phone.mp4' : '/images/birthday/kids_fairytale/stage_2/stage2_part1_desktop.mp4';
-  const s2 = mobile ? '/images/birthday/kids_fairytale/stage_2/stage2_part2_phone.mp4' : '/images/birthday/kids_fairytale/stage_2/stage2_part2_desktop.mp4';
-  const s3 = mobile ? '/images/birthday/kids_fairytale/stage_2/stage2_part3_phone.mp4' : '/images/birthday/kids_fairytale/stage_2/stage2_part3_desktop.mp4';
+  const s1 = mobile ? STAGE_VIDEOS.stage2.part1Phone : STAGE_VIDEOS.stage2.part1Desktop;
+  const s2 = mobile ? STAGE_VIDEOS.stage2.part2Phone : STAGE_VIDEOS.stage2.part2Desktop;
+  const s3 = mobile ? STAGE_VIDEOS.stage2.part3Phone : STAGE_VIDEOS.stage2.part3Desktop;
 
   const completedCirclesCount = circleProgress.filter(p => p >= 100).length;
 
