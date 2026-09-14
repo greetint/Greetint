@@ -14,8 +14,8 @@ export const STAGE_VIDEOS = {
     part1Phone: '/images/kids_fairytale/stage_2/stage2_part1_phone.mp4',
     part2Desktop: '/images/kids_fairytale/stage_2/stage2_part2_desktop.mp4',
     part2Phone: '/images/kids_fairytale/stage_2/stage2_part2_phone.mp4',
-    part3Desktop: '/images/kids_fairytale/stage_2/stage_2_part3_desktop.mp4',
-    part3Phone: '/images/kids_fairytale/stage_2/stage_2_part3_phone.mp4',
+    part3Desktop: '/images/kids_fairytale/stage_2/stage2_part3_desktop.mp4',
+    part3Phone: '/images/kids_fairytale/stage_2/stage2_part3_phone.mp4',
   },
   stage3: {
     part1Desktop: '/images/kids_fairytale/stage_3/stage3_part1_desctop.mp4', // Внимание: `desctop` с 'c'!
@@ -66,6 +66,7 @@ export const VideoPlayerManager = forwardRef<{
       try {
         if (videoRef.current) {
           videoRef.current.muted = true;
+          videoRef.current.load();
           await videoRef.current.play();
           setIsVideoReady(true);
         }
@@ -85,15 +86,30 @@ export const VideoPlayerManager = forwardRef<{
   }));
 
   useEffect(() => {
-    if (isActive && videoRef.current) {
-      videoRef.current.muted = true;
-      videoRef.current.play().then(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isActive) {
+      video.muted = true;
+      video.load();
+      video.play().then(() => {
         setIsVideoReady(true);
         if (audioRef.current) {
           audioRef.current.play().catch(() => {});
         }
       }).catch((err) => {
-        console.log("Auto-play on active failed, waiting for user gesture:", err);
+        console.log("Auto-play on active failed, attaching touch/click unlock listener:", err);
+        const handleUnlock = () => {
+          video.muted = true;
+          video.play().then(() => setIsVideoReady(true)).catch(() => {});
+          if (audioRef.current) {
+            audioRef.current.play().catch(() => {});
+          }
+          window.removeEventListener('click', handleUnlock);
+          window.removeEventListener('touchstart', handleUnlock);
+        };
+        window.addEventListener('click', handleUnlock, { once: true });
+        window.addEventListener('touchstart', handleUnlock, { once: true });
       });
     }
   }, [videoSrc, isActive]);
@@ -142,4 +158,5 @@ export const VideoPlayerManager = forwardRef<{
 
 VideoPlayerManager.displayName = 'VideoPlayerManager';
 export default VideoPlayerManager;
+
 
