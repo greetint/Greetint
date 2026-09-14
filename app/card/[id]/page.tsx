@@ -10,6 +10,7 @@ import { CakeStage } from '@/components/experiences/birthday/basic/CakeStage';
 import { CapsuleStage } from '@/components/experiences/birthday/basic/CapsuleStage';
 import { TimeCapsulePdf } from '@/components/experiences/birthday/basic/TimeCapsulePdf'; 
 import { DetectiveMysteryExperience } from '@/components/experiences/birthday/detective-mystery/DetectiveMysteryExperience';
+import { KidsFairytaleExperience } from '@/components/experiences/birthday/kids-fairytale/KidsFairytaleExperience';
 
 type QuestStage = 'seal' | 'scratch' | 'quiz' | 'memories' | 'cake' | 'capsule';
 
@@ -113,6 +114,15 @@ export default function CardPage() {
   }
 
   switch (styleId) {
+    case 'kids-fairytale':
+      return <KidsFairytaleExperience data={{
+        childName: questData?.recipient || questData?.childName || decodedName || 'Габи',
+        childAge: questData?.age || questData?.childAge || 6,
+        senderName: questData?.sender || questData?.senderName || 'Мама и Тато',
+        personalMessage: questData?.personalMessage || questData?.redactedWish || 'Ти правиш всеки наш ден изпълнен с усмивки и слънчева светлина. Никога не спирай да мечтаеш и да се радваш на малките чудеса!',
+        favoriteAnimal: questData?.favoriteAnimal || 'единорог',
+      }} />;
+
     case 'detective-mystery':
       return <DetectiveMysteryExperience data={questData || { recipient: decodedName, age: '30', sender: 'Инспектор', charges: [], secretClue: '', secretAnswer: '', redactedWish: '', photos: [] }} />;
 

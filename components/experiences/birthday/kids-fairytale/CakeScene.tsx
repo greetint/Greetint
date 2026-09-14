@@ -1,8 +1,9 @@
 'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { STAGE_VIDEOS } from './VideoPlayerManager';
-import { Sparkles, Mic, Flame, CheckCircle2 } from 'lucide-react';
+import { STAGE_VIDEOS, VideoPlayerManager } from './VideoPlayerManager';
+import { Sparkles, Mic, Flame } from 'lucide-react';
 
 interface CakeSceneProps {
   childAge: number;
@@ -12,154 +13,11 @@ interface CakeSceneProps {
 }
 
 export function CakeScene({ childAge, childName, isMuted = false, onComplete }: CakeSceneProps) {
-  const v1Ref = useRef<HTMLVideoElement | null>(null);
-  const v2Ref = useRef<HTMLVideoElement | null>(null);
-  const v3Ref = useRef<HTMLVideoElement | null>(null);
-  const v4Ref = useRef<HTMLVideoElement | null>(null);
-  const v5Ref = useRef<HTMLVideoElement | null>(null);
-  const v6Ref = useRef<HTMLVideoElement | null>(null);
-
-  const audio1Ref = useRef<HTMLAudioElement | null>(null);
-  const audio2Ref = useRef<HTMLAudioElement | null>(null);
-  const audio3Ref = useRef<HTMLAudioElement | null>(null);
-  const audio4Ref = useRef<HTMLAudioElement | null>(null);
-  const audio5Ref = useRef<HTMLAudioElement | null>(null);
-
-  const [subStage, setSubStage] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
-  const [videoEnded, setVideoEnded] = useState(false);
-  const [audioEnded, setAudioEnded] = useState(false);
-  const [sparks, setSparks] = useState<{ id: number; x: number; y: number }[]>([]);
-  const [childWish, setChildWish] = useState<string>('');
-  const [listening, setListening] = useState(false);
-  const [wishRecorded, setWishRecorded] = useState(false);
-
-  const [v2Playing, setV2Playing] = useState(false);
-  const [v3Playing, setV3Playing] = useState(false);
-  const [v4Playing, setV4Playing] = useState(false);
-  const [v5Playing, setV5Playing] = useState(false);
-  const [v6Playing, setV6Playing] = useState(false);
-
-  useEffect(() => {
-    if (v1Ref.current) {
-      v1Ref.current.muted = isMuted;
-      v1Ref.current.play().catch(() => {});
-    }
-    if (audio1Ref.current) {
-      audio1Ref.current.muted = isMuted;
-      audio1Ref.current.currentTime = 0;
-      audio1Ref.current.play().catch(() => {});
-    }
-  }, []);
-
-  useEffect(() => {
-    if (v1Ref.current) v1Ref.current.muted = true;
-    if (v2Ref.current) v2Ref.current.muted = true;
-    if (v3Ref.current) v3Ref.current.muted = true;
-    if (v4Ref.current) v4Ref.current.muted = true;
-    if (v5Ref.current) v5Ref.current.muted = true;
-    if (v6Ref.current) v6Ref.current.muted = true;
-    if (audio1Ref.current) audio1Ref.current.muted = isMuted;
-    if (audio2Ref.current) audio2Ref.current.muted = isMuted;
-    if (audio3Ref.current) audio3Ref.current.muted = isMuted;
-    if (audio4Ref.current) audio4Ref.current.muted = isMuted;
-    if (audio5Ref.current) audio5Ref.current.muted = isMuted;
-  }, [isMuted]);
-
-  const addSpark = (x: number, y: number) => {
-    setSparks(prev => [...prev.slice(-15), { id: Date.now() + Math.random(), x, y }]);
-  };
-
-  const handleVideoEnded = (stageNum: number) => {
-    const videoMap: Record<number, HTMLVideoElement | null> = {
-      1: v1Ref.current,
-      2: v2Ref.current,
-      3: v3Ref.current,
-      4: v4Ref.current,
-      5: v5Ref.current,
-      6: v6Ref.current,
-    };
-    const currentVid = videoMap[stageNum];
-    if (currentVid) {
-      currentVid.pause();
-      currentVid.currentTime = Math.max(0, currentVid.duration - 0.05);
-    }
-    setVideoEnded(true);
-  };
-
-  const handleTableClick = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!videoEnded || !audioEnded) return;
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
-    addSpark(clientX, clientY);
-
-    setVideoEnded(false);
-    setAudioEnded(false);
-    if (subStage === 1) {
-      setSubStage(2);
-      v2Ref.current?.play().catch(() => {});
-      if (audio2Ref.current) { audio2Ref.current.muted = isMuted; audio2Ref.current.currentTime = 0; audio2Ref.current.play().catch(() => {}); }
-    } else if (subStage === 2) {
-      setSubStage(3);
-      v3Ref.current?.play().catch(() => {});
-      if (audio3Ref.current) { audio3Ref.current.muted = isMuted; audio3Ref.current.currentTime = 0; audio3Ref.current.play().catch(() => {}); }
-    } else if (subStage === 3) {
-      setSubStage(4);
-      v4Ref.current?.play().catch(() => {});
-      if (audio4Ref.current) { audio4Ref.current.muted = isMuted; audio4Ref.current.currentTime = 0; audio4Ref.current.play().catch(() => {}); }
-    } else if (subStage === 4) {
-      setSubStage(5);
-      v5Ref.current?.play().catch(() => {});
-      if (audio5Ref.current) { audio5Ref.current.muted = isMuted; audio5Ref.current.currentTime = 0; audio5Ref.current.play().catch(() => {}); }
-    }
-  };
-
-  const startSpeechRecognition = () => {
-    if (listening || wishRecorded || !videoEnded || !audioEnded) return;
-    const SpeechRecognitionAPI = (window as unknown as { SpeechRecognition?: any; webkitSpeechRecognition?: any }).SpeechRecognition || (window as unknown as { webkitSpeechRecognition?: any }).webkitSpeechRecognition;
-    if (!SpeechRecognitionAPI) {
-      triggerCulmination('Най-хубавото желание за рожден ден!');
-      return;
-    }
-    try {
-      setListening(true);
-      const recognition = new SpeechRecognitionAPI();
-      recognition.lang = 'bg-BG';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setChildWish(transcript);
-        setWishRecorded(true);
-        setListening(false);
-        triggerCulmination(transcript);
-      };
-      recognition.onerror = () => {
-        setListening(false);
-        triggerCulmination('Вълшебно желание от сърце!');
-      };
-      recognition.onend = () => { setListening(false); };
-      recognition.start();
-    } catch {
-      setListening(false);
-      triggerCulmination('Вълшебно желание от сърце!');
-    }
-  };
-
-  const triggerCulmination = (wishText = 'Вълшебно желание') => {
-    if (wishRecorded && subStage >= 6) return;
-    setWishRecorded(true);
-    if (!childWish) setChildWish(wishText);
-    setVideoEnded(false);
-    setAudioEnded(false);
-    setSubStage(6);
-    v6Ref.current?.play().catch(() => {});
-  };
-
-  const handlePart6Ended = () => {
-    onComplete(childWish);
-  };
-
   const [mobile, setMobile] = useState(false);
+  const [subStage, setSubStage] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+  const [audioEnded, setAudioEnded] = useState(false);
+  const [childWish, setChildWish] = useState<string>('');
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const check = () => setMobile(window.innerWidth < 768);
@@ -168,184 +26,84 @@ export function CakeScene({ childAge, childName, isMuted = false, onComplete }: 
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  const s1 = mobile ? STAGE_VIDEOS.stage3.part1Phone : STAGE_VIDEOS.stage3.part1Desktop;
-  const s2 = mobile ? STAGE_VIDEOS.stage3.part2Phone : STAGE_VIDEOS.stage3.part2Desktop;
-  const s3 = mobile ? STAGE_VIDEOS.stage3.part3Phone : STAGE_VIDEOS.stage3.part3Desktop;
-  const s4 = mobile ? STAGE_VIDEOS.stage3.part4Phone : STAGE_VIDEOS.stage3.part4Desktop;
-  const s5 = mobile ? STAGE_VIDEOS.stage3.part5Phone : STAGE_VIDEOS.stage3.part5Desktop;
-  const s6 = mobile ? STAGE_VIDEOS.stage3.part6Phone : STAGE_VIDEOS.stage3.part6Desktop;
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+      audioRef.current.play().catch(() => {});
+    }
+  }, [isMuted, subStage]);
 
-  const getDragonQuote = () => {
-    switch (subStage) {
-      case 1:
-        return 'Виж каква голяма празнична маса! Но е толкова празна... Натисни я, за да я постелим с вълшебна покривка! ✨';
-      case 2:
-        return 'Стана страхотно! Но как ще празнуваме без съдове? Докосни покривката, за да подредим вълшебните чинии! 🍽️';
-      case 3:
-        return 'Всичко е наредено толкова красиво! Но виж — столчетата са празни... Нека да поканим вълшебните приятели за да стане празника още по-невероятен! 🦊';
-      case 4:
-        return 'Всички са тук и са толкова щастливи! Но виж във средата... какво ли липсва? Къде е празничната торта и какво е един истински рожден ден без торта? Нека сложим тортата на масата за да стане празника наистина невероятен! 🎂';
-      case 5:
-        return 'Ето я и нея! Затвори очи, намисли си най-съкровеното желание и го кажи на глас, а след това духни свещичката! ⭐';
-      case 6:
-        return 'Урааа! Желанието отлетя към звездите и засия в златна светлина! 🎉';
-      default:
-        return `Честит рожден ден, ${childName}! 🌟`;
+  const getVid = (n: number) => {
+    const s = STAGE_VIDEOS.stage3;
+    const isM = mobile;
+    switch (n) {
+      case 1: return isM ? s.part1Phone : s.part1Desktop;
+      case 2: return isM ? s.part2Phone : s.part2Desktop;
+      case 3: return isM ? s.part3Phone : s.part3Desktop;
+      case 4: return isM ? s.part4Phone : s.part4Desktop;
+      case 5: return isM ? s.part5Phone : s.part5Desktop;
+      case 6: return isM ? s.part6Phone : s.part6Desktop;
+      default: return s.part1Desktop;
     }
   };
 
+  const currentSrc = getVid(subStage);
+  const nextSrc = subStage < 6 ? getVid(subStage + 1) : undefined;
+
+  const handleInteract = () => {
+    if (!audioEnded) return;
+    if (subStage < 5) {
+      setAudioEnded(false);
+      setSubStage((subStage + 1) as any);
+    }
+  };
+
+  const audioSrc = `/audio/kids_fairytale/stage3_voice_part${subStage}.mp3`;
+
+  const text = subStage === 1 
+    ? "Виж каква голяма празнична маса! Натисни я, за да я постелим с вълшебна покривка!"
+    : subStage === 2
+    ? "Докосни покривката, за да подредим вълшебните чинии!"
+    : subStage === 3
+    ? "Нека да поканим вълшебните приятели за да стане празника още по-невероятен!"
+    : subStage === 4
+    ? "Нека сложим тортата на масата!"
+    : subStage === 5
+    ? "Ето я и нея! Затвори очи, намисли си най-съкровеното желание и го духни!"
+    : "Честит празник!";
+
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none cursor-none">
-      <audio ref={audio1Ref} src="/audio/kids_fairytale/stage3_voice_part1.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
-      <audio ref={audio2Ref} src="/audio/kids_fairytale/stage3_voice_part2.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
-      <audio ref={audio3Ref} src="/audio/kids_fairytale/stage3_voice_part3.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
-      <audio ref={audio4Ref} src="/audio/kids_fairytale/stage3_voice_part4.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
-      <audio ref={audio5Ref} src="/audio/kids_fairytale/stage3_voice_part5.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
-
-      <video 
-        ref={v1Ref} 
-        src={s1} 
-        muted={true}
-        playsInline={true}
-        webkit-playsinline="true"
-        autoPlay={true}
-        controls={false}
-        preload="auto"
-        disablePictureInPicture={true}
-        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
-        onEnded={() => handleVideoEnded(1)} 
-        onContextMenu={(e) => e.preventDefault()} 
-        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 && !v2Playing ? 'opacity-100' : 'opacity-0'}`} 
-      />
-      <video 
-        ref={v2Ref} 
-        src={s2} 
-        muted={true}
-        playsInline={true}
-        webkit-playsinline="true"
-        autoPlay={false}
-        controls={false}
-        preload="auto"
-        disablePictureInPicture={true}
-        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
-        onPlaying={() => setV2Playing(true)} 
-        onEnded={() => handleVideoEnded(2)} 
-        onContextMenu={(e) => e.preventDefault()} 
-        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 && !v3Playing ? 'opacity-100' : 'opacity-0'}`} 
-      />
-      <video 
-        ref={v3Ref} 
-        src={s3} 
-        muted={true}
-        playsInline={true}
-        webkit-playsinline="true"
-        autoPlay={false}
-        controls={false}
-        preload="auto"
-        disablePictureInPicture={true}
-        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
-        onPlaying={() => setV3Playing(true)} 
-        onEnded={() => handleVideoEnded(3)} 
-        onContextMenu={(e) => e.preventDefault()} 
-        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 && !v4Playing ? 'opacity-100' : 'opacity-0'}`} 
-      />
-      <video 
-        ref={v4Ref} 
-        src={s4} 
-        muted={true}
-        playsInline={true}
-        webkit-playsinline="true"
-        autoPlay={false}
-        controls={false}
-        preload="auto"
-        disablePictureInPicture={true}
-        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
-        onPlaying={() => setV4Playing(true)} 
-        onEnded={() => handleVideoEnded(4)} 
-        onContextMenu={(e) => e.preventDefault()} 
-        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 4 && !v5Playing ? 'opacity-100' : 'opacity-0'}`} 
-      />
-      <video 
-        ref={v5Ref} 
-        src={s5} 
-        muted={true}
-        playsInline={true}
-        webkit-playsinline="true"
-        autoPlay={false}
-        controls={false}
-        preload="auto"
-        disablePictureInPicture={true}
-        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
-        onPlaying={() => setV5Playing(true)} 
-        onEnded={() => handleVideoEnded(5)} 
-        onContextMenu={(e) => e.preventDefault()} 
-        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 5 && !v6Playing ? 'opacity-100' : 'opacity-0'}`} 
-      />
-      <video 
-        ref={v6Ref} 
-        src={s6} 
-        muted={true}
-        playsInline={true}
-        webkit-playsinline="true"
-        autoPlay={false}
-        controls={false}
-        preload="auto"
-        disablePictureInPicture={true}
-        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
-        onPlaying={() => setV6Playing(true)} 
-        onEnded={handlePart6Ended} 
-        onContextMenu={(e) => e.preventDefault()} 
-        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 6 ? 'opacity-100' : 'opacity-0'}`} 
-      />
-
-      {sparks.map(spark => (
-        <motion.div key={spark.id} initial={{ opacity: 1, scale: 1, x: spark.x - 12, y: spark.y - 12 }} animate={{ opacity: 0, scale: 0.3, y: spark.y - 50, x: spark.x + (Math.random() * 40 - 20) }} transition={{ duration: 0.7, ease: 'easeOut' }} className="fixed pointer-events-none z-[70] text-amber-300 drop-shadow-[0_0_15px_rgba(255,215,0,0.9)]">
-          <Sparkles className="w-6 h-6" />
-        </motion.div>
-      ))}
-
-
-
-      {videoEnded && audioEnded && subStage >= 1 && subStage <= 4 && (
-        <div onClick={handleTableClick} onTouchStart={handleTableClick} onContextMenu={(e) => e.preventDefault()} className="absolute inset-0 z-50 touch-none select-none cursor-pointer pointer-events-auto flex items-center justify-center">
-          <div className="absolute bottom-24 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-950 font-serif font-bold px-8 py-4 rounded-full shadow-[0_0_30px_rgba(255,215,0,0.8)] border-2 border-white animate-bounce flex items-center gap-2 text-sm sm:text-base">
-            <Sparkles className="w-5 h-5 text-amber-950" />
-            {subStage === 1 && "Натисни масата, за да я постелим"}
-            {subStage === 2 && "Докосни покривката, за да подредим чиниите"}
-            {subStage === 3 && "Докосни масата, за да поканим приятелите"}
-            {subStage === 4 && "Покани вълшебната торта в центъра на масата"}
-          </div>
+    <div className="relative w-screen h-screen overflow-hidden bg-slate-950 flex items-center justify-center select-none" onClick={subStage < 5 ? handleInteract : undefined}>
+      <audio ref={audioRef} src={audioSrc} preload="auto" onEnded={() => setAudioEnded(true)} />
+      <div className="absolute inset-0 z-0 w-full h-full">
+        <VideoPlayerManager
+          currentVideoSrc={currentSrc}
+          nextVideoSrc={nextSrc}
+          onVideoEnded={() => { if (subStage === 6) onComplete(childWish || 'Вълшебно желание'); }}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} key={subStage} className="absolute top-8 inset-x-4 max-w-2xl mx-auto z-40 pointer-events-none">
+        <div className="bg-amber-950/40 backdrop-blur-md border border-amber-400/60 rounded-2xl p-4 sm:p-6 text-amber-100 font-serif text-center shadow-2xl">
+          <p className="text-sm sm:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-yellow-300 to-amber-400 leading-relaxed">{text}</p>
+        </div>
+      </motion.div>
+      {subStage < 5 && audioEnded && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-auto cursor-pointer">
+          <span className="px-6 py-3 rounded-full bg-amber-400 text-slate-950 font-serif font-bold text-sm shadow-2xl animate-bounce">Докосни екрана за следващата стъпка ✨</span>
         </div>
       )}
-
-      {videoEnded && audioEnded && subStage === 5 && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-between py-12 px-4 pointer-events-auto bg-black/20 backdrop-blur-[2px]">
-          <div className="text-center mt-6 z-40">
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 drop-shadow-[0_0_20px_rgba(255,215,0,0.8)]">
-              Намисли си вълшебно желание, {childName}!
-            </h2>
-          </div>
-
-          <div className="my-auto flex flex-col items-center justify-center gap-6">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={startSpeechRecognition} className="cursor-pointer group flex flex-col items-center justify-center p-8 rounded-full bg-gradient-to-br from-amber-500/90 via-yellow-500/90 to-amber-600/90 backdrop-blur-md border-2 border-white shadow-[0_0_40px_rgba(255,215,0,0.7)] text-slate-950">
-              <Mic className="w-12 h-12 mb-2 animate-pulse text-amber-950" />
-              <span className="font-serif font-bold text-sm sm:text-base tracking-wide text-amber-950">
-                {listening ? "Слушам желанието ти..." : "Натисни и кажи своето желание"}
-              </span>
-            </motion.div>
-
-            <div className="flex gap-4">
-              <button onClick={() => triggerCulmination("Празнично вълшебно желание")} className="px-6 py-3 rounded-full bg-black/70 backdrop-blur-md border border-amber-400/60 text-amber-300 font-serif font-bold text-sm shadow-xl hover:bg-black/85 transition flex items-center gap-2 cursor-pointer">
-                <Flame className="w-4 h-4 text-amber-400 fill-amber-400" /> Духни свещичката с клик
+      {subStage === 5 && audioEnded && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-auto bg-black/30 backdrop-blur-sm p-4">
+          <div className="max-w-md w-full bg-amber-950/80 border-2 border-amber-300 p-6 rounded-3xl text-center space-y-4 shadow-2xl backdrop-blur-xl">
+            <h3 className="text-xl font-serif font-bold text-amber-200">Намисли си желание, {childName}!</h3>
+            <div className="flex flex-col gap-3">
+              <button onClick={() => setChildWish('Вълшебно детско пожелание')} className="w-full py-3 px-6 rounded-2xl bg-amber-500 text-slate-950 font-serif font-bold text-sm shadow-lg">Намисли желание</button>
+              <button onClick={() => setSubStage(6)} className="w-full py-3 px-6 rounded-2xl bg-gradient-to-r from-orange-500 to-rose-500 text-white font-serif font-bold text-sm shadow-lg flex items-center justify-center gap-2">
+                <Flame className="w-5 h-5" /> Духни свещичката
               </button>
             </div>
           </div>
-
-          {childWish && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 px-6 py-3 rounded-2xl bg-amber-950/80 border border-amber-400/50 text-amber-200 font-serif text-sm backdrop-blur-md flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" /> Желание: „{childWish}“
-            </motion.div>
-          )}
         </div>
       )}
     </div>

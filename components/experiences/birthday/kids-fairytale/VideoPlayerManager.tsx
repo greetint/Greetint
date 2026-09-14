@@ -18,7 +18,7 @@ export const STAGE_VIDEOS = {
     part3Phone: '/images/kids_fairytale/stage_2/stage2_part3_phone.mp4',
   },
   stage3: {
-    part1Desktop: '/images/kids_fairytale/stage_3/stage3_part1_desctop.mp4', // Внимание: `desctop` с 'c'!
+    part1Desktop: '/images/kids_fairytale/stage_3/stage3_part1_desctop.mp4', // With 'c' as per file path rule
     part1Phone: '/images/kids_fairytale/stage_3/stage3_part1_phone.mp4',
     part2Desktop: '/images/kids_fairytale/stage_3/stage3_part2_desctop.mp4',
     part2Phone: '/images/kids_fairytale/stage_3/stage3_part2_phone.mp4',
@@ -33,13 +33,10 @@ export const STAGE_VIDEOS = {
   },
 };
 
-interface VideoPlayerManagerProps {
-  videoSrc: string;
-  audioSrc?: string;
-  poster?: string;
-  isActive: boolean;
+interface DualBufferVideoPlayerProps {
+  currentVideoSrc: string;
+  nextVideoSrc?: string;
   onVideoEnded?: () => void;
-  onAudioEnded?: () => void;
   className?: string;
 }
 
@@ -47,110 +44,102 @@ export const VideoPlayerManager = forwardRef<{
   play: () => Promise<void>;
   pause: () => void;
   videoEl: HTMLVideoElement | null;
-  audioEl: HTMLAudioElement | null;
-}, VideoPlayerManagerProps>(({
-  videoSrc,
-  audioSrc,
-  poster,
-  isActive,
+}, DualBufferVideoPlayerProps>(({
+  currentVideoSrc,
+  nextVideoSrc,
   onVideoEnded,
-  onAudioEnded,
   className = ''
 }, ref) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isVideoReady, setIsVideoReady] = useState(false);
+  const videoARef = useRef<HTMLVideoElement | null>(null);
+  const videoBRef = useRef<HTMLVideoElement | null>(null);
+
+  const [activeBuffer, setActiveBuffer] = useState<'A' | 'B'>('A');
+  const [sourceA, setSourceA] = useState<string>(currentVideoSrc);
+  const [sourceB, setSourceB] = useState<string>(nextVideoSrc || currentVideoSrc);
 
   useImperativeHandle(ref, () => ({
     play: async () => {
-      try {
-        if (videoRef.current) {
-          videoRef.current.muted = true;
-          videoRef.current.load();
-          await videoRef.current.play();
-          setIsVideoReady(true);
-        }
-        if (audioRef.current) {
-          await audioRef.current.play();
-        }
-      } catch (err) {
-        console.log("Autoplay prevented:", err);
+      const activeEl = activeBuffer === 'A' ? videoARef.current : videoBRef.current;
+      if (activeEl) {
+        activeEl.muted = true;
+        await activeEl.play().catch(() => {});
       }
     },
     pause: () => {
-      videoRef.current?.pause();
-      audioRef.current?.pause();
+      videoARef.current?.pause();
+      videoBRef.current?.pause();
     },
-    videoEl: videoRef.current,
-    audioEl: audioRef.current,
+    videoEl: activeBuffer === 'A' ? videoARef.current : videoBRef.current,
   }));
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isActive) {
-      video.muted = true;
-      video.load();
-      video.play().then(() => {
-        setIsVideoReady(true);
-        if (audioRef.current) {
-          audioRef.current.play().catch(() => {});
-        }
-      }).catch((err) => {
-        console.log("Auto-play on active failed, attaching touch/click unlock listener:", err);
-        const handleUnlock = () => {
-          video.muted = true;
-          video.play().then(() => setIsVideoReady(true)).catch(() => {});
-          if (audioRef.current) {
-            audioRef.current.play().catch(() => {});
-          }
-          window.removeEventListener('click', handleUnlock);
-          window.removeEventListener('touchstart', handleUnlock);
-        };
-        window.addEventListener('click', handleUnlock, { once: true });
-        window.addEventListener('touchstart', handleUnlock, { once: true });
-      });
+    // Switch or update buffer when currentVideoSrc changes
+    const nextBuf = activeBuffer === 'A' ? 'B' : 'A';
+    if (nextBuf === 'B') {
+      setSourceB(currentVideoSrc);
+    } else {
+      setSourceA(currentVideoSrc);
     }
-  }, [videoSrc, isActive]);
+    setActiveBuffer(nextBuf);
+
+    const activeEl = nextBuf === 'A' ? videoARef.current : videoBRef.current;
+    if (activeEl) {
+      activeEl.currentTime = 0;
+      activeEl.muted = true;
+      activeEl.play().catch(() => {});
+    }
+
+    // Preload next video in background buffer
+    if (nextVideoSrc) {
+      const preloadBuf = nextBuf === 'A' ? 'B' : 'A';
+      if (preloadBuf === 'B') {
+        setSourceB(nextVideoSrc);
+      } else {
+        setSourceA(nextVideoSrc);
+      }
+    }
+  }, [currentVideoSrc]);
+
+  useEffect(() => {
+    if (nextVideoSrc) {
+      const preloadBuf = activeBuffer === 'A' ? 'B' : 'A';
+      if (preloadBuf === 'B') {
+        setSourceB(nextVideoSrc);
+      } else {
+        setSourceA(nextVideoSrc);
+      }
+    }
+  }, [nextVideoSrc, activeBuffer]);
 
   return (
     <div className={`relative w-full h-full overflow-hidden bg-black select-none pointer-events-none ${className}`}>
-      {audioSrc && (
-        <audio 
-          ref={audioRef} 
-          src={audioSrc} 
-          preload="auto" 
-          muted={false}
-          onEnded={onAudioEnded} 
-        />
-      )}
-
-      {!isVideoReady && poster && (
-        <img 
-          src={poster} 
-          alt="Loading frame..." 
-          className="absolute inset-0 w-full h-full object-cover filter blur-[2px] opacity-80 z-0 select-none" 
-        />
-      )}
-
       <video
-        ref={videoRef}
-        id="main-video-player"
-        src={videoSrc}
+        ref={videoARef}
+        src={sourceA}
         muted={true}
         playsInline={true}
         webkit-playsinline="true"
-        autoPlay={isActive}
+        autoPlay={true}
         controls={false}
         preload="auto"
         disablePictureInPicture={true}
-        onLoadedData={() => setIsVideoReady(true)}
-        onCanPlay={() => setIsVideoReady(true)}
-        onEnded={onVideoEnded}
-        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
+        onEnded={activeBuffer === 'A' ? onVideoEnded : undefined}
         onContextMenu={(e) => e.preventDefault()}
-        className={`absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}
+        className={`absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-75 ${activeBuffer === 'A' ? 'opacity-100' : 'opacity-0'}`}
+      />
+      <video
+        ref={videoBRef}
+        src={sourceB}
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        autoPlay={true}
+        controls={false}
+        preload="auto"
+        disablePictureInPicture={true}
+        onEnded={activeBuffer === 'B' ? onVideoEnded : undefined}
+        onContextMenu={(e) => e.preventDefault()}
+        className={`absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-75 ${activeBuffer === 'B' ? 'opacity-100' : 'opacity-0'}`}
       />
     </div>
   );
@@ -158,5 +147,6 @@ export const VideoPlayerManager = forwardRef<{
 
 VideoPlayerManager.displayName = 'VideoPlayerManager';
 export default VideoPlayerManager;
+
 
 

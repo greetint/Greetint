@@ -1,7 +1,8 @@
 'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { STAGE_VIDEOS } from './VideoPlayerManager';
+import { STAGE_VIDEOS, VideoPlayerManager } from './VideoPlayerManager';
 import { Sparkles } from 'lucide-react';
 
 interface PartyHallSceneProps {
@@ -11,21 +12,12 @@ interface PartyHallSceneProps {
 }
 
 export function PartyHallScene({ childName, isMuted = false, onComplete }: PartyHallSceneProps) {
-  const v1Ref = useRef<HTMLVideoElement | null>(null);
-  const v2Ref = useRef<HTMLVideoElement | null>(null);
-  const v3Ref = useRef<HTMLVideoElement | null>(null);
-  const audio1Ref = useRef<HTMLAudioElement | null>(null);
-  const audio2Ref = useRef<HTMLAudioElement | null>(null);
-
   const [mobile, setMobile] = useState(false);
-  const [subStage, setSubStage] = useState<1 | 2 | 3>(1);
-  const [videoEnded, setVideoEnded] = useState(false);
+  const [part, setPart] = useState<1 | 2 | 3>(1);
   const [audioEnded, setAudioEnded] = useState(false);
-  const [garlandProgress, setGarlandProgress] = useState(0);
-  const [circleProgress, setCircleProgress] = useState<number[]>([0, 0, 0]);
-  const [sparks, setSparks] = useState<{ id: number; x: number; y: number }[]>([]);
-  const [v2Playing, setV2Playing] = useState(false);
-  const [v3Playing, setV3Playing] = useState(false);
+  const [garlandDone, setGarlandDone] = useState(false);
+  const [balloonsDone, setBalloonsDone] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const check = () => setMobile(window.innerWidth < 768);
@@ -35,188 +27,66 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
   }, []);
 
   useEffect(() => {
-    if (v1Ref.current) v1Ref.current.muted = true;
-    if (v2Ref.current) v2Ref.current.muted = true;
-    if (v3Ref.current) v3Ref.current.muted = true;
-    if (audio1Ref.current) audio1Ref.current.muted = isMuted;
-    if (audio2Ref.current) audio2Ref.current.muted = isMuted;
-  }, [isMuted]);
-
-  useEffect(() => {
-    v1Ref.current?.play().catch(() => {});
-    if (audio1Ref.current) {
-      audio1Ref.current.muted = isMuted;
-      audio1Ref.current.currentTime = 0;
-      audio1Ref.current.play().catch(() => {});
-    }
-  }, []);
-
-  const handleVideoEnded = (stageNum: number) => {
-    if (stageNum === 1 && v1Ref.current) {
-      v1Ref.current.pause();
-      v1Ref.current.currentTime = v1Ref.current.duration - 0.05;
-    } else if (stageNum === 2 && v2Ref.current) {
-      v2Ref.current.pause();
-      v2Ref.current.currentTime = v2Ref.current.duration - 0.05;
-    }
-    setVideoEnded(true);
-  };
-
-  const addSpark = (x: number, y: number) => {
-    setSparks(prev => [...prev.slice(-15), { id: Date.now() + Math.random(), x, y }]);
-  };
-
-  const handlePointerMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!videoEnded || !audioEnded) return;
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
-    addSpark(clientX, clientY);
-
-    if (subStage === 1 && clientY < window.innerHeight * 0.5) {
-      setGarlandProgress(prev => {
-        const next = Math.min(100, prev + 2.5);
-        if (next >= 100) {
-          setVideoEnded(false);
-          setAudioEnded(false);
-          setSubStage(2);
-          v2Ref.current?.play().catch(() => {});
-          if (audio2Ref.current) {
-            audio2Ref.current.muted = isMuted;
-            audio2Ref.current.currentTime = 0;
-            audio2Ref.current.play().catch(() => {});
-          }
-        }
-        return next;
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+      audioRef.current.play().catch(() => {
+        const unlock = () => {
+          audioRef.current?.play().catch(() => {});
+          window.removeEventListener('click', unlock);
+        };
+        window.addEventListener('click', unlock, { once: true });
       });
     }
-  };
+  }, [isMuted]);
 
-  const handleCircleTraceMove = (index: number, e: React.MouseEvent | React.TouchEvent) => {
-    if (subStage !== 2 || !videoEnded || !audioEnded || circleProgress[index] >= 100) return;
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
-    addSpark(clientX, clientY);
+  const v1 = mobile ? STAGE_VIDEOS.stage2.part1Phone : STAGE_VIDEOS.stage2.part1Desktop;
+  const v2 = mobile ? STAGE_VIDEOS.stage2.part2Phone : STAGE_VIDEOS.stage2.part2Desktop;
+  const v3 = mobile ? STAGE_VIDEOS.stage2.part3Phone : STAGE_VIDEOS.stage2.part3Desktop;
 
-    const updated = [...circleProgress];
-    updated[index] = Math.min(100, updated[index] + 4);
-    setCircleProgress(updated);
+  const currentSrc = part === 1 ? v1 : part === 2 ? v2 : v3;
+  const nextSrc = part === 1 ? v2 : part === 2 ? v3 : undefined;
 
-    if (updated.every(p => p >= 100)) {
-      setVideoEnded(false);
+  const handleInteract = () => {
+    if (part === 1 && audioEnded && !garlandDone) {
+      setGarlandDone(true);
       setAudioEnded(false);
-      setSubStage(3);
-      if (v3Ref.current) {
-        v3Ref.current.currentTime = 0;
-        v3Ref.current.play().catch(() => {});
+      setPart(2);
+      if (audioRef.current) {
+        audioRef.current.src = '/audio/kids_fairytale/stage2_voice_part2.mp3';
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {});
       }
+    } else if (part === 2 && audioEnded && !balloonsDone) {
+      setBalloonsDone(true);
+      setPart(3);
     }
   };
 
-  const s1 = mobile ? STAGE_VIDEOS.stage2.part1Phone : STAGE_VIDEOS.stage2.part1Desktop;
-  const s2 = mobile ? STAGE_VIDEOS.stage2.part2Phone : STAGE_VIDEOS.stage2.part2Desktop;
-  const s3 = mobile ? STAGE_VIDEOS.stage2.part3Phone : STAGE_VIDEOS.stage2.part3Desktop;
-
-  const completedCirclesCount = circleProgress.filter(p => p >= 100).length;
+  const text = part === 1 
+    ? "Вече сме в празничната залата на замъка! Прокарай пръстче по тавана, за да сложим празничните гирлянди!"
+    : part === 2
+    ? "Стана невероятно! Нарисувай вълшебни кръгчета във въздуха, за да пуснем балоните!"
+    : "Всичко е толкова красиво и празнично!";
 
   return (
-    <div
-      onMouseMove={handlePointerMove}
-      onTouchMove={handlePointerMove}
-      className="fixed inset-0 w-screen h-screen overflow-hidden bg-black z-50 flex items-center justify-center select-none"
-    >
-      <audio ref={audio1Ref} src="/audio/kids_fairytale/stage2_voice_part1.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
-      <audio ref={audio2Ref} src="/audio/kids_fairytale/stage2_voice_part2.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
-
-      <video 
-        ref={v1Ref} 
-        src={s1} 
-        muted={true}
-        playsInline={true}
-        webkit-playsinline="true"
-        autoPlay={true}
-        controls={false}
-        preload="auto"
-        disablePictureInPicture={true}
-        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
-        onEnded={() => handleVideoEnded(1)} 
-        onContextMenu={(e) => e.preventDefault()} 
-        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 1 && !v2Playing ? 'opacity-100' : 'opacity-0'}`} 
-      />
-      <video 
-        ref={v2Ref} 
-        src={s2} 
-        muted={true}
-        playsInline={true}
-        webkit-playsinline="true"
-        autoPlay={false}
-        controls={false}
-        preload="auto"
-        disablePictureInPicture={true}
-        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
-        onPlaying={() => setV2Playing(true)} 
-        onEnded={() => handleVideoEnded(2)} 
-        onContextMenu={(e) => e.preventDefault()} 
-        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 2 && !v3Playing ? 'opacity-100' : 'opacity-0'}`} 
-      />
-      <video 
-        ref={v3Ref} 
-        src={s3} 
-        muted={true}
-        playsInline={true}
-        webkit-playsinline="true"
-        autoPlay={false}
-        controls={false}
-        preload="auto"
-        disablePictureInPicture={true}
-        onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
-        onPlaying={() => setV3Playing(true)} 
-        onEnded={onComplete} 
-        onContextMenu={(e) => e.preventDefault()} 
-        className={`absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none transition-opacity duration-200 ${subStage === 3 ? 'opacity-100' : 'opacity-0'}`} 
-      />
-
-      {sparks.map(spark => (
-        <motion.div key={spark.id} initial={{ opacity: 1, scale: 1, x: spark.x - 12, y: spark.y - 12 }} animate={{ opacity: 0, scale: 0.3, y: spark.y - 45, x: spark.x + (Math.random() * 30 - 15) }} transition={{ duration: 0.7, ease: 'easeOut' }} className="fixed pointer-events-none z-[60] text-amber-300 drop-shadow-[0_0_12px_rgba(255,215,0,0.9)]">
-          <Sparkles className="w-6 h-6" />
-        </motion.div>
-      ))}
-
-
-
-      {videoEnded && audioEnded && subStage === 1 && (
-        <div onMouseMove={handlePointerMove} onTouchMove={handlePointerMove} onContextMenu={(e) => e.preventDefault()} className="absolute top-0 inset-x-0 h-48 z-50 touch-none select-none cursor-pointer pointer-events-auto flex flex-col items-center justify-center pt-8">
-          <div className="absolute inset-x-12 top-6 border-b-4 border-dashed border-amber-300/80 rounded-[50%] h-24 pointer-events-none shadow-[0_0_20px_rgba(255,215,0,0.8)] animate-pulse"></div>
-          <span className="px-6 py-2 rounded-full bg-amber-400/90 text-slate-950 font-bold text-xs shadow-2xl backdrop-blur-md animate-bounce border border-white/80">
-            Трейсни цялата линия по арките горе ({Math.round(garlandProgress)}%)
-          </span>
+    <div className="relative w-screen h-screen overflow-hidden bg-slate-950 flex items-center justify-center select-none" onClick={handleInteract} onTouchStart={handleInteract}>
+      <audio ref={audioRef} src="/audio/kids_fairytale/stage2_voice_part1.mp3" preload="auto" onEnded={() => setAudioEnded(true)} />
+      <div className="absolute inset-0 z-0 w-full h-full">
+        <VideoPlayerManager currentVideoSrc={currentSrc} nextVideoSrc={nextSrc} onVideoEnded={() => { if (part === 3) onComplete(); }} className="w-full h-full object-cover" />
+      </div>
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} key={part} className="absolute top-8 inset-x-4 max-w-2xl mx-auto z-40 pointer-events-none">
+        <div className="bg-amber-950/40 backdrop-blur-md border border-amber-400/60 rounded-2xl p-4 sm:p-6 text-amber-100 font-serif text-center shadow-2xl">
+          <p className="text-sm sm:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-yellow-300 to-amber-400 leading-relaxed">{text}</p>
         </div>
-      )}
-
-      {videoEnded && audioEnded && subStage === 2 && (
-        <div onContextMenu={(e) => e.preventDefault()} className="absolute inset-0 z-50 touch-none select-none flex items-center justify-around pointer-events-auto px-12">
-          {[0, 1, 2].map((i) => (
-            <motion.div 
-              key={i} 
-              onMouseMove={(e) => handleCircleTraceMove(i, e)}
-              onTouchMove={(e) => handleCircleTraceMove(i, e)}
-              onMouseEnter={(e) => handleCircleTraceMove(i, e)}
-              onClick={(e) => handleCircleTraceMove(i, e)}
-              className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 backdrop-blur-md cursor-pointer flex flex-col items-center justify-center shadow-[0_0_35px_rgba(255,215,0,0.9)] transition-all ${circleProgress[i] >= 100 ? 'bg-emerald-500/40 border-emerald-300 scale-105' : 'bg-amber-400/40 border-amber-300 animate-pulse'}`}
-            >
-              {circleProgress[i] >= 100 ? (
-                <span className="text-emerald-100 font-bold text-lg font-serif">Готово!</span>
-              ) : (
-                <>
-                  <Sparkles className="w-8 h-8 text-amber-200 animate-spin" />
-                  <span className="text-[11px] font-bold text-amber-100 mt-1 font-serif">Очертай ({Math.round(circleProgress[i])}%)</span>
-                </>
-              )}
-            </motion.div>
-          ))}
+      </motion.div>
+      {audioEnded && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-auto">
+          <span className="px-6 py-3 rounded-full bg-amber-400 text-slate-950 font-serif font-bold text-sm shadow-2xl animate-bounce">
+            Докосни екрана, за да продължиш магията ✨
+          </span>
         </div>
       )}
     </div>
   );
 }
-
 export default PartyHallScene;
