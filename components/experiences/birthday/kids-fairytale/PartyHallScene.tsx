@@ -103,8 +103,12 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
 
     if (updated.every(p => p >= 100)) {
       setVideoEnded(false);
+      setAudioEnded(false);
       setSubStage(3);
-      v3Ref.current?.play().catch(() => {});
+      if (v3Ref.current) {
+        v3Ref.current.currentTime = 0;
+        v3Ref.current.play().catch(() => {});
+      }
     }
   };
 
