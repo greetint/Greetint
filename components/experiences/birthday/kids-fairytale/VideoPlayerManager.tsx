@@ -60,7 +60,6 @@ export const VideoPlayerManager = forwardRef<{
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isVideoReady, setIsVideoReady] = useState(false);
-  const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
 
   useImperativeHandle(ref, () => ({
     play: async () => {
@@ -68,13 +67,13 @@ export const VideoPlayerManager = forwardRef<{
         if (videoRef.current) {
           videoRef.current.muted = true;
           await videoRef.current.play();
+          setIsVideoReady(true);
         }
-        if (audioRef.current && isVideoReady) {
+        if (audioRef.current) {
           await audioRef.current.play();
         }
-        setHasStartedPlaying(true);
       } catch (err) {
-        console.log("Autoplay prevented, waiting for user gesture", err);
+        console.log("Autoplay prevented:", err);
       }
     },
     pause: () => {
@@ -87,23 +86,17 @@ export const VideoPlayerManager = forwardRef<{
 
   useEffect(() => {
     if (isActive && videoRef.current) {
-      videoRef.current.load();
-    }
-  }, [videoSrc, isActive]);
-
-  const handleCanPlayThrough = () => {
-    setIsVideoReady(true);
-    if (isActive && !hasStartedPlaying) {
-      videoRef.current?.play().then(() => {
-        setHasStartedPlaying(true);
+      videoRef.current.muted = true;
+      videoRef.current.play().then(() => {
+        setIsVideoReady(true);
         if (audioRef.current) {
           audioRef.current.play().catch(() => {});
         }
       }).catch((err) => {
-        console.log("Play failed on canplaythrough:", err);
+        console.log("Auto-play on active failed, waiting for user gesture:", err);
       });
     }
-  };
+  }, [videoSrc, isActive]);
 
   return (
     <div className={`relative w-full h-full overflow-hidden bg-black select-none pointer-events-none ${className}`}>
@@ -136,12 +129,12 @@ export const VideoPlayerManager = forwardRef<{
         controls={false}
         preload="auto"
         disablePictureInPicture={true}
-        onCanPlayThrough={handleCanPlayThrough}
-        onLoadedData={handleCanPlayThrough}
+        onLoadedData={() => setIsVideoReady(true)}
+        onCanPlay={() => setIsVideoReady(true)}
         onEnded={onVideoEnded}
         onError={(e) => console.error("Video load error for path:", e.currentTarget.src)}
         onContextMenu={(e) => e.preventDefault()}
-        className={`absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-300 ${isActive && isVideoReady ? 'opacity-100' : 'opacity-0'}`}
+        className={`absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}
       />
     </div>
   );
@@ -149,3 +142,4 @@ export const VideoPlayerManager = forwardRef<{
 
 VideoPlayerManager.displayName = 'VideoPlayerManager';
 export default VideoPlayerManager;
+
