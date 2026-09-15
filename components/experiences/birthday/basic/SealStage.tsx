@@ -192,7 +192,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
         <div className="relative w-full h-full flex items-center justify-center bg-[#1F1A17]">
           <video
             ref={desktopIdleRef}
-            src="/videos/envelope-idle-desktop.mp4"
+            src="/videos/birthday/basic/envelope-idle-desktop.mp4"
             muted={true}
             playsInline
             webkit-playsinline="true"
@@ -205,7 +205,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
 
           <video
             ref={desktopActionRef}
-            src="/videos/envelope-open-desktop.mp4"
+            src="/videos/birthday/basic/envelope-open-desktop.mp4"
             muted={true}
             playsInline
             webkit-playsinline="true"
@@ -264,7 +264,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
         <div className="relative w-full h-full flex items-center justify-center">
           <video
             ref={mobileIdleRef}
-            src="/videos/envelope-idle-mobile.mp4"
+            src="/videos/birthday/basic/envelope-idle-mobile.mp4"
             muted={true}
             playsInline
             webkit-playsinline="true"
@@ -277,7 +277,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
 
           <video
             ref={mobileActionRef}
-            src="/videos/envelope-open-mobile.mp4"
+            src="/videos/birthday/basic/envelope-open-mobile.mp4"
             muted={true}
             playsInline
             webkit-playsinline="true"

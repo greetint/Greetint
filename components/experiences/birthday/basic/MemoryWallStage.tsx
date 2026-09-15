@@ -27,7 +27,7 @@ const DEFAULT_MEMORIES: MemoryPhotoItem[] = [
   },
   {
     id: '2',
-    url: '/videos/envelope-open-desktop.mp4', 
+    url: '/videos/birthday/basic/envelope-open-desktop.mp4', 
     type: 'video',
     questionOrCaption: 'Какво си казвахме в този точно момент?',
     correctAnswer: 'щастие'
