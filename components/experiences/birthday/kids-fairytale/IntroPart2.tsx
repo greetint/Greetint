@@ -62,9 +62,9 @@ export function IntroPart2({ childName, isMuted = false, onComplete }: IntroPart
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-slate-950 flex items-center justify-center select-none">
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black flex items-center justify-center select-none z-50">
       <div className="absolute inset-0 z-[1] w-full h-full">
-        <video ref={videoRef} src={src} muted playsInline webkit-playsinline="true" autoPlay preload="auto" loop controls={false} disablePictureInPicture onContextMenu={e => e.preventDefault()} className="w-full h-full object-cover" />
+        <video ref={videoRef} src={src} muted playsInline webkit-playsinline="true" autoPlay preload="auto" loop controls={false} disablePictureInPicture onContextMenu={e => e.preventDefault()} className="w-full h-full object-cover object-center" />
       </div>
 
       {!done && (

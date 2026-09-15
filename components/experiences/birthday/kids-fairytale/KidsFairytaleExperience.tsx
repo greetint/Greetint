@@ -56,11 +56,11 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
   }, [isMuted]);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-amber-950 via-slate-950 to-indigo-950 text-amber-100 font-serif overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6 select-none cursor-none">
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black text-amber-100 font-serif select-none cursor-none z-50">
       <MagicCursor />
       <audio ref={bgAudioRef} src="/audio/kids_fairytale/background_kids_fairytale.mp3" preload="auto" loop />
 
-      <div className="w-full max-w-4xl mx-auto flex-1 flex items-center justify-center relative my-auto">
+      <div className="absolute inset-0 w-full h-full">
         <AnimatePresence mode="wait">
           {currentScene === 0 && (
             <IntroScene 
@@ -103,10 +103,6 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
         </AnimatePresence>
       </div>
 
-      <div className="text-center text-xs text-amber-200/70 font-serif pb-2 flex items-center justify-center gap-2 z-40 pointer-events-none">
-        <Sparkles className="w-4 h-4 text-amber-400 animate-spin" /> Вълшебното пътешествие на празника • Създадено за {childName}
-      </div>
-
       <div className="fixed top-4 right-4 z-[100] flex items-center gap-3 pointer-events-auto">
         <button
           onClick={() => setIsMuted(!isMuted)}
@@ -122,3 +118,4 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
 }
 
 export default KidsFairytaleExperience;
+

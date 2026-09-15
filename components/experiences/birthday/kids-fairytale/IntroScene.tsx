@@ -57,7 +57,7 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
   }
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-slate-950 flex items-center justify-center select-none">
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black flex items-center justify-center select-none z-50">
       <audio ref={audioRef} src="/audio/kids_fairytale/stage1_voice.mp3" preload="auto" />
 
       {/* Hidden preloader for Part 2 video to guarantee 0 black screen */}
@@ -85,7 +85,7 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
             disablePictureInPicture={true}
             onEnded={handlePart1Ended}
             onContextMenu={(e) => e.preventDefault()}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
           />
         </div>
       )}
@@ -112,7 +112,7 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
           <motion.div
             exit={{ scale: 1.2, opacity: 0, rotateY: -90 }}
             transition={{ duration: 0.9, ease: 'easeInOut' }}
-            className="absolute inset-0 z-[50] flex items-center justify-center p-4 bg-gradient-to-br from-amber-950 via-slate-950 to-indigo-950 cursor-pointer"
+            className="absolute inset-0 z-[100] flex items-center justify-center p-4 bg-gradient-to-br from-amber-950 via-slate-950 to-indigo-950 cursor-pointer"
             onClick={handleOpenBook}
           >
             <motion.div

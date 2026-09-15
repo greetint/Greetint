@@ -54,13 +54,13 @@ export function PartyHallScene({ childName, isMuted = false, onComplete }: Party
     : "Празнична подготовка завършена!";
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-slate-950 flex items-center justify-center select-none" onClick={subStage < 3 ? handleInteract : undefined}>
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black flex items-center justify-center select-none z-50" onClick={subStage < 3 ? handleInteract : undefined}>
       {audioSrc && <audio ref={audioRef} src={audioSrc} preload="auto" onEnded={() => setAudioEnded(true)} />}
       <div className="absolute inset-0 z-0 w-full h-full">
         <VideoPlayerManager
           src={currentSrc}
           onEnded={() => { if (subStage === 3) onComplete(); }}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-center"
         />
       </div>
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} key={subStage} className="absolute top-8 inset-x-4 max-w-2xl mx-auto z-[40] pointer-events-none">
