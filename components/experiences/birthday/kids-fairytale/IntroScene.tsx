@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { STAGE_VIDEOS } from './VideoPlayerManager';
 import { IntroPart2 } from './IntroPart2';
+import { Sparkles } from 'lucide-react';
 
 interface IntroSceneProps {
   childName: string;
@@ -14,6 +15,7 @@ interface IntroSceneProps {
 export function IntroScene({ childName, isMuted = false, onComplete }: IntroSceneProps) {
   const [mobile, setMobile] = useState(false);
   const [bookOpened, setBookOpened] = useState(false);
+  const [overlayVisible, setOverlayVisible] = useState(true);
   const [showPart2, setShowPart2] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -44,7 +46,25 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
 
     if (videoRef.current) {
       videoRef.current.muted = true;
-      await videoRef.current.play().catch(() => {});
+      await videoRef.current.play().then(() => {
+        setOverlayVisible(false);
+      }).catch((err) => {
+        console.error("Video play error:", err);
+      });
+    }
+  };
+
+  const handleTriggerPlay = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().then(() => {
+        setOverlayVisible(false);
+      }).catch(err => console.error("Video play error:", err));
+    }
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+      audioRef.current.play().catch(() => {});
     }
   };
 
@@ -104,6 +124,33 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
             </h1>
           </div>
         </motion.div>
+      )}
+
+      {/* Interactive Layer to Unblock Video Play (User Gesture Trigger) */}
+      {bookOpened && overlayVisible && (
+        <div
+          className="absolute inset-0 z-[30] cursor-pointer flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px]"
+          onClick={handleTriggerPlay}
+          onTouchStart={handleTriggerPlay}
+        >
+          <motion.div
+            animate={{ scale: [1, 1.05, 1], opacity: [0.9, 1, 0.9] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="max-w-md w-full mx-4 bg-amber-950/85 border-2 border-amber-400 p-6 sm:p-8 rounded-3xl text-center space-y-4 shadow-[0_0_50px_rgba(255,215,0,0.6)] backdrop-blur-md cursor-pointer pointer-events-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleTriggerPlay();
+            }}
+          >
+            <Sparkles className="w-12 h-12 mx-auto text-amber-300 animate-spin" />
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-amber-100">
+              Докосни екрана, за да отключиш магията ✨
+            </h2>
+            <span className="inline-block px-6 py-3 rounded-full bg-amber-400 text-slate-950 font-serif font-bold text-sm shadow-lg">
+              Старт на приключението 🪄
+            </span>
+          </motion.div>
+        </div>
       )}
 
       {/* 3D Book Cover Overlay */}
