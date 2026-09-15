@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { STAGE_VIDEOS, VideoPlayerManager } from './VideoPlayerManager';
+import { STAGE_VIDEOS } from './VideoPlayerManager';
+import { IntroPart2 } from './IntroPart2';
 
 interface IntroSceneProps {
   childName: string;
@@ -13,8 +14,9 @@ interface IntroSceneProps {
 export function IntroScene({ childName, isMuted = false, onComplete }: IntroSceneProps) {
   const [mobile, setMobile] = useState(false);
   const [bookOpened, setBookOpened] = useState(false);
+  const [showPart2, setShowPart2] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const videoPlayerRef = useRef<any>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     const check = () => setMobile(window.innerWidth < 768);
@@ -27,6 +29,9 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
     if (audioRef.current) audioRef.current.muted = isMuted;
   }, [isMuted]);
 
+  const part1Src = mobile ? STAGE_VIDEOS.stage1.phone : STAGE_VIDEOS.stage1.desktop;
+  const part2Src = mobile ? STAGE_VIDEOS.stage1.part2Phone : STAGE_VIDEOS.stage1.part2Desktop;
+
   const handleOpenBook = async () => {
     if (bookOpened) return;
     setBookOpened(true);
@@ -37,24 +42,49 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
       audioRef.current.play().catch(() => {});
     }
 
-    if (videoPlayerRef.current) {
-      await videoPlayerRef.current.play();
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      await videoRef.current.play().catch(() => {});
     }
   };
 
-  const videoSrc = mobile ? STAGE_VIDEOS.stage1.phone : STAGE_VIDEOS.stage1.desktop;
+  const handlePart1Ended = () => {
+    setShowPart2(true);
+  };
+
+  if (showPart2) {
+    return <IntroPart2 childName={childName} isMuted={isMuted} onComplete={onComplete} />;
+  }
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-slate-950 flex items-center justify-center select-none">
       <audio ref={audioRef} src="/audio/kids_fairytale/stage1_voice.mp3" preload="auto" />
 
-      {/* Video Background Layer with z-index 1 */}
+      {/* Hidden preloader for Part 2 video to guarantee 0 black screen */}
+      <video
+        src={part2Src}
+        muted={true}
+        playsInline={true}
+        webkit-playsinline="true"
+        preload="auto"
+        className="hidden"
+      />
+
+      {/* Part 1 Video Layer */}
       {bookOpened && (
         <div className="absolute inset-0 z-[1] w-full h-full">
-          <VideoPlayerManager
-            ref={videoPlayerRef}
-            src={videoSrc}
-            onEnded={onComplete}
+          <video
+            ref={videoRef}
+            src={part1Src}
+            muted={true}
+            playsInline={true}
+            webkit-playsinline="true"
+            autoPlay={false}
+            controls={false}
+            preload="auto"
+            disablePictureInPicture={true}
+            onEnded={handlePart1Ended}
+            onContextMenu={(e) => e.preventDefault()}
             className="w-full h-full object-cover"
           />
         </div>
@@ -76,7 +106,7 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
         </motion.div>
       )}
 
-      {/* 3D Book Cover Overlay with z-index 50 (Fix CSS Layout, no blocking checks) */}
+      {/* 3D Book Cover Overlay */}
       <AnimatePresence>
         {!bookOpened && (
           <motion.div
@@ -115,3 +145,4 @@ export function IntroScene({ childName, isMuted = false, onComplete }: IntroScen
 }
 
 export default IntroScene;
+
