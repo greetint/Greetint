@@ -27,6 +27,7 @@ export function IntroPart2({ childName, isMuted = false, onComplete }: IntroPart
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = true;
+      videoRef.current.playsInline = true;
       videoRef.current.play().catch(() => {});
     }
   }, []);
@@ -64,7 +65,7 @@ export function IntroPart2({ childName, isMuted = false, onComplete }: IntroPart
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black flex items-center justify-center select-none z-50">
       <div className="absolute inset-0 z-[1] w-full h-full">
-        <video ref={videoRef} src={src} muted playsInline webkit-playsinline="true" autoPlay preload="auto" loop controls={false} disablePictureInPicture onContextMenu={e => e.preventDefault()} className="w-full h-full object-cover object-center" />
+        <video ref={videoRef} src={src} muted={true} playsInline={true} webkit-playsinline="true" autoPlay={true} preload="auto" loop controls={false} disablePictureInPicture={true} onContextMenu={e => e.preventDefault()} className="w-full h-full object-cover object-center" />
       </div>
 
       {!done && (
@@ -76,7 +77,7 @@ export function IntroPart2({ childName, isMuted = false, onComplete }: IntroPart
         </motion.div>
       )}
 
-      <div className="absolute inset-0 z-[30] flex items-center justify-center pointer-events-auto">
+      <div className="absolute inset-0 z-[40] flex items-center justify-center pointer-events-auto">
         <div className="relative cursor-pointer group p-12 sm:p-16 flex items-center justify-center select-none" onMouseDown={start} onMouseUp={stop} onMouseLeave={stop} onTouchStart={start} onTouchEnd={stop} onTouchCancel={stop}>
           <motion.div animate={{ scale: isHolding ? [1, 1.4, 1.7] : [1, 1.15, 1], opacity: isHolding ? [0.6, 0.9, 1] : [0.3, 0.6, 0.3] }} transition={{ duration: isHolding ? 0.6 : 2, repeat: Infinity, ease: 'easeInOut' }} className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400/50 via-amber-300/70 to-yellow-500/50 blur-3xl pointer-events-none" />
           <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-amber-400/40 flex items-center justify-center bg-amber-950/40 backdrop-blur-sm shadow-[0_0_40px_rgba(255,215,0,0.6)] group-hover:border-amber-300 transition-all">
