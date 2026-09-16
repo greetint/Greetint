@@ -19,38 +19,50 @@ export function IntroScene({ childName, onOpen }: IntroSceneProps) {
   };
 
   return (
-    <div className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-gradient-to-b from-[#1a0b2e] via-[#0f051d] to-black flex flex-col items-center justify-center text-white select-none">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-purple-900/40 via-transparent to-black pointer-events-none" />
+    <div className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-gradient-to-br from-pink-100 via-amber-50 to-purple-100 flex flex-col items-center justify-center text-[#2c1810] select-none">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-amber-200/40 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-200/40 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+      </div>
 
       <motion.div
-        initial={{ opacity: 0, y: -30 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
         className="z-10 text-center px-4 mb-8"
       >
-        <h1 className="font-serif italic text-3xl md:text-5xl lg:text-6xl text-amber-200 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] tracking-wide">
+        <h1 className="font-serif italic text-3xl md:text-5xl lg:text-6xl text-amber-900 drop-shadow-[0_2px_10px_rgba(251,191,36,0.5)] tracking-wide">
           Вълшебната приказка за {childName} започва...
         </h1>
       </motion.div>
 
-      <div className="z-10 perspective-[1200px] cursor-pointer" onClick={handleOpenBook}>
+      <div className="z-10 perspective-[1400px] cursor-pointer" onClick={handleOpenBook}>
         <motion.div
-          animate={isOpen ? { rotateY: -110, scale: 1.1 } : { rotateY: 0, scale: 1 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-          className="relative w-64 md:w-80 h-80 md:h-96 bg-amber-900/90 rounded-r-2xl rounded-l-md shadow-[0_20px_50px_rgba(251,191,36,0.3)] border-4 border-amber-500/60 flex items-center justify-center p-6 transform-style-3d group"
+          animate={isOpen ? { rotateY: -110, scale: 1.05 } : { rotateY: 0, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
+          className="relative w-72 md:w-96 h-88 md:h-[420px] bg-[#fefae0] rounded-r-3xl rounded-l-md shadow-[0_25px_60px_rgba(180,83,9,0.25)] border-8 border-amber-400 flex items-center justify-center p-8 transform-style-3d group"
         >
-          <div className="absolute left-0 top-0 bottom-0 w-8 bg-amber-950 rounded-l-md border-r-2 border-amber-600/50" />
-          
-          <div className="text-center space-y-4">
-            <div className="w-20 h-20 mx-auto rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center shadow-[0_0_25px_rgba(251,191,36,0.6)] group-hover:scale-110 transition duration-300">
-              <span className="text-4xl">📖</span>
-            </div>
-            <p className="font-serif italic text-lg md:text-xl text-amber-100 font-bold drop-shadow-md animate-pulse">
-              Докосни книгата, за да я отвориш ✨
-            </p>
+          <div className="absolute left-0 top-0 bottom-0 w-10 bg-amber-700 rounded-l-md border-r-4 border-amber-500 shadow-inner flex items-center justify-center">
+            <div className="w-2 h-full bg-amber-800/40" />
           </div>
 
-          <div className="absolute inset-0 rounded-r-2xl bg-amber-400/10 opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none" />
+          <div className="absolute -top-4 right-12 w-6 h-16 bg-amber-500 rounded-b-md shadow-md border border-amber-300" />
+
+          <div className="text-center space-y-6">
+            <div className="w-24 h-24 mx-auto rounded-full bg-amber-100 border-4 border-amber-400 flex items-center justify-center shadow-[0_0_30px_rgba(251,191,36,0.6)] group-hover:scale-110 transition duration-300">
+              <span className="text-5xl">👑</span>
+            </div>
+            <div className="space-y-2">
+              <h2 className="font-serif italic text-2xl md:text-3xl text-amber-950 font-bold">
+                Вълшебна Книга
+              </h2>
+              <p className="font-serif italic text-base md:text-lg text-amber-800 font-semibold animate-pulse">
+                Докосни книгата, за да я отвориш ✨
+              </p>
+            </div>
+          </div>
+
+          <div className="absolute inset-0 rounded-r-3xl bg-amber-300/15 opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none" />
         </motion.div>
       </div>
     </div>

@@ -21,7 +21,7 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
   const [currentStage, setCurrentStage] = useState<'intro' | 'stage1' | 'stage2' | 'stage3' | 'stage4'>('intro');
   const [deviceType, setDeviceType] = useState<'desktop' | 'phone'>('desktop');
   const [recordedAudioBlob, setRecordedAudioBlob] = useState<Blob | null>(null);
-  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
 
@@ -37,19 +37,31 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
     return () => window.removeEventListener('resize', checkDevice);
   }, []);
 
+  const toggleMute = () => {
+    setIsMuted(prev => {
+      const next = !prev;
+      if (bgMusicRef.current) {
+        bgMusicRef.current.muted = next;
+      }
+      return next;
+    });
+  };
+
   const startExperience = () => {
     if (!bgMusicRef.current) {
       bgMusicRef.current = new Audio('/audio/kids-fairytale/background_kids_fairytale.mp3');
       bgMusicRef.current.loop = true;
       bgMusicRef.current.volume = 0.3;
+      bgMusicRef.current.muted = isMuted;
     }
     bgMusicRef.current.play().then(() => {
-      setIsPlayingMusic(true);
+      // playing
     }).catch(() => {
       bgMusicRef.current = new Audio('/audio/background-music.mp3');
       bgMusicRef.current.loop = true;
       bgMusicRef.current.volume = 0.3;
-      bgMusicRef.current.play().then(() => setIsPlayingMusic(true)).catch(() => {});
+      bgMusicRef.current.muted = isMuted;
+      bgMusicRef.current.play().catch(() => {});
     });
 
     setCurrentStage('stage1');
@@ -59,12 +71,22 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
     <main className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-black select-none font-sans">
       <MagicCursor />
 
+      {currentStage !== 'intro' && (
+        <button
+          onClick={toggleMute}
+          className="absolute top-4 right-4 z-50 w-12 h-12 bg-white/30 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center text-white hover:bg-white/50 transition cursor-pointer"
+          title={isMuted ? 'Включи звука' : 'Спри звука'}
+        >
+          <span className="text-xl">{isMuted ? '🔇' : '🔊'}</span>
+        </button>
+      )}
+
       {currentStage === 'intro' && (
         <IntroScene childName={childName} onOpen={startExperience} />
       )}
 
       {currentStage === 'stage1' && (
-        <Stage1Scene deviceType={deviceType} onComplete={() => setCurrentStage('stage2')} />
+        <Stage1Scene deviceType={deviceType} isMuted={isMuted} onComplete={() => setCurrentStage('stage2')} />
       )}
 
       {currentStage === 'stage2' && (
