@@ -1,76 +1,63 @@
 'use client';
-import React, { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
+import React, { useEffect, useState } from 'react';
 
 export function MagicCursor() {
-  const [pos, setPos] = useState({ x: -200, y: -200 });
-  const [trails, setTrails] = useState<{ id: number; x: number; y: number }[]>([]);
-  const mouseRef = useRef({ x: -200, y: -200 });
-  const posRef = useRef({ x: -200, y: -200 });
+  const [pos, setPos] = useState({ x: -100, y: -100 });
+  const [trails, setTrails] = useState<{ x: number; y: number; id: number }[]>([]);
 
   useEffect(() => {
+    let idCounter = 0;
     const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-      if (Math.random() < 0.4) {
-        setTrails(prev => [...prev.slice(-15), { id: Date.now() + Math.random(), x: e.clientX, y: e.clientY }]);
-      }
+      setPos({ x: e.clientX, y: e.clientY });
+      setTrails(prev => [
+        ...prev.slice(-15),
+        { x: e.clientX, y: e.clientY, id: idCounter++ }
+      ]);
     };
+
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        mouseRef.current = { x: touch.clientX, y: touch.clientY };
-        if (Math.random() < 0.4) {
-          setTrails(prev => [...prev.slice(-15), { id: Date.now() + Math.random(), x: touch.clientX, y: touch.clientY }]);
-        }
+        const t = e.touches[0];
+        setPos({ x: t.clientX, y: t.clientY });
+        setTrails(prev => [
+          ...prev.slice(-15),
+          { x: t.clientX, y: t.clientY, id: idCounter++ }
+        ]);
       }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('touchmove', handleTouchMove);
-    window.addEventListener('touchstart', handleTouchMove);
-
-    let animationFrameId: number;
-    const animate = () => {
-      posRef.current.x += (mouseRef.current.x - posRef.current.x) * 0.2;
-      posRef.current.y += (mouseRef.current.y - posRef.current.y) * 0.2;
-      setPos({ x: posRef.current.x, y: posRef.current.y });
-      animationFrameId = requestAnimationFrame(animate);
-    };
-    animationFrameId = requestAnimationFrame(animate);
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchstart', handleTouchMove);
-      cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
+    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+      {trails.map((t, index) => (
+        <div
+          key={t.id}
+          className="absolute w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_12px_#fbbf24] animate-ping opacity-75"
+          style={{
+            left: `${t.x}px`,
+            top: `${t.y}px`,
+            transform: 'translate(-50%, -50px)',
+            transition: 'all 0.2s ease-out',
+            opacity: index / trails.length,
+          }}
+        />
+      ))}
       <div
-        className="absolute w-4 h-4 rounded-full bg-gradient-to-tr from-yellow-300 via-amber-200 to-amber-400 shadow-[0_0_20px_rgba(255,215,0,0.95),0_0_8px_rgba(255,255,255,0.8)] blur-[1px] pointer-events-none -translate-x-1/2 -translate-y-1/2"
-        style={{ left: pos.x, top: pos.y }}
+        className="absolute w-8 h-8 rounded-full bg-gradient-to-r from-amber-300 to-yellow-100 shadow-[0_0_20px_#f59e0b] blur-[1px]"
+        style={{
+          left: `${pos.x}px`,
+          top: `${pos.y}px`,
+          transform: 'translate(-50%, -50%)',
+        }}
       />
-      <div
-        className="absolute w-12 h-12 rounded-full bg-[radial-gradient(circle,_rgba(255,215,0,0.5)_0%,_rgba(255,165,0,0.15)_60%,_transparent_100%)] blur-md pointer-events-none -translate-x-1/2 -translate-y-1/2"
-        style={{ left: pos.x, top: pos.y }}
-      />
-      <AnimatePresence>
-        {trails.map(t => (
-          <motion.div
-            key={t.id}
-            initial={{ opacity: 0.9, scale: 1, x: t.x - 4, y: t.y - 4 }}
-            animate={{ opacity: 0, scale: 0.2, y: t.y - 30, x: t.x + (Math.random() * 20 - 10) }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="absolute w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_12px_rgba(255,215,0,1)] pointer-events-none"
-          />
-        ))}
-      </AnimatePresence>
     </div>
   );
 }
-
-export default MagicCursor;
-

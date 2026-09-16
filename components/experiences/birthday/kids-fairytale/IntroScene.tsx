@@ -1,195 +1,58 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { STAGE_VIDEOS } from './VideoPlayerManager';
-import { IntroPart2 } from './IntroPart2';
-import { Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 
 interface IntroSceneProps {
   childName: string;
-  isMuted?: boolean;
-  onComplete: () => void;
+  onOpen: () => void;
 }
 
-export function IntroScene({ childName, isMuted = false, onComplete }: IntroSceneProps) {
-  const [mobile, setMobile] = useState(false);
-  const [bookOpened, setBookOpened] = useState(false);
-  const [overlayVisible, setOverlayVisible] = useState(true);
-  const [showPart2, setShowPart2] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+export function IntroScene({ childName, onOpen }: IntroSceneProps) {
+  const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    const check = () => setMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
-
-  useEffect(() => {
-    if (audioRef.current) audioRef.current.muted = isMuted;
-  }, [isMuted]);
-
-  const part1Src = mobile ? STAGE_VIDEOS.stage1.phone : STAGE_VIDEOS.stage1.desktop;
-  const part2Src = mobile ? STAGE_VIDEOS.stage1.part2Phone : STAGE_VIDEOS.stage1.part2Desktop;
-
-  const handleOpenBook = async () => {
-    if (bookOpened) return;
-    setBookOpened(true);
-
-    if (audioRef.current) {
-      audioRef.current.muted = isMuted;
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {});
-    }
-
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      await videoRef.current.play().then(() => {
-        setOverlayVisible(false);
-      }).catch((err) => {
-        console.error("Video play error:", err);
-      });
-    }
+  const handleOpenBook = () => {
+    setIsOpen(true);
+    setTimeout(() => {
+      onOpen();
+    }, 1200);
   };
-
-  const handleTriggerPlay = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().then(() => {
-        setOverlayVisible(false);
-      }).catch(err => console.error("Video play error:", err));
-    }
-    if (audioRef.current) {
-      audioRef.current.muted = isMuted;
-      audioRef.current.play().catch(() => {});
-    }
-  };
-
-  const handlePart1Ended = () => {
-    setShowPart2(true);
-  };
-
-  if (showPart2) {
-    return <IntroPart2 childName={childName} isMuted={isMuted} onComplete={onComplete} />;
-  }
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black flex items-center justify-center select-none z-50">
-      <audio ref={audioRef} src="/audio/kids_fairytale/stage1_voice.mp3" preload="auto" />
+    <div className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-gradient-to-b from-[#1a0b2e] via-[#0f051d] to-black flex flex-col items-center justify-center text-white select-none">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-purple-900/40 via-transparent to-black pointer-events-none" />
 
-      {/* Hidden preloader for Part 2 video to guarantee 0 black screen */}
-      <video
-        src={part2Src}
-        muted={true}
-        playsInline={true}
-        webkit-playsinline="true"
-        preload="auto"
-        className="hidden"
-      />
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+        className="z-10 text-center px-4 mb-8"
+      >
+        <h1 className="font-serif italic text-3xl md:text-5xl lg:text-6xl text-amber-200 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)] tracking-wide">
+          Вълшебната приказка за {childName} започва...
+        </h1>
+      </motion.div>
 
-      {/* Part 1 Video Layer */}
-      {bookOpened && (
-        <div className="absolute inset-0 z-[1] w-full h-full">
-          <video
-            ref={videoRef}
-            src={part1Src}
-            muted={true}
-            playsInline={true}
-            webkit-playsinline="true"
-            autoPlay={false}
-            controls={false}
-            preload="auto"
-            disablePictureInPicture={true}
-            onEnded={handlePart1Ended}
-            onContextMenu={(e) => e.preventDefault()}
-            className="w-full h-full object-cover object-center"
-          />
-        </div>
-      )}
-
-      {/* Title Header */}
-      {bookOpened && (
+      <div className="z-10 perspective-[1200px] cursor-pointer" onClick={handleOpenBook}>
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="absolute top-8 inset-x-4 max-w-2xl mx-auto z-[40] pointer-events-none"
+          animate={isOpen ? { rotateY: -110, scale: 1.1 } : { rotateY: 0, scale: 1 }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+          className="relative w-64 md:w-80 h-80 md:h-96 bg-amber-900/90 rounded-r-2xl rounded-l-md shadow-[0_20px_50px_rgba(251,191,36,0.3)] border-4 border-amber-500/60 flex items-center justify-center p-6 transform-style-3d group"
         >
-          <div className="bg-amber-950/40 backdrop-blur-md border border-amber-400/60 rounded-2xl p-4 sm:p-6 text-amber-100 font-serif text-center shadow-2xl">
-            <h1 className="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-yellow-300 to-amber-400">
-              Вълшебната приказка за {childName} започва...
-            </h1>
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-amber-950 rounded-l-md border-r-2 border-amber-600/50" />
+          
+          <div className="text-center space-y-4">
+            <div className="w-20 h-20 mx-auto rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center shadow-[0_0_25px_rgba(251,191,36,0.6)] group-hover:scale-110 transition duration-300">
+              <span className="text-4xl">📖</span>
+            </div>
+            <p className="font-serif italic text-lg md:text-xl text-amber-100 font-bold drop-shadow-md animate-pulse">
+              Докосни книгата, за да я отвориш ✨
+            </p>
           </div>
+
+          <div className="absolute inset-0 rounded-r-2xl bg-amber-400/10 opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none" />
         </motion.div>
-      )}
-
-      {/* Interactive Layer to Unblock Video Play (User Gesture Trigger) */}
-      {bookOpened && overlayVisible && (
-        <div
-          className="absolute inset-0 z-[30] cursor-pointer flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px]"
-          onClick={handleTriggerPlay}
-          onTouchStart={handleTriggerPlay}
-        >
-          <motion.div
-            animate={{ scale: [1, 1.05, 1], opacity: [0.9, 1, 0.9] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="max-w-md w-full mx-4 bg-amber-950/85 border-2 border-amber-400 p-6 sm:p-8 rounded-3xl text-center space-y-4 shadow-[0_0_50px_rgba(255,215,0,0.6)] backdrop-blur-md cursor-pointer pointer-events-auto"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleTriggerPlay();
-            }}
-          >
-            <Sparkles className="w-12 h-12 mx-auto text-amber-300 animate-spin" />
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-amber-100">
-              Докосни екрана, за да отключиш магията ✨
-            </h2>
-            <span className="inline-block px-6 py-3 rounded-full bg-amber-400 text-slate-950 font-serif font-bold text-sm shadow-lg">
-              Старт на приключението 🪄
-            </span>
-          </motion.div>
-        </div>
-      )}
-
-      {/* 3D Book Cover Overlay */}
-      <AnimatePresence>
-        {!bookOpened && (
-          <motion.div
-            exit={{ scale: 1.2, opacity: 0, rotateY: -90 }}
-            transition={{ duration: 0.9, ease: 'easeInOut' }}
-            className="absolute inset-0 z-[100] flex items-center justify-center p-4 bg-gradient-to-br from-amber-950 via-slate-950 to-indigo-950 cursor-pointer"
-            onClick={handleOpenBook}
-          >
-            <motion.div
-              whileHover={{ scale: 1.03, rotateZ: 1 }}
-              whileTap={{ scale: 0.97 }}
-              className="relative max-w-md w-full bg-gradient-to-br from-amber-900 via-amber-950 to-yellow-950 border-4 border-amber-400 rounded-3xl p-8 sm:p-12 shadow-[0_0_60px_rgba(255,215,0,0.5)] text-center space-y-6 flex flex-col items-center justify-center"
-            >
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-amber-400/20 border-2 border-amber-300 flex items-center justify-center shadow-inner">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-amber-300 shadow-[0_0_20px_rgba(255,215,0,0.9)] animate-pulse" />
-              </div>
-
-              <div className="space-y-3">
-                <span className="text-xs uppercase tracking-[0.3em] font-bold text-amber-300">Вълшебна книга</span>
-                <h2 className="text-2xl sm:text-4xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-yellow-300 to-amber-500 leading-tight">
-                  Вълшебната приказка за {childName}
-                </h2>
-              </div>
-
-              <div className="pt-4">
-                <span className="inline-block font-serif text-xs sm:text-sm font-bold text-slate-950 bg-amber-300 px-6 py-3 rounded-full shadow-lg border border-white animate-bounce">
-                  Докосни книгата, за да я отвориш ✨
-                </span>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }
-
-export default IntroScene;
-

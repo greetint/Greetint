@@ -1,121 +1,95 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX, Sparkles } from 'lucide-react';
-import { IntroScene } from './IntroScene';
-import { PartyHallScene } from './PartyHallScene';
-import { CakeScene } from './CakeScene';
-import { GiftFinaleScene } from './GiftFinaleScene';
+import React, { useState, useEffect, useRef } from 'react';
 import { MagicCursor } from './MagicCursor';
+import { IntroScene } from './IntroScene';
+import { Stage1Scene } from './Stage1Scene';
+import { Stage2Scene } from './Stage2Scene';
+import { Stage3Scene } from './Stage3Scene';
+import { Stage4Scene } from './Stage4Scene';
 
 interface KidsFairytaleExperienceProps {
-  data: {
+  data?: {
     childName?: string;
-    childAge?: string | number;
-    senderName?: string;
+    senderWish?: string;
     personalMessage?: string;
-    favoriteAnimal?: string;
+    [key: string]: any;
   };
 }
 
 export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) {
-  const [currentScene, setCurrentScene] = useState<number>(0);
-  const [isMuted, setIsMuted] = useState<boolean>(false);
-  const [childWish, setChildWish] = useState<string>('');
-  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentStage, setCurrentStage] = useState<'intro' | 'stage1' | 'stage2' | 'stage3' | 'stage4'>('intro');
+  const [deviceType, setDeviceType] = useState<'desktop' | 'phone'>('desktop');
+  const [recordedAudioBlob, setRecordedAudioBlob] = useState<Blob | null>(null);
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+
+  const bgMusicRef = useRef<HTMLAudioElement | null>(null);
 
   const childName = data?.childName || 'Габи';
-  const childAge = Number(data?.childAge) || 6;
-  const senderName = data?.senderName || 'Мама и Тато';
-  const personalMessage = data?.personalMessage || 'Ти правиш всеки наш ден изпълнен с усмивки и слънчева светлина. Никога не спирай да мечтаеш и да се радваш на малките чудеса!';
-  const favoriteAnimal = data?.favoriteAnimal || 'единорог';
+  const senderWish = data?.senderWish || data?.personalMessage || 'Ти правиш света по-красив само защото си в него! Бъди все така щастлива и усмихната.';
 
   useEffect(() => {
-    if (bgAudioRef.current) {
-      bgAudioRef.current.muted = isMuted;
-      bgAudioRef.current.volume = 0.35;
-      bgAudioRef.current.loop = true;
-      const playBg = () => {
-        bgAudioRef.current?.play().catch(() => {});
-      };
-      playBg();
-      window.addEventListener('click', playBg, { once: true });
-      window.addEventListener('touchstart', playBg, { once: true });
-      return () => {
-        window.removeEventListener('click', playBg);
-        window.removeEventListener('touchstart', playBg);
-      };
-    }
+    const checkDevice = () => {
+      setDeviceType(window.innerWidth >= 768 ? 'desktop' : 'phone');
+    };
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
   }, []);
 
-  useEffect(() => {
-    if (bgAudioRef.current) {
-      bgAudioRef.current.muted = isMuted;
+  const startExperience = () => {
+    if (!bgMusicRef.current) {
+      bgMusicRef.current = new Audio('/audio/kids-fairytale/background_kids_fairytale.mp3');
+      bgMusicRef.current.loop = true;
+      bgMusicRef.current.volume = 0.3;
     }
-  }, [isMuted]);
+    bgMusicRef.current.play().then(() => {
+      setIsPlayingMusic(true);
+    }).catch(() => {
+      bgMusicRef.current = new Audio('/audio/background-music.mp3');
+      bgMusicRef.current.loop = true;
+      bgMusicRef.current.volume = 0.3;
+      bgMusicRef.current.play().then(() => setIsPlayingMusic(true)).catch(() => {});
+    });
+
+    setCurrentStage('stage1');
+  };
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-black text-amber-100 font-serif select-none cursor-none z-50">
+    <main className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-black select-none font-sans">
       <MagicCursor />
-      <audio ref={bgAudioRef} src="/audio/kids_fairytale/background_kids_fairytale.mp3" preload="auto" loop />
 
-      <div className="absolute inset-0 w-full h-full">
-        <AnimatePresence mode="wait">
-          {currentScene === 0 && (
-            <IntroScene 
-              key="intro" 
-              childName={childName}
-              isMuted={isMuted}
-              onComplete={() => setCurrentScene(1)} 
-            />
-          )}
-          {currentScene === 1 && (
-            <PartyHallScene 
-              key="party-hall" 
-              childName={childName}
-              isMuted={isMuted}
-              onComplete={() => setCurrentScene(2)} 
-            />
-          )}
-          {currentScene === 2 && (
-            <CakeScene 
-              key="cake" 
-              childAge={childAge}
-              childName={childName}
-              isMuted={isMuted}
-              onComplete={(wish) => {
-                if (wish) setChildWish(wish);
-                setCurrentScene(3);
-              }} 
-            />
-          )}
-          {currentScene === 3 && (
-            <GiftFinaleScene 
-              key="finale" 
-              childName={childName}
-              senderName={senderName}
-              personalMessage={personalMessage}
-              favoriteAnimal={favoriteAnimal}
-              childWish={childWish}
-            />
-          )}
-        </AnimatePresence>
-      </div>
+      {currentStage === 'intro' && (
+        <IntroScene childName={childName} onOpen={startExperience} />
+      )}
 
-      <div className="fixed top-4 right-4 z-[100] flex items-center gap-3 pointer-events-auto">
-        <button
-          onClick={() => setIsMuted(!isMuted)}
-          className="bg-amber-950/80 backdrop-blur-md px-4 py-2.5 rounded-full text-amber-200 hover:bg-amber-900 shadow-2xl border border-amber-400/60 transition cursor-none flex items-center gap-2 text-xs font-bold font-serif"
-          title={isMuted ? "Включи звука" : "Спри звука"}
-        >
-          {isMuted ? <VolumeX className="w-5 h-5 text-rose-400" /> : <Volume2 className="w-5 h-5 text-emerald-400" />}
-          <span className="hidden sm:inline">{isMuted ? "Тихо" : "Магически звук"}</span>
-        </button>
-      </div>
-    </div>
+      {currentStage === 'stage1' && (
+        <Stage1Scene deviceType={deviceType} onComplete={() => setCurrentStage('stage2')} />
+      )}
+
+      {currentStage === 'stage2' && (
+        <Stage2Scene deviceType={deviceType} onComplete={() => setCurrentStage('stage3')} />
+      )}
+
+      {currentStage === 'stage3' && (
+        <Stage3Scene
+          deviceType={deviceType}
+          onComplete={(blob) => {
+            setRecordedAudioBlob(blob);
+            setCurrentStage('stage4');
+          }}
+        />
+      )}
+
+      {currentStage === 'stage4' && (
+        <Stage4Scene
+          deviceType={deviceType}
+          childName={childName}
+          senderWish={senderWish}
+          recordedAudioBlob={recordedAudioBlob}
+          onFinish={() => {}}
+        />
+      )}
+    </main>
   );
 }
-
-export default KidsFairytaleExperience;
-
