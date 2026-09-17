@@ -11,16 +11,34 @@ interface Stage1SceneProps {
 
 export function Stage1Scene({ deviceType, isMuted, onComplete }: Stage1SceneProps) {
   const [phase, setPhase] = useState<'part1' | 'pausedAtKey' | 'part2' | 'unlocked'>('part1');
+  const [isKeyActive, setIsKeyActive] = useState(false);
   const [touchPos, setTouchPos] = useState<{ x: number; y: number } | null>(null);
   const [holdProgress, setHoldProgress] = useState(0);
 
   const startTimeRef = useRef<number>(0);
   const animFrameRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const video1Src = `/videos/birthday/kids-fairytale/stage_1/stage1_part1_${deviceType}.mp4`;
   const video2Src = `/videos/birthday/kids-fairytale/stage_1/stage1_part2_${deviceType}.mp4`;
   const audioSrc = `/audio/kids-fairytale/stage1_voice.mp3`;
+
+  useEffect(() => {
+    audioRef.current = new Audio(audioSrc);
+    audioRef.current.muted = isMuted;
+    audioRef.current.play().catch(() => {});
+
+    audioRef.current.onended = () => {
+      setIsKeyActive(true);
+    };
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -31,6 +49,9 @@ export function Stage1Scene({ deviceType, isMuted, onComplete }: Stage1SceneProp
   const handleVideo1Ended = () => {
     if (phase === 'part1') {
       setPhase('pausedAtKey');
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
     }
   };
 
@@ -42,7 +63,7 @@ export function Stage1Scene({ deviceType, isMuted, onComplete }: Stage1SceneProp
   };
 
   const startHold = (e: React.PointerEvent | React.TouchEvent | React.MouseEvent) => {
-    if (phase !== 'pausedAtKey') return;
+    if (!isKeyActive || phase === 'part2' || phase === 'unlocked') return;
     const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.PointerEvent).clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.PointerEvent).clientY;
     setTouchPos({ x: clientX, y: clientY });
@@ -56,9 +77,6 @@ export function Stage1Scene({ deviceType, isMuted, onComplete }: Stage1SceneProp
 
       if (progress >= 1) {
         setPhase('part2');
-        audioRef.current = new Audio(audioSrc);
-        audioRef.current.muted = isMuted;
-        audioRef.current.play().catch(() => {});
       } else {
         animFrameRef.current = requestAnimationFrame(updateHold);
       }
@@ -79,6 +97,7 @@ export function Stage1Scene({ deviceType, isMuted, onComplete }: Stage1SceneProp
   return (
     <div className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-black select-none flex items-center justify-center">
       <video
+        ref={videoRef}
         key={phase === 'part2' || phase === 'unlocked' ? 'v2' : 'v1'}
         src={phase === 'part2' || phase === 'unlocked' ? video2Src : video1Src}
         autoPlay={phase !== 'pausedAtKey'}
@@ -90,7 +109,7 @@ export function Stage1Scene({ deviceType, isMuted, onComplete }: Stage1SceneProp
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
 
-      {phase === 'pausedAtKey' && (
+      {isKeyActive && phase === 'pausedAtKey' && (
         <div
           onPointerDown={startHold}
           onPointerUp={endHold}
@@ -109,9 +128,9 @@ export function Stage1Scene({ deviceType, isMuted, onComplete }: Stage1SceneProp
                   transform: 'translate(-50%, -50%)',
                   width: `${Math.max(80, holdProgress * 300)}px`,
                   height: `${Math.max(80, holdProgress * 300)}px`,
-                  background: 'radial-gradient(circle, rgba(251,191,36,0.8) 0%, rgba(245,158,11,0.4) 50%, transparent 80%)',
-                  boxShadow: '0 0 40px #fbbf24',
-                  opacity: 0.2 + holdProgress * 0.8,
+                  background: 'radial-gradient(circle, rgba(251,191,36,0.9) 0%, rgba(245,158,11,0.5) 40%, transparent 80%)',
+                  boxShadow: '0 0 50px #fbbf24',
+                  opacity: 0.3 + holdProgress * 0.7,
                 }}
               />
             )}

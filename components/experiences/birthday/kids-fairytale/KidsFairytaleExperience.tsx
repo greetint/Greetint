@@ -90,7 +90,7 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
       )}
 
       {currentStage === 'stage2' && (
-        <Stage2Scene deviceType={deviceType} onComplete={() => setCurrentStage('stage3')} />
+        <Stage2Scene deviceType={deviceType} isMuted={isMuted} onComplete={() => setCurrentStage('stage3')} />
       )}
 
       {currentStage === 'stage3' && (
