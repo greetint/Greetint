@@ -1,22 +1,23 @@
 'use client';
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Stage3SceneProps {
   deviceType: 'desktop' | 'phone';
-  onComplete: (audioBlob: Blob | null) => void;
+  isMuted: boolean;
+  onComplete: (audioBlob: Blob | null, transcribedText: string) => void;
 }
 
-export function Stage3Scene({ deviceType, onComplete }: Stage3SceneProps) {
+export function Stage3Scene({ deviceType, isMuted, onComplete }: Stage3SceneProps) {
   const [step, setStep] = useState<number>(1);
-  const [isRecording, setIsRecording] = useState(false);
+  const [wishState, setWishState] = useState<'recording' | 'readyToBlow' | 'blowing' | 'done'>('recording');
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
-  const [wishDone, setWishDone] = useState(false);
+  const [transcribedText, setTranscribedText] = useState<string>('');
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const totalSteps = 6;
 
@@ -28,11 +29,12 @@ export function Stage3Scene({ deviceType, onComplete }: Stage3SceneProps) {
     if (audSrc) {
       if (audioRef.current) audioRef.current.pause();
       audioRef.current = new Audio(audSrc);
+      audioRef.current.muted = isMuted;
       audioRef.current.play().catch(() => {});
     }
 
-    if (step === 6 && !isRecording && !recordedBlob) {
-      startMicrophoneRecording();
+    if (step === 6) {
+      startRecordingAndSpeechRecognition();
     }
 
     return () => {
@@ -40,93 +42,95 @@ export function Stage3Scene({ deviceType, onComplete }: Stage3SceneProps) {
     };
   }, [step]);
 
-  const startMicrophoneRecording = async () => {
+  useEffect(() => { if (audioRef.current) audioRef.current.muted = isMuted; }, [isMuted]);
+
+  const startRecordingAndSpeechRecognition = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       mediaRecorderRef.current = recorder;
       audioChunksRef.current = [];
 
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          audioChunksRef.current.push(e.data);
-        }
-      };
-
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
       recorder.onstop = () => {
         const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         setRecordedBlob(blob);
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach(t => t.stop());
       };
-
       recorder.start();
-      setIsRecording(true);
-    } catch (err) {
-      console.warn('Microphone permission denied or unavailable:', err);
-    }
-  };
+    } catch (err) { console.warn('Mic error:', err); }
 
-  const handleScreenClick = () => {
-    if (step < totalSteps) {
-      setStep(prev => prev + 1);
-    } else if (step === totalSteps && !wishDone) {
-      setWishDone(true);
+    try {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'bg-BG'; recognition.interimResults = false;
+        recognition.onresult = (event: any) => setTranscribedText(event.results[0][0].transcript);
+        recognition.start();
+      }
+    } catch (err) { console.warn('Speech rec error:', err); }
+
+    setTimeout(() => {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
         mediaRecorderRef.current.stop();
       }
-      setTimeout(() => {
-        onComplete(recordedBlob);
-      }, 1500);
+      setWishState('readyToBlow');
+    }, 6000);
+  };
+
+  const handleInteraction = () => {
+    if (step < totalSteps) {
+      setStep(prev => prev + 1);
+    } else if (step === totalSteps && wishState === 'readyToBlow') {
+      setWishState('done');
+      if (videoRef.current) videoRef.current.play().catch(() => {});
+    }
+  };
+
+  const handleVideoEnded = () => {
+    if (step === totalSteps && wishState === 'done') {
+      setTimeout(() => onComplete(recordedBlob, transcribedText), 1000);
     }
   };
 
   return (
-    <div
-      onClick={handleScreenClick}
-      className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-black select-none cursor-pointer"
-    >
+    <div onClick={handleInteraction} className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-black select-none cursor-pointer">
       <video
+        ref={videoRef}
         key={step}
         src={getVideoSrc(step)}
-        autoPlay
-        muted
+        autoPlay={step < totalSteps || wishState === 'done'}
+        muted={true}
         playsInline
         // @ts-ignore
         webkit-playsinline="true"
+        onEnded={handleVideoEnded}
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
 
       <div className="absolute bottom-16 left-0 right-0 text-center z-20 pointer-events-none px-4">
         {step < totalSteps ? (
-          <p className="font-serif italic text-lg md:text-2xl text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] animate-pulse">
-            Докосни екрана, за да подредим празника! ✨ (Стъпка {step}/{totalSteps})
-          </p>
+          <p className="font-serif italic text-lg md:text-2xl text-amber-200 drop-shadow animate-pulse">✨ Докосни екрана ({step}/{totalSteps})</p>
         ) : (
-          <div className="space-y-3 bg-black/40 backdrop-blur-md p-4 rounded-2xl max-w-lg mx-auto border border-amber-500/40">
-            <p className="font-serif italic text-xl md:text-2xl text-amber-200 drop-shadow-md">
-              🎂 Намисли си желание, кажи го на глас и докосни свещичката, за да я духнеш!
-            </p>
-            <p className="text-xs uppercase tracking-[0.2em] text-amber-400">
-              {isRecording ? '🎙️ Записваме твоето желание...' : '✨ Желанието е записано!'}
-            </p>
+          <div className="space-y-3 bg-black/50 backdrop-blur-md p-6 rounded-3xl max-w-lg mx-auto border border-amber-500/50 shadow-2xl pointer-events-auto">
+            {wishState === 'recording' && (
+              <>
+                <p className="font-serif italic text-xl md:text-2xl text-amber-200">🎙️ Намисли си желание и го кажи на глас!</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-400 animate-pulse">Записваме желанието ти...</p>
+              </>
+            )}
+            {wishState === 'readyToBlow' && (
+              <>
+                <p className="font-serif italic text-xl md:text-2xl text-amber-200">🎂 Духни свещичката или докосни екрана.</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-400">{transcribedText ? `"${transcribedText}"` : 'Желанието е запазено!'}</p>
+              </>
+            )}
+            {wishState === 'done' && (
+              <p className="font-serif italic text-2xl text-amber-200 animate-pulse">✨ Свещичката загасна! Сбъдва се...</p>
+            )}
           </div>
         )}
       </div>
-
-      <AnimatePresence>
-        {wishDone && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="absolute inset-0 bg-white z-50 pointer-events-none flex items-center justify-center"
-          >
-            <div className="text-amber-900 font-serif italic text-4xl md:text-6xl font-bold animate-pulse">
-              Вълшебното желание се сбъдва! ✨
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

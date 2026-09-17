@@ -21,6 +21,7 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
   const [currentStage, setCurrentStage] = useState<'intro' | 'stage1' | 'stage2' | 'stage3' | 'stage4'>('intro');
   const [deviceType, setDeviceType] = useState<'desktop' | 'phone'>('desktop');
   const [recordedAudioBlob, setRecordedAudioBlob] = useState<Blob | null>(null);
+  const [transcribedWishText, setTranscribedWishText] = useState<string>('');
   const [isMuted, setIsMuted] = useState(false);
 
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
@@ -96,8 +97,10 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
       {currentStage === 'stage3' && (
         <Stage3Scene
           deviceType={deviceType}
-          onComplete={(blob) => {
+          isMuted={isMuted}
+          onComplete={(blob, text) => {
             setRecordedAudioBlob(blob);
+            setTranscribedWishText(text);
             setCurrentStage('stage4');
           }}
         />
@@ -106,8 +109,10 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
       {currentStage === 'stage4' && (
         <Stage4Scene
           deviceType={deviceType}
+          isMuted={isMuted}
           childName={childName}
           senderWish={senderWish}
+          transcribedWishText={transcribedWishText}
           recordedAudioBlob={recordedAudioBlob}
           onFinish={() => {}}
         />
