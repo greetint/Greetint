@@ -8,6 +8,14 @@ export function BalloonsSubScene({ isMuted, onComplete }: BalloonsProps) {
   const [angles, setAngles] = useState([0, 0, 0, 0, 0]);
   const [last, setLast] = useState<{ x: number; y: number } | null>(null);
 
+  const balloonPositions = [
+    { top: '28%', left: '22%' },
+    { top: '24%', right: '22%' },
+    { top: '48%', left: '38%' },
+    { top: '42%', left: '15%' },
+    { top: '42%', right: '15%' },
+  ];
+
   const moveB = (i: number, clientX: number, clientY: number) => {
     if (balls[i] === 100) return;
     const el = document.getElementById(`b-${i}`); if (!el) return;
@@ -33,16 +41,34 @@ export function BalloonsSubScene({ isMuted, onComplete }: BalloonsProps) {
   };
 
   return (
-    <div className="absolute inset-0 z-20 flex flex-col items-center justify-between py-12 px-4">
-      <div className="text-center"><p className="font-serif italic text-xl md:text-3xl text-amber-200 drop-shadow">🎈 Нарисувай кръг около всеки балон! ({balls.filter(v => v === 100).length}/5)</p></div>
-      <div className="grid grid-cols-5 gap-3 md:gap-6 items-center justify-center w-full max-w-4xl px-2">
-        {[0, 1, 2, 3, 4].map(i => (
-          <div key={i} id={`b-${i}`} onMouseMove={(e) => moveB(i, e.clientX, e.clientY)} onTouchMove={(e) => e.touches.length > 0 && moveB(i, e.touches[0].clientX, e.touches[0].clientY)} onMouseLeave={() => setLast(null)} onTouchEnd={() => setLast(null)} className="relative w-16 h-24 md:w-28 md:h-40 rounded-full border-4 border-amber-300/80 bg-amber-400/15 backdrop-blur-sm flex items-center justify-center cursor-pointer shadow-xl touch-none" style={{ boxShadow: balls[i] === 100 ? '0 0 30px #fbbf24' : undefined }}>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-t from-amber-500 to-yellow-300 opacity-85" style={{ clipPath: `inset(${100 - balls[i]}% 0 0 0)` }} />
-            <span className="relative z-10 font-bold text-amber-950 text-sm md:text-lg">{balls[i]}%</span>
-          </div>
-        ))}
+    <div className="absolute inset-0 z-20 pointer-events-auto select-none">
+      <div className="absolute top-8 left-0 right-0 text-center pointer-events-none z-30">
+        <p className="font-serif italic text-xl md:text-3xl text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          🎈 Нарисувай кръг около всеки балон, за да го напълниш! ({balls.filter(v => v === 100).length}/5)
+        </p>
       </div>
+
+      {balloonPositions.map((pos, i) => (
+        <div
+          key={i}
+          id={`b-${i}`}
+          onMouseMove={(e) => moveB(i, e.clientX, e.clientY)}
+          onTouchMove={(e) => e.touches.length > 0 && moveB(i, e.touches[0].clientX, e.touches[0].clientY)}
+          onMouseLeave={() => setLast(null)}
+          onTouchEnd={() => setLast(null)}
+          className="absolute w-20 h-28 md:w-32 md:h-44 rounded-full border-4 border-amber-300/80 bg-amber-400/10 backdrop-blur-[2px] flex items-center justify-center cursor-pointer shadow-[0_0_25px_rgba(251,191,36,0.4)] transition-transform hover:scale-105 touch-none"
+          style={{
+            ...pos,
+            boxShadow: balls[i] === 100 ? '0 0 45px #fbbf24' : '0 0 20px rgba(251,191,36,0.4)',
+          }}
+        >
+          <div
+            className="absolute inset-0 rounded-full bg-gradient-to-t from-amber-500 via-yellow-400 to-amber-200 opacity-90 transition-all duration-300 pointer-events-none"
+            style={{ clipPath: `inset(${100 - balls[i]}% 0 0 0)` }}
+          />
+          <div className="absolute inset-0 rounded-full border-2 border-white/60 animate-pulse pointer-events-none" />
+        </div>
+      ))}
     </div>
   );
 }
