@@ -120,7 +120,7 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
       )}
 
       {currentStage === 'intro' && (
-        <IntroScene childName={childName} onOpen={startExperience} />
+        <IntroScene childName={childName} deviceType={deviceType} onOpen={startExperience} />
       )}
 
       {currentStage === 'stage1' && (

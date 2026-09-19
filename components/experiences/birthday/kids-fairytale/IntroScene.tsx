@@ -2,14 +2,17 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { VideoPreloader } from './VideoPreloader';
 
 interface IntroSceneProps {
   childName: string;
+  deviceType: 'desktop' | 'phone';
   onOpen: () => void;
 }
 
-export function IntroScene({ childName, onOpen }: IntroSceneProps) {
+export function IntroScene({ childName, deviceType, onOpen }: IntroSceneProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const firstStageVideoSrc = `/videos/birthday/kids-fairytale/stage_1/stage1_part1_${deviceType}.mp4`;
 
   const handleOpenBook = () => {
     setIsOpen(true);
@@ -20,6 +23,9 @@ export function IntroScene({ childName, onOpen }: IntroSceneProps) {
 
   return (
     <div className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-gradient-to-br from-pink-100 via-amber-50 to-purple-100 flex flex-col items-center justify-center text-[#2c1810] select-none">
+      {/* Warm the cache for stage 1's opening clip while the child reads the intro. */}
+      <VideoPreloader src={firstStageVideoSrc} />
+
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-amber-200/40 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-200/40 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />

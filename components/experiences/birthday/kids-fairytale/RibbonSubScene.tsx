@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
+import { VideoPreloader } from './VideoPreloader';
 
 interface RibbonProps {
   deviceType: 'desktop' | 'phone';
@@ -18,6 +19,7 @@ export function RibbonSubScene({ deviceType, isMuted, onUnlocked, onVideoRef, on
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const v1 = `/videos/birthday/kids-fairytale/stage_4/stage4_part1_${deviceType === 'desktop' ? 'desctop' : 'phone'}.mp4`;
+  const nextClipSrc = `/videos/birthday/kids-fairytale/stage_4/stage4_part2_${deviceType === 'desktop' ? 'desctop' : 'phone'}.mp4`;
   const voice1 = `/audio/kids-fairytale/stage4_voice_part1.mp3`;
 
   useEffect(() => {
@@ -56,6 +58,8 @@ export function RibbonSubScene({ deviceType, isMuted, onUnlocked, onVideoRef, on
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center">
       <video ref={(el: HTMLVideoElement | null) => onVideoRef?.(el)} onPlaying={onPlaying} src={v1} autoPlay muted playsInline webkit-playsinline="true" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+      {/* Warm the cache for the scratch scene's clip while the ribbon plays. */}
+      <VideoPreloader src={nextClipSrc} />
       <div onPointerDown={startHold} onPointerUp={endHold} onPointerLeave={endHold} onTouchStart={startHold} onTouchEnd={endHold} className="absolute z-30 w-36 h-36 rounded-full flex items-center justify-center cursor-pointer touch-none">
         {touchPos && (
           <div className="absolute rounded-full pointer-events-none transition-all duration-200" style={{ width: `${Math.max(90, holdProg * 280)}px`, height: `${Math.max(90, holdProg * 280)}px`, background: 'radial-gradient(circle, rgba(251,191,36,0.9) 0%, rgba(245,158,11,0.5) 50%, transparent 80%)', boxShadow: '0 0 50px #fbbf24', opacity: 0.3 + holdProg * 0.7 }} />

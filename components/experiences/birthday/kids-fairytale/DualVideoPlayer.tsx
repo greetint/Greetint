@@ -11,9 +11,13 @@ interface DualVideoPlayerProps {
   autoPlay?: boolean;
   loop?: boolean;
   muted?: boolean;
+  // When false, an incoming buffer still preloads and crossfades in (so there's
+  // never a black frame), but freezes on its first frame right away instead of
+  // playing through — the caller resumes it later via the ref from onActiveVideoRef.
+  autoPlayOnSwap?: boolean;
 }
 
-export function DualVideoPlayer({ src, onEnded, onPlaying, onActiveVideoRef, className = '', autoPlay = true, loop = false, muted = true }: DualVideoPlayerProps) {
+export function DualVideoPlayer({ src, onEnded, onPlaying, onActiveVideoRef, className = '', autoPlay = true, loop = false, muted = true, autoPlayOnSwap = true }: DualVideoPlayerProps) {
   const [activeBuffer, setActiveBuffer] = useState<'A' | 'B'>('A');
   const [sourceA, setSourceA] = useState(src);
   const [sourceB, setSourceB] = useState('');
@@ -50,11 +54,13 @@ export function DualVideoPlayer({ src, onEnded, onPlaying, onActiveVideoRef, cla
 
   const handlePlayingA = () => {
     if (activeBuffer === 'B' && sourceA === src) setActiveBuffer('A');
+    if (!autoPlayOnSwap && videoARef.current) videoARef.current.pause();
     onPlaying?.();
   };
 
   const handlePlayingB = () => {
     if (activeBuffer === 'A' && sourceB === src) setActiveBuffer('B');
+    if (!autoPlayOnSwap && videoBRef.current) videoBRef.current.pause();
     onPlaying?.();
   };
 

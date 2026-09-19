@@ -1,6 +1,8 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DualVideoPlayer } from './DualVideoPlayer';
+import { VideoPreloader } from './VideoPreloader';
 
 interface Stage3SceneProps {
   deviceType: 'desktop' | 'phone';
@@ -25,6 +27,11 @@ export function Stage3Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
 
   const getVideoSrc = (s: number) => `/videos/birthday/kids-fairytale/stage_3/stage3_part${s}_${deviceType === 'desktop' ? 'desctop' : 'phone'}.mp4`;
   const getAudioSrc = (s: number) => s <= 5 ? `/audio/kids-fairytale/stage3_voice_part${s}.mp3` : null;
+  const nextStageVideoSrc = `/videos/birthday/kids-fairytale/stage_4/stage4_part1_${deviceType === 'desktop' ? 'desctop' : 'phone'}.mp4`;
+  // Step 6's clip preloads and crossfades in like every other step, but must
+  // freeze on its first frame instead of playing — it only resumes once the
+  // child taps to blow out the candle.
+  const isAwaitingBlow = step === totalSteps && wishState !== 'done';
 
   useEffect(() => {
     const audSrc = getAudioSrc(step);
@@ -97,19 +104,18 @@ export function Stage3Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
 
   return (
     <div onClick={handleInteraction} className="relative w-screen h-screen fixed inset-0 overflow-hidden select-none cursor-pointer">
-      <video
-        ref={(el: HTMLVideoElement | null) => { videoRef.current = el; onVideoRef?.(el); }}
-        key={step}
+      <DualVideoPlayer
         src={getVideoSrc(step)}
-        autoPlay={step < totalSteps || wishState === 'done'}
-        muted={true}
-        playsInline
-        // @ts-ignore
-        webkit-playsinline="true"
+        onActiveVideoRef={(el) => { videoRef.current = el; onVideoRef?.(el); }}
+        autoPlayOnSwap={!isAwaitingBlow}
         onEnded={handleVideoEnded}
         onPlaying={onPlaying}
-        className="absolute inset-0 w-full h-full object-cover object-center"
+        muted={true}
+        loop={false}
       />
+
+      {/* Warm the cache for stage 4's opening clip while this stage plays. */}
+      <VideoPreloader src={nextStageVideoSrc} />
 
       <div className="absolute bottom-16 left-0 right-0 text-center z-20 pointer-events-none px-4">
         {step < totalSteps ? (

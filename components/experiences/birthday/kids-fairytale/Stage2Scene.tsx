@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { DualVideoPlayer } from './DualVideoPlayer';
+import { VideoPreloader } from './VideoPreloader';
 import { GarlandsSubScene } from './GarlandsSubScene';
 import { BalloonsSubScene } from './BalloonsSubScene';
 
@@ -18,6 +19,7 @@ export function Stage2Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
   const vG = `/videos/birthday/kids-fairytale/stage_2/stage2_part1_${deviceType}.mp4`;
   const vB = `/videos/birthday/kids-fairytale/stage_2/stage2_part2_${deviceType}.mp4`;
   const vT = `/videos/birthday/kids-fairytale/stage_2/stage2_part3_${deviceType}.mp4`;
+  const nextStageVideoSrc = `/videos/birthday/kids-fairytale/stage_3/stage3_part1_${deviceType === 'desktop' ? 'desctop' : 'phone'}.mp4`;
 
   return (
     <div className="relative w-screen h-screen fixed inset-0 overflow-hidden select-none">
@@ -32,6 +34,9 @@ export function Stage2Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
           onPlaying={onPlaying}
         />
       </div>
+
+      {/* Warm the cache for stage 3's opening clip while this stage plays. */}
+      <VideoPreloader src={nextStageVideoSrc} />
 
       {sub === 'garlands' && (
         <GarlandsSubScene deviceType={deviceType} isMuted={isMuted} onComplete={() => setSub('balloons')} />

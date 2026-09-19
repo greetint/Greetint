@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { DualVideoPlayer } from './DualVideoPlayer';
+import { VideoPreloader } from './VideoPreloader';
 
 interface Stage1SceneProps {
   deviceType: 'desktop' | 'phone';
@@ -11,11 +13,21 @@ interface Stage1SceneProps {
   onPlaying?: () => void;
 }
 
+interface BurstParticle {
+  id: number;
+  angle: number;
+  distance: number;
+  size: number;
+  delay: number;
+}
+
 export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPlaying }: Stage1SceneProps) {
   const [phase, setPhase] = useState<'part1' | 'pausedAtKey' | 'part2' | 'unlocked'>('part1');
   const [isKeyActive, setIsKeyActive] = useState(false);
   const [touchPos, setTouchPos] = useState<{ x: number; y: number } | null>(null);
   const [holdProgress, setHoldProgress] = useState(0);
+  const [isBursting, setIsBursting] = useState(false);
+  const [particles, setParticles] = useState<BurstParticle[]>([]);
 
   const startTimeRef = useRef<number>(0);
   const animFrameRef = useRef<number | null>(null);
@@ -24,6 +36,7 @@ export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
 
   const video1Src = `/videos/birthday/kids-fairytale/stage_1/stage1_part1_${deviceType}.mp4`;
   const video2Src = `/videos/birthday/kids-fairytale/stage_1/stage1_part2_${deviceType}.mp4`;
+  const nextStageVideoSrc = `/videos/birthday/kids-fairytale/stage_2/stage2_part1_${deviceType}.mp4`;
   const audioSrc = `/audio/kids-fairytale/stage1_voice.mp3`;
 
   useEffect(() => {
@@ -48,24 +61,41 @@ export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
     }
   }, [isMuted]);
 
-  const handleVideo1Ended = () => {
+  const handleVideoEnded = () => {
     if (phase === 'part1') {
       setPhase('pausedAtKey');
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
+    } else if (phase === 'part2') {
+      setPhase('unlocked');
+      setTimeout(() => {
+        onComplete();
+      }, 800);
     }
   };
 
-  const handleVideo2Ended = () => {
-    setPhase('unlocked');
+  const triggerKeyBurst = () => {
+    setHoldProgress(1);
+    setIsBursting(true);
+    const count = 14 + Math.floor(Math.random() * 6);
+    setParticles(
+      Array.from({ length: count }, (_, i) => ({
+        id: i,
+        angle: (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5,
+        distance: 60 + Math.random() * 90,
+        size: 4 + Math.random() * 5,
+        delay: Math.random() * 0.08,
+      }))
+    );
+
     setTimeout(() => {
-      onComplete();
-    }, 800);
+      setIsBursting(false);
+      setTouchPos(null);
+      setHoldProgress(0);
+      setPhase('part2');
+    }, 550);
   };
 
   const startHold = (e: React.PointerEvent | React.TouchEvent | React.MouseEvent) => {
-    if (!isKeyActive || phase === 'part2' || phase === 'unlocked') return;
+    if (!isKeyActive || phase !== 'pausedAtKey') return;
     const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.PointerEvent).clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.PointerEvent).clientY;
     setTouchPos({ x: clientX, y: clientY });
@@ -78,7 +108,7 @@ export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
       setHoldProgress(progress);
 
       if (progress >= 1) {
-        setPhase('part2');
+        triggerKeyBurst();
       } else {
         animFrameRef.current = requestAnimationFrame(updateHold);
       }
@@ -88,7 +118,7 @@ export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
   };
 
   const endHold = () => {
-    if (phase === 'part2' || phase === 'unlocked') return;
+    if (phase !== 'pausedAtKey' || isBursting) return;
     setHoldProgress(0);
     setTouchPos(null);
     if (animFrameRef.current) {
@@ -98,21 +128,19 @@ export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
 
   return (
     <div className="relative w-screen h-screen fixed inset-0 overflow-hidden select-none flex items-center justify-center">
-      <video
-        ref={(el: HTMLVideoElement | null) => { videoRef.current = el; onVideoRef?.(el); }}
-        key={phase === 'part2' || phase === 'unlocked' ? 'v2' : 'v1'}
+      <DualVideoPlayer
         src={phase === 'part2' || phase === 'unlocked' ? video2Src : video1Src}
-        autoPlay={phase !== 'pausedAtKey'}
-        muted={true}
-        playsInline
-        // @ts-ignore
-        webkit-playsinline="true"
-        onEnded={phase === 'part1' ? handleVideo1Ended : handleVideo2Ended}
+        onActiveVideoRef={(el) => { videoRef.current = el; onVideoRef?.(el); }}
+        onEnded={handleVideoEnded}
         onPlaying={onPlaying}
-        className="absolute inset-0 w-full h-full object-cover object-center"
+        muted={true}
+        loop={false}
       />
 
-      {isKeyActive && phase === 'pausedAtKey' && (
+      {/* Warm the cache for stage 2's opening clip while this stage plays. */}
+      <VideoPreloader src={nextStageVideoSrc} />
+
+      {isKeyActive && (phase === 'pausedAtKey' || isBursting) && (
         <div
           onPointerDown={startHold}
           onPointerUp={endHold}
@@ -122,7 +150,22 @@ export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
           className="absolute inset-0 z-30 cursor-pointer touch-none flex items-center justify-center"
         >
           <div className="absolute w-48 h-48 md:w-64 md:h-64 rounded-full flex items-center justify-center">
-            {touchPos && (
+            {/* Gentle idle aura behind the key while it waits to be pressed. */}
+            {!touchPos && (
+              <motion.div
+                className="absolute rounded-full pointer-events-none"
+                style={{
+                  width: '9rem',
+                  height: '9rem',
+                  background:
+                    'radial-gradient(circle, rgba(251,191,36,0.55) 0%, rgba(245,158,11,0.25) 45%, transparent 75%)',
+                }}
+                animate={{ scale: [1, 1.18, 1], opacity: [0.4, 0.75, 0.4] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            )}
+
+            {touchPos && !isBursting && (
               <div
                 className="absolute rounded-full pointer-events-none transition-all duration-200"
                 style={{
@@ -137,13 +180,58 @@ export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
                 }}
               />
             )}
+
+            {isBursting && touchPos && (
+              <>
+                <motion.div
+                  className="fixed pointer-events-none"
+                  style={{
+                    left: `${touchPos.x}px`,
+                    top: `${touchPos.y}px`,
+                    transform: 'translate(-50%, -50%)',
+                    width: '340px',
+                    height: '340px',
+                    borderRadius: '9999px',
+                    background:
+                      'radial-gradient(circle, rgba(255,250,220,0.95) 0%, rgba(251,191,36,0.6) 35%, transparent 72%)',
+                  }}
+                  initial={{ opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: [0, 1, 0], scale: [0.6, 1.1, 1.3] }}
+                  transition={{ duration: 0.2, times: [0, 0.4, 1], ease: 'easeOut' }}
+                />
+                {particles.map((p) => (
+                  <motion.div
+                    key={p.id}
+                    className="fixed rounded-full pointer-events-none"
+                    style={{
+                      left: `${touchPos.x}px`,
+                      top: `${touchPos.y}px`,
+                      width: `${p.size}px`,
+                      height: `${p.size}px`,
+                      background: '#fde68a',
+                      boxShadow: '0 0 8px 2px rgba(251,191,36,0.9)',
+                    }}
+                    initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                    animate={{
+                      x: Math.cos(p.angle) * p.distance,
+                      y: Math.sin(p.angle) * p.distance,
+                      opacity: 0,
+                      scale: 0.3,
+                    }}
+                    transition={{ duration: 0.55, delay: p.delay, ease: 'easeOut' }}
+                  />
+                ))}
+              </>
+            )}
           </div>
 
-          <div className="absolute bottom-16 left-0 right-0 text-center pointer-events-none px-4">
-            <p className="font-serif italic text-xl md:text-3xl text-amber-200 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] animate-pulse">
-              ✨ Натисни и задръж върху вълшебния ключ...
-            </p>
-          </div>
+          {!isBursting && (
+            <div className="absolute bottom-16 left-0 right-0 text-center pointer-events-none px-4">
+              <p className="font-serif italic text-xl md:text-3xl text-amber-200 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] animate-pulse">
+                ✨ Натисни и задръж върху вълшебния ключ...
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
