@@ -6,9 +6,11 @@ interface Stage3SceneProps {
   deviceType: 'desktop' | 'phone';
   isMuted: boolean;
   onComplete: (audioBlob: Blob | null, transcribedText: string) => void;
+  onVideoRef?: (el: HTMLVideoElement | null) => void;
+  onPlaying?: () => void;
 }
 
-export function Stage3Scene({ deviceType, isMuted, onComplete }: Stage3SceneProps) {
+export function Stage3Scene({ deviceType, isMuted, onComplete, onVideoRef, onPlaying }: Stage3SceneProps) {
   const [step, setStep] = useState<number>(1);
   const [wishState, setWishState] = useState<'recording' | 'readyToBlow' | 'blowing' | 'done'>('recording');
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
@@ -94,9 +96,9 @@ export function Stage3Scene({ deviceType, isMuted, onComplete }: Stage3SceneProp
   };
 
   return (
-    <div onClick={handleInteraction} className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-black select-none cursor-pointer">
+    <div onClick={handleInteraction} className="relative w-screen h-screen fixed inset-0 overflow-hidden select-none cursor-pointer">
       <video
-        ref={videoRef}
+        ref={(el: HTMLVideoElement | null) => { videoRef.current = el; onVideoRef?.(el); }}
         key={step}
         src={getVideoSrc(step)}
         autoPlay={step < totalSteps || wishState === 'done'}
@@ -105,6 +107,7 @@ export function Stage3Scene({ deviceType, isMuted, onComplete }: Stage3SceneProp
         // @ts-ignore
         webkit-playsinline="true"
         onEnded={handleVideoEnded}
+        onPlaying={onPlaying}
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
 

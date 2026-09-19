@@ -7,9 +7,11 @@ interface Stage1SceneProps {
   deviceType: 'desktop' | 'phone';
   isMuted: boolean;
   onComplete: () => void;
+  onVideoRef?: (el: HTMLVideoElement | null) => void;
+  onPlaying?: () => void;
 }
 
-export function Stage1Scene({ deviceType, isMuted, onComplete }: Stage1SceneProps) {
+export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPlaying }: Stage1SceneProps) {
   const [phase, setPhase] = useState<'part1' | 'pausedAtKey' | 'part2' | 'unlocked'>('part1');
   const [isKeyActive, setIsKeyActive] = useState(false);
   const [touchPos, setTouchPos] = useState<{ x: number; y: number } | null>(null);
@@ -95,9 +97,9 @@ export function Stage1Scene({ deviceType, isMuted, onComplete }: Stage1SceneProp
   };
 
   return (
-    <div className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-black select-none flex items-center justify-center">
+    <div className="relative w-screen h-screen fixed inset-0 overflow-hidden select-none flex items-center justify-center">
       <video
-        ref={videoRef}
+        ref={(el: HTMLVideoElement | null) => { videoRef.current = el; onVideoRef?.(el); }}
         key={phase === 'part2' || phase === 'unlocked' ? 'v2' : 'v1'}
         src={phase === 'part2' || phase === 'unlocked' ? video2Src : video1Src}
         autoPlay={phase !== 'pausedAtKey'}
@@ -106,6 +108,7 @@ export function Stage1Scene({ deviceType, isMuted, onComplete }: Stage1SceneProp
         // @ts-ignore
         webkit-playsinline="true"
         onEnded={phase === 'part1' ? handleVideo1Ended : handleVideo2Ended}
+        onPlaying={onPlaying}
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
 

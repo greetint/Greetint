@@ -17,14 +17,42 @@ interface KidsFairytaleExperienceProps {
   };
 }
 
+function captureVideoFrame(video: HTMLVideoElement | null): string | null {
+  if (!video || !video.videoWidth || !video.videoHeight) return null;
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg', 0.8);
+  } catch {
+    return null;
+  }
+}
+
 export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) {
   const [currentStage, setCurrentStage] = useState<'intro' | 'stage1' | 'stage2' | 'stage3' | 'stage4'>('intro');
   const [deviceType, setDeviceType] = useState<'desktop' | 'phone'>('desktop');
   const [recordedAudioBlob, setRecordedAudioBlob] = useState<Blob | null>(null);
   const [transcribedWishText, setTranscribedWishText] = useState<string>('');
   const [isMuted, setIsMuted] = useState(false);
+  // Frozen last frame of the outgoing stage's video, shown underneath the
+  // incoming stage until ITS video fires `onPlaying` — this is what keeps
+  // stage-to-stage transitions from ever showing a black screen.
+  const [transitionFrame, setTransitionFrame] = useState<string | null>(null);
 
   const bgMusicRef = useRef<HTMLAudioElement | null>(null);
+  const activeVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  const goToStage = (next: 'stage1' | 'stage2' | 'stage3' | 'stage4') => {
+    const frame = captureVideoFrame(activeVideoRef.current);
+    if (frame) setTransitionFrame(frame);
+    setCurrentStage(next);
+  };
+
+  const clearTransitionFrame = () => setTransitionFrame(null);
 
   const childName = data?.childName || 'Габи';
   const senderWish = data?.senderWish || data?.personalMessage || 'Ти правиш света по-красив само защото си в него! Бъди все така щастлива и усмихната.';
@@ -70,6 +98,15 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
 
   return (
     <main className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-black select-none font-sans">
+      {transitionFrame && (
+        <img
+          src={transitionFrame}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0"
+        />
+      )}
+
       <MagicCursor />
 
       {currentStage !== 'intro' && (
@@ -87,11 +124,23 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
       )}
 
       {currentStage === 'stage1' && (
-        <Stage1Scene deviceType={deviceType} isMuted={isMuted} onComplete={() => setCurrentStage('stage2')} />
+        <Stage1Scene
+          deviceType={deviceType}
+          isMuted={isMuted}
+          onComplete={() => goToStage('stage2')}
+          onVideoRef={(el) => { activeVideoRef.current = el; }}
+          onPlaying={clearTransitionFrame}
+        />
       )}
 
       {currentStage === 'stage2' && (
-        <Stage2Scene deviceType={deviceType} isMuted={isMuted} onComplete={() => setCurrentStage('stage3')} />
+        <Stage2Scene
+          deviceType={deviceType}
+          isMuted={isMuted}
+          onComplete={() => goToStage('stage3')}
+          onVideoRef={(el) => { activeVideoRef.current = el; }}
+          onPlaying={clearTransitionFrame}
+        />
       )}
 
       {currentStage === 'stage3' && (
@@ -101,8 +150,10 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
           onComplete={(blob, text) => {
             setRecordedAudioBlob(blob);
             setTranscribedWishText(text);
-            setCurrentStage('stage4');
+            goToStage('stage4');
           }}
+          onVideoRef={(el) => { activeVideoRef.current = el; }}
+          onPlaying={clearTransitionFrame}
         />
       )}
 
@@ -115,6 +166,8 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
           transcribedWishText={transcribedWishText}
           recordedAudioBlob={recordedAudioBlob}
           onFinish={() => {}}
+          onVideoRef={(el) => { activeVideoRef.current = el; }}
+          onPlaying={clearTransitionFrame}
         />
       )}
     </main>

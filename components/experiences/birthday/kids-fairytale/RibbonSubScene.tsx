@@ -5,9 +5,11 @@ interface RibbonProps {
   deviceType: 'desktop' | 'phone';
   isMuted: boolean;
   onUnlocked: () => void;
+  onVideoRef?: (el: HTMLVideoElement | null) => void;
+  onPlaying?: () => void;
 }
 
-export function RibbonSubScene({ deviceType, isMuted, onUnlocked }: RibbonProps) {
+export function RibbonSubScene({ deviceType, isMuted, onUnlocked, onVideoRef, onPlaying }: RibbonProps) {
   const [holdProg, setHoldProg] = useState(0);
   const [touchPos, setTouchPos] = useState<{ x: number; y: number } | null>(null);
 
@@ -53,7 +55,7 @@ export function RibbonSubScene({ deviceType, isMuted, onUnlocked }: RibbonProps)
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center">
-      <video src={v1} autoPlay muted playsInline webkit-playsinline="true" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+      <video ref={(el: HTMLVideoElement | null) => onVideoRef?.(el)} onPlaying={onPlaying} src={v1} autoPlay muted playsInline webkit-playsinline="true" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
       <div onPointerDown={startHold} onPointerUp={endHold} onPointerLeave={endHold} onTouchStart={startHold} onTouchEnd={endHold} className="absolute z-30 w-36 h-36 rounded-full flex items-center justify-center cursor-pointer touch-none">
         {touchPos && (
           <div className="absolute rounded-full pointer-events-none transition-all duration-200" style={{ width: `${Math.max(90, holdProg * 280)}px`, height: `${Math.max(90, holdProg * 280)}px`, background: 'radial-gradient(circle, rgba(251,191,36,0.9) 0%, rgba(245,158,11,0.5) 50%, transparent 80%)', boxShadow: '0 0 50px #fbbf24', opacity: 0.3 + holdProg * 0.7 }} />

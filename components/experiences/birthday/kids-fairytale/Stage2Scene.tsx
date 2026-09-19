@@ -4,9 +4,15 @@ import { DualVideoPlayer } from './DualVideoPlayer';
 import { GarlandsSubScene } from './GarlandsSubScene';
 import { BalloonsSubScene } from './BalloonsSubScene';
 
-interface Stage2Props { deviceType: 'desktop' | 'phone'; isMuted: boolean; onComplete: () => void; }
+interface Stage2Props {
+  deviceType: 'desktop' | 'phone';
+  isMuted: boolean;
+  onComplete: () => void;
+  onVideoRef?: (el: HTMLVideoElement | null) => void;
+  onPlaying?: () => void;
+}
 
-export function Stage2Scene({ deviceType, isMuted, onComplete }: Stage2Props) {
+export function Stage2Scene({ deviceType, isMuted, onComplete, onVideoRef, onPlaying }: Stage2Props) {
   const [sub, setSub] = useState<'garlands' | 'balloons' | 'transition'>('garlands');
 
   const vG = `/videos/birthday/kids-fairytale/stage_2/stage2_part1_${deviceType}.mp4`;
@@ -14,7 +20,7 @@ export function Stage2Scene({ deviceType, isMuted, onComplete }: Stage2Props) {
   const vT = `/videos/birthday/kids-fairytale/stage_2/stage2_part3_${deviceType}.mp4`;
 
   return (
-    <div className="relative w-screen h-screen fixed inset-0 overflow-hidden bg-black select-none">
+    <div className="relative w-screen h-screen fixed inset-0 overflow-hidden select-none">
       <div className="absolute inset-0 pointer-events-none">
         <DualVideoPlayer
           src={sub === 'garlands' ? vG : sub === 'balloons' ? vB : vT}
@@ -22,6 +28,8 @@ export function Stage2Scene({ deviceType, isMuted, onComplete }: Stage2Props) {
           autoPlay={true}
           loop={false}
           onEnded={sub === 'transition' ? onComplete : undefined}
+          onActiveVideoRef={onVideoRef}
+          onPlaying={onPlaying}
         />
       </div>
 
