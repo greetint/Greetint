@@ -1,0 +1,218 @@
+{
+  "createForm": {
+    "logoAlt": "Greetint Logo",
+    "backToStyles": "← Избери стил",
+    "title": "Режисирай Преживяването",
+    "subtitle": "Студио за създаване на интерактивен куест (Luxe Minimal / Basic)",
+    "printTitle": "Интерактивна Картичка - Greetint",
+    "cardTemplates": {
+      "blank": "Чисто бял (Blank)"
+    },
+    "fonts": {
+      "classic": "Cormorant Garamond (Класика)",
+      "modern": "Montserrat (Модерен)",
+      "handwritten": "Caveat (Ръкописен)"
+    },
+    "capsuleQuestionOptions": {
+      "q1": "Къде се виждаш след 5 години?",
+      "q2": "Коя е най-щурата ти мечта?",
+      "q3": "Кой е любимият ти спомен от тази година?",
+      "q4": "Ако можеше да спечелиш световно по нещо, какво би било то?",
+      "custom": "Напиши свой собствен въпрос..."
+    },
+    "section1": {
+      "title": "1. За кого е изненадата?",
+      "recipientLabel": "Име на получателя",
+      "recipientPlaceholder": "напр. Виктория",
+      "dateLabel": "Дата на събитието",
+      "senderLabel": "Име на подателя",
+      "senderPlaceholder": "напр. от Алекс"
+    },
+    "section2": {
+      "title": "2. Основно Пожелание (При духване на свещта) *",
+      "description": "Емоционалният връх, който получателят ще види, когато духне свещта.",
+      "placeholder": "Напиши своето сърдечно пожелание тук..."
+    },
+    "section3": {
+      "title": "3. Профил & Скрити Послания",
+      "addMessage": "+ Добави послание",
+      "statusPlaceholder": "Забавен етикет / статус (напр. Човекът с 3 кафета...)",
+      "messagePlaceholder": "Скрито послание / шега #{n} (до 10)",
+      "delete": "Изтрий"
+    },
+    "section4Photos": {
+      "title": "4. Спомени & Снимки (До 5 броя)",
+      "chooseFiles": "Избери файлове",
+      "dropZone": "Плъсни и пусни снимките си тук (Drag & Drop)",
+      "memoryAlt": "Memory",
+      "questionPlaceholder": "Въпрос към тази снимка...",
+      "answerPlaceholder": "Очакван отговор...",
+      "remove": "Премахни"
+    },
+    "section4Quiz": {
+      "title": "4. Забавни Въпроси / Викторина (До 10)",
+      "addQuestion": "+ Добави въпрос",
+      "questionLabel": "Въпрос #{n}",
+      "delete": "Изтрий",
+      "questionPlaceholder": "Въведи въпрос...",
+      "optionAPlaceholder": "Опция А",
+      "optionBPlaceholder": "Опция Б",
+      "optionCPlaceholder": "Опция В",
+      "correctAnswerLabel": "Верен отговор:"
+    },
+    "section6Capsule": {
+      "title": "6. Въпроси за Капсулата на Времето",
+      "addQuestion": "+ Добави въпрос",
+      "questionLabel": "Въпрос #{n}",
+      "delete": "Изтрий",
+      "placeholder": "Въведи собствен въпрос тук...",
+      "orChoose": "Или избери готов:",
+      "selectDefault": "Избери готов въпрос..."
+    },
+    "section7Card": {
+      "title": "7. Редактор на Printable Картичка",
+      "orientationLabel": "Формат / Ориентация",
+      "portrait": "Вертикална (Portrait)",
+      "landscape": "Хоризонтална (Landscape)",
+      "chooseDesignLabel": "Избери дизайн или плъзни снимка тук (Drag & Drop)",
+      "dragDropTitle": "📂 Провлачни снимка тук или кликни",
+      "dragDropHint": "Поддържа PNG, JPG, WEBP",
+      "fontLabel": "Шрифт",
+      "textColorLabel": "Цвят на текста",
+      "qrColorLabel": "Цвят на QR кода",
+      "previewHint": "Хвани и плъзни текста и QR кода свободно (и използвай ↔ ъгълчето за преоразмеряване директно) ↓",
+      "defaultCardText": "За получателя",
+      "resizeTitle": "Дръпни за преоразмеряване",
+      "downloadPdf": "🖨️ Свали само картичката с QR код като PDF"
+    },
+    "actions": {
+      "simulate": "Симулатор на преживяването 👀",
+      "submit": "Запечатай & Вземи Линк ✨"
+    },
+    "result": {
+      "title": "Готово е!",
+      "linkLabel": "Линк за споделяне:",
+      "openLink": "Отвори дигиталния линк →"
+    },
+    "simulator": {
+      "stepLabel": "Симулатор на куеста (Стъпка {current} от {total})",
+      "exit": "Изход от симулатора ✕",
+      "prevStep": "← Предишна стъпка",
+      "hint": "Навигирай и тествай стейджовете",
+      "nextStep": "Следваща стъпка →",
+      "defaultRecipient": "Получател",
+      "secretMessageTitle": "Скрито послание #{n}",
+      "defaultCandleWish": "Честит празник!",
+      "defaultMemoryCaption": "Спомен",
+      "defaultMemoryAnswer": "отговор"
+    }
+  },
+  "sealStage": {
+    "brandLine": "ГРИЙТИНТ КИНЕМАТОГРАФИЯ",
+    "letterTitle": "Имате неочаквано писмо...",
+    "openScreen": "Отвори Екрана 🎬",
+    "holdInstruction": "Натисни и задръж златния печат",
+    "specialExperience": "СПЕЦИАЛНО ПРЕЖИВЯВАНЕ",
+    "happyBirthday": "Честит Рожден Ден,",
+    "unlockMessage": "Подготвили сме ти неща, които да отключиш...",
+    "startAdventure": "Започни Приключението ➔",
+    "defaultRecipient": "Виктория"
+  },
+  "cakeStage": {
+    "wishPrompt": "Преди да се разкрие празничната 3D магия, напиши своето съкровено желание...",
+    "wishPlaceholder": "Твоето желание тук...",
+    "lockWish": "Заключи Желанието ➔",
+    "blowInstruction": "🎤 Духни в микрофона или кликни тортата",
+    "senderWishLabel": "ПОСЛАНИЕ ОТ ПОДАРЯВАЩИЯ",
+    "toCapsule": "Към Капсулата на бъдещето",
+    "defaultRecipient": "ВИКТОРИЯ",
+    "defaultSenderWish": "Нека тази година ти донесе здраве, вдъхновение, безкрайно щастие и много сбъднати мечти!"
+  },
+  "capsuleStage": {
+    "pageIndicator": "ЛИЧЕН ДНЕВНИК // СТРАНИЦА {current} от {total}",
+    "questionLabel": "Въпрос {n}",
+    "answerPlaceholder": "Пиши тук... (Натисни Enter)",
+    "charCount": "{count} / {max} знака",
+    "prev": "← Предишна",
+    "next": "Следваща ➔",
+    "finish": "Запечатай & PDF 📄✨",
+    "noAnswer": "Без отговор",
+    "defaultQuestions": {
+      "q1": "Главна цел за новата година?",
+      "q2": "Мечтано място за пътуване?",
+      "q3": "Най-ценният урок от изминалата година?",
+      "q4": "Нов навик, който искаш да започнеш?",
+      "q5": "Кое те кара да се смееш от сърце?",
+      "q6": "Твоето лично обещание днес?",
+      "q7": "Послание към бъдещето ти \"Аз\":"
+    }
+  },
+  "memoryWallStage": {
+    "defaultRecipient": "ВИКТОРИЯ",
+    "defaultMemories": {
+      "caption1": "Къде беше направена тази незабравима снимка?",
+      "caption2": "Какво си казвахме в този точно момент?",
+      "caption3": "Коя песен слушахме непрекъснато тогава?"
+    },
+    "correctFeedback": "✦ Позна! Прекрасен кадър! ✦",
+    "giveUpFeedback": "Ето ти кадъра, заслужаваш го! ❤️",
+    "wrongFeedback": "Не съвсем... Опит {n} от 3.",
+    "frameLabel": "✦ Кадър {n} ✦",
+    "answerPlaceholder": "Въведи отговора тук...",
+    "submit": "Завърти ➔",
+    "prev": "Предишен",
+    "next": "Следващ",
+    "toFinal": "Към Финала",
+    "waitingForAnswer": "Очаква се отговор"
+  },
+  "quizStage": {
+    "defaultRecipient": "VIKTORIYA",
+    "defaultQuizzes": {
+      "q1": {
+        "question": "Kade beshe nai-ludoto ni putuvane zaedno?",
+        "optionA": "Na moreto",
+        "optionB": "V planinata",
+        "optionC": "V chuzhbina"
+      },
+      "q2": {
+        "question": "Koya e lyubimata ni chast ot denya?",
+        "optionA": "Sutreshnoto kafe",
+        "optionB": "Zvezdnata nosht",
+        "optionC": "Sledobednata razhodka"
+      }
+    },
+    "progressLabel": "Vapros {n} ot {total}",
+    "badge": "✦ Interaktiven test ✦",
+    "wrongMessage": "✦ Ne suvsem... Pomisli otnovo i opitay pak ✦",
+    "nextQuestion": "Sledvasht Vapros ➔",
+    "toMemories": "Kum Spomenite ➔",
+    "hint": "✦ Izberi verniya otgovor za prodalzhenie ✦"
+  },
+  "scratchStage": {
+    "defaultCards": {
+      "title1": "Първа тайна • Шега",
+      "secret1": "Човекът, който пие 3 кафета на ден и пак намира енергия за щури идеи!",
+      "title2": "Втора тайна • Спомен",
+      "secret2": "Умишлено запазените най-луди моменти, които винаги ни крадат усмивките!"
+    },
+    "canvasHint": "✦ Изтрий за да разкриеш тайната ✦",
+    "titleFallback": "Тайна {n} от {total}",
+    "prompt": "Зад златното фолио е скрита тайната...",
+    "nextSecret": "Следваща Тайна ➔",
+    "toQuestions": "Към Въпросите ➔",
+    "scratchHint": "✦ Плъсни с пръст, за да изтриеш фолиото ✦"
+  },
+  "timeCapsulePdf": {
+    "defaultRecipient": "Получател",
+    "defaultSender": "Подаряващия",
+    "title": "Капсула на времето за {recipient}",
+    "subtitle": "Създадено с любов и надежда, за да се отвори в бъдещето",
+    "startLabel": "Начало",
+    "messageLabel": "Послание",
+    "candleWishLabel": "Намислено желание",
+    "scratchSecretLabel": "Скреч Тайна",
+    "answersHeading": "Отговори от капсулата",
+    "noAnswers": "Няма въведени отговори все още",
+    "signature": "С любов, {sender}"
+  }
+}

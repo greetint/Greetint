@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { VideoPreloader } from './VideoPreloader';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface IntroSceneProps {
   childName: string;
@@ -11,6 +12,7 @@ interface IntroSceneProps {
 }
 
 export function IntroScene({ childName, deviceType, onOpen }: IntroSceneProps) {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const firstStageVideoSrc = `/videos/birthday/kids-fairytale/stage_1/stage1_part1_${deviceType}.mp4`;
 
@@ -38,7 +40,7 @@ export function IntroScene({ childName, deviceType, onOpen }: IntroSceneProps) {
         className="z-10 text-center px-4 mb-8"
       >
         <h1 className="font-serif italic text-3xl md:text-5xl lg:text-6xl text-amber-900 drop-shadow-[0_2px_10px_rgba(251,191,36,0.5)] tracking-wide">
-          Вълшебната приказка за {childName} започва...
+          {t('kidsFairytale.intro.title', { childName })}
         </h1>
       </motion.div>
 
@@ -60,10 +62,10 @@ export function IntroScene({ childName, deviceType, onOpen }: IntroSceneProps) {
             </div>
             <div className="space-y-2">
               <h2 className="font-serif italic text-2xl md:text-3xl text-amber-950 font-bold">
-                Вълшебна Книга
+                {t('kidsFairytale.intro.bookTitle')}
               </h2>
               <p className="font-serif italic text-base md:text-lg text-amber-800 font-semibold animate-pulse">
-                Докосни книгата, за да я отвориш ✨
+                {t('kidsFairytale.intro.bookPrompt')}
               </p>
             </div>
           </div>

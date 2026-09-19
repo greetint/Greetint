@@ -2,6 +2,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, useMotionValueEvent, animate } from 'framer-motion';
 import { VideoPreloader } from './VideoPreloader';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface RibbonProps {
   deviceType: 'desktop' | 'phone';
@@ -22,6 +23,7 @@ interface BurstParticle {
 const REQUIRED_DISTANCE = 130;
 
 export function RibbonSubScene({ deviceType, isMuted, onUnlocked, onVideoRef, onPlaying }: RibbonProps) {
+  const { t } = useLanguage();
   const [isBursting, setIsBursting] = useState(false);
   const [particles, setParticles] = useState<BurstParticle[]>([]);
   const completedRef = useRef(false);
@@ -153,7 +155,7 @@ export function RibbonSubScene({ deviceType, isMuted, onUnlocked, onVideoRef, on
 
       {!isBursting && (
         <div className="absolute bottom-20 left-0 right-0 text-center pointer-events-none px-4 z-30">
-          <p className="font-serif italic text-xl md:text-3xl text-amber-200 drop-shadow animate-pulse">✨ Дръпни панделката, за да я развържеш!</p>
+          <p className="font-serif italic text-xl md:text-3xl text-amber-200 drop-shadow animate-pulse">{t('kidsFairytale.ribbon.pullPrompt')}</p>
         </div>
       )}
     </div>

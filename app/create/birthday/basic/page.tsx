@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { CARD_STYLES } from '@/app/create/stylesConfig';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 // ИМПОРТ НА РЕАЛНИТЕ СТЕЙДЖОВЕ ОТ КУЕСТА
 import SealStage from '@/components/experiences/birthday/basic/SealStage';
@@ -14,26 +15,12 @@ import MemoryWallStage from '@/components/experiences/birthday/basic/MemoryWallS
 import QuizStage from '@/components/experiences/birthday/basic/QuizStage';
 import CapsuleStage from '@/components/experiences/birthday/basic/CapsuleStage';
 
-const CARD_TEMPLATES = [
-  { id: 'blank', name: 'Чисто бял (Blank)', img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="140"><rect width="100%" height="100%" fill="%23FEFEFD"/></svg>' },
+const CARD_TEMPLATES_BASE = [
+  { id: 'blank', img: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="140"><rect width="100%" height="100%" fill="%23FEFEFD"/></svg>' },
   { id: '1', name: 'Signature Luxe', img: '/images/cards/card-1.png' },
   { id: '2', name: 'Playful Celebration', img: '/images/cards/card-2.png' },
   { id: '3', name: 'Chic Pink Stripe', img: '/images/cards/card-3.png' },
   { id: '4', name: 'Modern Blue Stripe', img: '/images/cards/card-4.png' },
-];
-
-const BULGARIAN_FONTS = [
-  { name: 'Cormorant Garamond (Класика)', family: 'font-serif' },
-  { name: 'Montserrat (Модерен)', family: 'font-sans' },
-  { name: 'Caveat (Ръкописен)', family: 'font-mono' },
-];
-
-const CAPSULE_QUESTION_OPTIONS = [
-  "Къде се виждаш след 5 години?",
-  "Коя е най-щурата ти мечта?",
-  "Кой е любимият ти спомен от тази година?",
-  "Ако можеше да спечелиш световно по нещо, какво би било то?",
-  "Напиши свой собствен въпрос..."
 ];
 
 interface MemoryPhoto {
@@ -51,7 +38,27 @@ interface QuizQuestion {
 }
 
 export default function CreateCardPage() {
+  const { t, lang } = useLanguage();
   const previewRef = useRef<HTMLDivElement | null>(null);
+
+  const CARD_TEMPLATES = CARD_TEMPLATES_BASE.map(c => ({
+    ...c,
+    name: c.id === 'blank' ? t('basic.createForm.cardTemplates.blank') : c.name,
+  }));
+
+  const BULGARIAN_FONTS = [
+    { name: t('basic.createForm.fonts.classic'), family: 'font-serif' },
+    { name: t('basic.createForm.fonts.modern'), family: 'font-sans' },
+    { name: t('basic.createForm.fonts.handwritten'), family: 'font-mono' },
+  ];
+
+  const CAPSULE_QUESTION_OPTIONS = [
+    t('basic.createForm.capsuleQuestionOptions.q1'),
+    t('basic.createForm.capsuleQuestionOptions.q2'),
+    t('basic.createForm.capsuleQuestionOptions.q3'),
+    t('basic.createForm.capsuleQuestionOptions.q4'),
+    t('basic.createForm.capsuleQuestionOptions.custom'),
+  ];
 
   // 1. Основни данни
   const [recipient, setRecipient] = useState('');
@@ -80,7 +87,7 @@ export default function CreateCardPage() {
   // 7. Редактор на картичка
   const [includeCard, setIncludeCard] = useState(true);
   const [cardOrientation, setCardOrientation] = useState<'portrait' | 'landscape'>('portrait');
-  const [selectedCardImg, setSelectedCardImg] = useState(CARD_TEMPLATES[0].img);
+  const [selectedCardImg, setSelectedCardImg] = useState(CARD_TEMPLATES_BASE[0].img);
   const [customCardBg, setCustomCardBg] = useState<string | null>(null);
   const [cardText, setCardText] = useState('');
   const [textSize, setTextSize] = useState(18);
@@ -103,7 +110,7 @@ export default function CreateCardPage() {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Интерактивна Картичка - Greetint</title>
+          <title>${t('basic.createForm.printTitle')}</title>
           <style>
             @page { size: ${cardOrientation === 'portrait' ? 'portrait' : 'landscape'}; margin: 0; }
             body {
@@ -190,11 +197,11 @@ export default function CreateCardPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const uniqueId = Math.random().toString(36).substring(2, 9);
-    
+
     // Взима актуалния домейн (напр. твоя Vercel линк) вместо твърдо кодиран .com
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-    const generatedUrl = `${baseUrl}/card/${uniqueId}`;
-    
+    const generatedUrl = `${baseUrl}/card/${uniqueId}?lang=${lang}`;
+
     const questPayload = {
       occasion: 'birthday',
       styleId: 'basic',
@@ -230,90 +237,90 @@ export default function CreateCardPage() {
 
   // Списък със стейджовете за реалния симулатор на преживяването (с подадени реални данни от формата)
   const simulatorStages = [
-    <SealStage 
-      key="seal" 
-      recipient={recipient || 'Получател'} 
-      onComplete={() => setCurrentSimulatorStage(1)} 
-      onUnlock={() => {}} 
+    <SealStage
+      key="seal"
+      recipient={recipient || t('basic.createForm.simulator.defaultRecipient')}
+      onComplete={() => setCurrentSimulatorStage(1)}
+      onUnlock={() => {}}
     />,
-    <ScratchStage 
-      key="scratch" 
-      recipient={recipient || 'Получател'}
-      scratchCards={secretMessages.filter(Boolean).length > 0 ? secretMessages.map((msg, idx) => ({ id: String(idx + 1), title: `Скрито послание #${idx + 1}`, secretText: msg })) : undefined}
-      onComplete={() => setCurrentSimulatorStage(2)} 
+    <ScratchStage
+      key="scratch"
+      recipient={recipient || t('basic.createForm.simulator.defaultRecipient')}
+      scratchCards={secretMessages.filter(Boolean).length > 0 ? secretMessages.map((msg, idx) => ({ id: String(idx + 1), title: t('basic.createForm.simulator.secretMessageTitle', { n: idx + 1 }), secretText: msg })) : undefined}
+      onComplete={() => setCurrentSimulatorStage(2)}
     />,
-    <QuizStage 
-      key="quiz" 
-      recipient={recipient || 'Получател'}
+    <QuizStage
+      key="quiz"
+      recipient={recipient || t('basic.createForm.simulator.defaultRecipient')}
       quizzes={quizList.filter(q => q.question).length > 0 ? quizList.filter(q => q.question).map((q, idx) => ({ id: String(idx + 1), question: q.question, options: [q.optionA, q.optionB, q.optionC].filter(Boolean), correctAnswer: q.correct === 'A' ? 0 : q.correct === 'B' ? 1 : 2 })) : undefined}
-      onComplete={() => setCurrentSimulatorStage(3)} 
+      onComplete={() => setCurrentSimulatorStage(3)}
     />,
-    <MemoryWallStage 
-      key="memory" 
-      recipient={recipient || 'Получател'}
-      memories={photos.length > 0 ? photos.map((p, idx) => ({ id: String(idx + 1), url: p.fileUrl, type: 'image' as const, questionOrCaption: p.question || 'Спомен', correctAnswer: p.answer || 'отговор' })) : undefined}
-      onComplete={() => setCurrentSimulatorStage(4)} 
+    <MemoryWallStage
+      key="memory"
+      recipient={recipient || t('basic.createForm.simulator.defaultRecipient')}
+      memories={photos.length > 0 ? photos.map((p, idx) => ({ id: String(idx + 1), url: p.fileUrl, type: 'image' as const, questionOrCaption: p.question || t('basic.createForm.simulator.defaultMemoryCaption'), correctAnswer: p.answer || t('basic.createForm.simulator.defaultMemoryAnswer') })) : undefined}
+      onComplete={() => setCurrentSimulatorStage(4)}
     />,
-    <CakeStage 
-      key="cake" 
-      recipient={recipient || 'Получател'}
-      senderWish={candleWish || 'Честит празник!'}
-      onComplete={() => setCurrentSimulatorStage(5)} 
+    <CakeStage
+      key="cake"
+      recipient={recipient || t('basic.createForm.simulator.defaultRecipient')}
+      senderWish={candleWish || t('basic.createForm.simulator.defaultCandleWish')}
+      onComplete={() => setCurrentSimulatorStage(5)}
     />,
-    <CapsuleStage 
-      key="capsule" 
+    <CapsuleStage
+      key="capsule"
       customQuestions={capsuleQuestions.filter(Boolean).length > 0 ? capsuleQuestions.filter(Boolean) : undefined}
-      onGeneratePdf={async () => {}} 
+      onGeneratePdf={async () => {}}
     />
   ];
 
   return (
     <div className="min-h-screen bg-[#F7F4EF] text-[#11100F] py-12 px-4 sm:px-6 font-serif flex justify-center selection:bg-[#958679]/30">
       <div className="max-w-4xl w-full bg-[#FEFEFD] p-8 sm:p-14 rounded-[40px] shadow-2xl border border-[#958679]/20 space-y-12 relative overflow-hidden">
-        
+
         {/* ЛОГО И ЗАГЛАВИЕ */}
         <div className="relative z-10 flex flex-col sm:flex-row justify-between items-center border-b border-[#958679]/20 pb-8 gap-4">
           <Link href="/" className="flex items-center space-x-3 group">
-            <img src="/images/logo/logo-horizontal.png" alt="Greetint Logo" className="h-20 sm:h-28 object-contain opacity-95 group-hover:opacity-100 transition" />
+            <img src="/images/logo/logo-horizontal.png" alt={t('basic.createForm.logoAlt')} className="h-20 sm:h-28 object-contain opacity-95 group-hover:opacity-100 transition" />
           </Link>
           <div className="flex items-center space-x-3">
             <Link href="/create/birthday/select-style" className="bg-[#FAF6EE] border border-[#958679]/30 hover:bg-white text-[#11100F] px-5 py-2.5 rounded-2xl text-xs font-sans uppercase tracking-widest transition shadow-sm font-semibold">
-              ← Избери стил
+              {t('basic.createForm.backToStyles')}
             </Link>
           </div>
         </div>
         <div className="relative z-10 text-center space-y-3">
-          <h1 className="text-4xl sm:text-5xl font-serif font-light tracking-wide text-[#11100F]">Режисирай Преживяването</h1>
-          <p className="text-xs text-[#958679] font-sans tracking-widest uppercase">Студио за създаване на интерактивен куест (Luxe Minimal / Basic)</p>
+          <h1 className="text-4xl sm:text-5xl font-serif font-light tracking-wide text-[#11100F]">{t('basic.createForm.title')}</h1>
+          <p className="text-xs text-[#958679] font-sans tracking-widest uppercase">{t('basic.createForm.subtitle')}</p>
         </div>
 
         <div className="relative z-10 space-y-8">
           {!createdLink ? (
             <form onSubmit={handleSubmit} className="relative z-10 space-y-12">
-            
+
             {/* 1. ОСНОВНИ ДАННИ */}
             <div className="space-y-4 bg-[#F7F4EF]/60 p-6 rounded-3xl border border-[#958679]/20 shadow-sm">
-              <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">1. За кого е изненадата?</h2>
+              <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">{t('basic.createForm.section1.title')}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-2">Име на получателя</label>
-                  <input 
-                    type="text" required value={recipient} 
+                  <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-2">{t('basic.createForm.section1.recipientLabel')}</label>
+                  <input
+                    type="text" required value={recipient}
                     onChange={e => {
                       setRecipient(e.target.value);
-                      if (!cardText) setCardText(`За ${e.target.value}`);
-                    }} 
-                    className="w-full bg-white border border-[#958679]/30 rounded-2xl p-3.5 text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F] transition shadow-inner" 
-                    placeholder="напр. Виктория" 
+                      if (!cardText) setCardText(`${t('basic.createForm.section7Card.defaultCardText')} ${e.target.value}`);
+                    }}
+                    className="w-full bg-white border border-[#958679]/30 rounded-2xl p-3.5 text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F] transition shadow-inner"
+                    placeholder={t('basic.createForm.section1.recipientPlaceholder')}
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-2">Дата на събитието</label>
+                  <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-2">{t('basic.createForm.section1.dateLabel')}</label>
                   <input type="date" value={birthDate} onChange={e => setBirthDate(e.target.value)} className="w-full bg-white border border-[#958679]/30 rounded-2xl p-3.5 text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F] transition shadow-inner" />
                 </div>
                 <div>
-                  <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-2">Име на подателя</label>
-                  <input type="text" required value={sender} onChange={e => setSender(e.target.value)} className="w-full bg-white border border-[#958679]/30 rounded-2xl p-3.5 text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F] transition shadow-inner" placeholder="напр. от Алекс" />
+                  <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-2">{t('basic.createForm.section1.senderLabel')}</label>
+                  <input type="text" required value={sender} onChange={e => setSender(e.target.value)} className="w-full bg-white border border-[#958679]/30 rounded-2xl p-3.5 text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F] transition shadow-inner" placeholder={t('basic.createForm.section1.senderPlaceholder')} />
                 </div>
               </div>
             </div>
@@ -321,45 +328,45 @@ export default function CreateCardPage() {
             {/* 2. ПОЖЕЛАНИЕ ПРИ ДУХВАНЕ НА СВЕЩТА */}
             <div className="space-y-3 bg-[#F7F4EF]/60 p-6 rounded-3xl border border-[#958679]/20 shadow-sm">
               <div>
-                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">2. Основно Пожелание (При духване на свещта) *</h2>
-                <p className="text-[11px] text-[#11100F]/60 font-sans mt-0.5">Емоционалният връх, който получателят ще види, когато духне свещта.</p>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">{t('basic.createForm.section2.title')}</h2>
+                <p className="text-[11px] text-[#11100F]/60 font-sans mt-0.5">{t('basic.createForm.section2.description')}</p>
               </div>
-              <textarea 
-                rows={4} required value={candleWish} 
-                onChange={e => setCandleWish(e.target.value)} 
-                className="w-full bg-white border border-[#958679]/30 rounded-2xl p-4 text-sm font-serif text-[#11100F] focus:outline-none focus:border-[#11100F] transition resize-none shadow-inner" 
-                placeholder="Напиши своето сърдечно пожелание тук..." 
+              <textarea
+                rows={4} required value={candleWish}
+                onChange={e => setCandleWish(e.target.value)}
+                className="w-full bg-white border border-[#958679]/30 rounded-2xl p-4 text-sm font-serif text-[#11100F] focus:outline-none focus:border-[#11100F] transition resize-none shadow-inner"
+                placeholder={t('basic.createForm.section2.placeholder')}
               />
             </div>
 
             {/* 3. СТАТУТ & СКРИТИ ПОСЛАНИЯ */}
             <div className="space-y-4 bg-[#F7F4EF]/60 p-6 rounded-3xl border border-[#958679]/20 shadow-sm">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">3. Профил & Скрити Послания</h2>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">{t('basic.createForm.section3.title')}</h2>
                 {secretMessages.length < 10 && (
                   <button type="button" onClick={() => setSecretMessages([...secretMessages, ''])} className="text-xs font-sans text-[#11100F] hover:text-[#958679] underline font-semibold">
-                    + Добави послание
+                    {t('basic.createForm.section3.addMessage')}
                   </button>
                 )}
               </div>
-              <input type="text" value={statusText} onChange={e => setStatusText(e.target.value)} placeholder="Забавен етикет / статус (напр. Човекът с 3 кафета...)" className="w-full bg-white border border-[#958679]/30 rounded-2xl p-3.5 text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F] shadow-inner" />
-              
+              <input type="text" value={statusText} onChange={e => setStatusText(e.target.value)} placeholder={t('basic.createForm.section3.statusPlaceholder')} className="w-full bg-white border border-[#958679]/30 rounded-2xl p-3.5 text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F] shadow-inner" />
+
               <div className="space-y-2 pt-2">
                 {secretMessages.map((msg, idx) => (
                   <div key={idx} className="flex gap-2 items-center">
-                    <input 
-                      type="text" 
-                      value={msg} 
+                    <input
+                      type="text"
+                      value={msg}
                       onChange={e => {
                         const updated = [...secretMessages];
                         updated[idx] = e.target.value;
                         setSecretMessages(updated);
-                      }} 
-                      placeholder={`Скрито послание / шега #${idx + 1} (до 10)`} 
+                      }}
+                      placeholder={t('basic.createForm.section3.messagePlaceholder', { n: idx + 1 })}
                       className="flex-1 bg-white border border-[#958679]/30 rounded-2xl p-3 text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F] shadow-inner"
                     />
                     {secretMessages.length > 1 && (
-                      <button type="button" onClick={() => setSecretMessages(secretMessages.filter((_, i) => i !== idx))} className="text-xs text-red-600 font-semibold">Изтрий</button>
+                      <button type="button" onClick={() => setSecretMessages(secretMessages.filter((_, i) => i !== idx))} className="text-xs text-red-600 font-semibold">{t('basic.createForm.section3.delete')}</button>
                     )}
                   </div>
                 ))}
@@ -369,49 +376,49 @@ export default function CreateCardPage() {
             {/* 4. СПОМЕНИ & СНИМКИ */}
             <div className="space-y-4 bg-[#F7F4EF]/60 p-6 rounded-3xl border border-[#958679]/20 shadow-sm">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">4. Спомени & Снимки (До 5 броя)</h2>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">{t('basic.createForm.section4Photos.title')}</h2>
                 <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} id="photo-input" className="hidden" />
-                <label htmlFor="photo-input" className="text-xs font-sans font-semibold bg-[#FAF6EE] text-[#11100F] border border-[#958679]/30 px-4 py-2.5 rounded-xl cursor-pointer hover:bg-white transition shadow-sm">Избери файлове</label>
+                <label htmlFor="photo-input" className="text-xs font-sans font-semibold bg-[#FAF6EE] text-[#11100F] border border-[#958679]/30 px-4 py-2.5 rounded-xl cursor-pointer hover:bg-white transition shadow-sm">{t('basic.createForm.section4Photos.chooseFiles')}</label>
               </div>
 
-              <div 
+              <div
                 onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={handleDrop}
                 className={`border-2 border-dashed rounded-3xl p-8 text-center transition ${isDragging ? 'border-[#11100F] bg-white' : 'border-[#958679]/40 bg-[#F7F4EF]'}`}
               >
-                <p className="text-xs text-[#11100F]/70 font-sans">Плъсни и пусни снимките си тук (Drag & Drop)</p>
+                <p className="text-xs text-[#11100F]/70 font-sans">{t('basic.createForm.section4Photos.dropZone')}</p>
               </div>
 
               <div className="space-y-3">
                 {photos.map((photo, idx) => (
                   <div key={idx} className="bg-white p-4 rounded-2xl border border-[#958679]/20 shadow-sm flex flex-col sm:flex-row gap-4 items-center">
-                    <img src={photo.fileUrl} alt="Memory" className="w-16 h-16 object-cover rounded-xl flex-shrink-0 border border-[#958679]/20" />
+                    <img src={photo.fileUrl} alt={t('basic.createForm.section4Photos.memoryAlt')} className="w-16 h-16 object-cover rounded-xl flex-shrink-0 border border-[#958679]/20" />
                     <div className="flex-1 w-full space-y-2">
-                      <input 
-                        type="text" 
-                        value={photo.question} 
+                      <input
+                        type="text"
+                        value={photo.question}
                         onChange={e => {
                           const updated = [...photos];
                           updated[idx].question = e.target.value;
                           setPhotos(updated);
-                        }} 
-                        placeholder="Въпрос към тази снимка..." 
+                        }}
+                        placeholder={t('basic.createForm.section4Photos.questionPlaceholder')}
                         className="w-full bg-[#F7F4EF] border border-[#958679]/30 p-2.5 rounded-xl text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F]"
                       />
-                      <input 
-                        type="text" 
-                        value={photo.answer} 
+                      <input
+                        type="text"
+                        value={photo.answer}
                         onChange={e => {
                           const updated = [...photos];
                           updated[idx].answer = e.target.value;
                           setPhotos(updated);
-                        }} 
-                        placeholder="Очакван отговор..." 
+                        }}
+                        placeholder={t('basic.createForm.section4Photos.answerPlaceholder')}
                         className="w-full bg-[#F7F4EF] border border-[#958679]/30 p-2.5 rounded-xl text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F]"
                       />
                     </div>
-                    <button type="button" onClick={() => setPhotos(photos.filter((_, i) => i !== idx))} className="text-xs text-red-600 font-semibold">Премахни</button>
+                    <button type="button" onClick={() => setPhotos(photos.filter((_, i) => i !== idx))} className="text-xs text-red-600 font-semibold">{t('basic.createForm.section4Photos.remove')}</button>
                   </div>
                 ))}
               </div>
@@ -420,10 +427,10 @@ export default function CreateCardPage() {
             {/* 4. ЗАБАВНИ ВЪПРОСИ / ВИКТОРИНА (преди 5. Снимки) */}
             <div className="space-y-4 bg-[#F7F4EF]/60 p-6 rounded-3xl border border-[#958679]/20 shadow-sm">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">4. Забавни Въпроси / Викторина (До 10)</h2>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">{t('basic.createForm.section4Quiz.title')}</h2>
                 {quizList.length < 10 && (
                   <button type="button" onClick={() => setQuizList([...quizList, { question: '', optionA: '', optionB: '', optionC: '', correct: 'A' }])} className="text-xs font-sans text-[#11100F] hover:text-[#958679] underline font-semibold">
-                    + Добави въпрос
+                    {t('basic.createForm.section4Quiz.addQuestion')}
                   </button>
                 )}
               </div>
@@ -431,27 +438,27 @@ export default function CreateCardPage() {
               {quizList.map((q, idx) => (
                 <div key={idx} className="bg-white p-5 rounded-2xl border border-[#958679]/20 shadow-sm space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-[11px] font-sans font-semibold text-[#11100F]">Въпрос #{idx + 1}</span>
+                    <span className="text-[11px] font-sans font-semibold text-[#11100F]">{t('basic.createForm.section4Quiz.questionLabel', { n: idx + 1 })}</span>
                     {quizList.length > 1 && (
-                      <button type="button" onClick={() => setQuizList(quizList.filter((_, i) => i !== idx))} className="text-xs text-red-600 font-semibold">Изтрий</button>
+                      <button type="button" onClick={() => setQuizList(quizList.filter((_, i) => i !== idx))} className="text-xs text-red-600 font-semibold">{t('basic.createForm.section4Quiz.delete')}</button>
                     )}
                   </div>
-                  <input type="text" value={q.question} onChange={e => { const u = [...quizList]; u[idx].question = e.target.value; setQuizList(u); }} placeholder="Въведи въпрос..." className="w-full bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F]" />
-                  
+                  <input type="text" value={q.question} onChange={e => { const u = [...quizList]; u[idx].question = e.target.value; setQuizList(u); }} placeholder={t('basic.createForm.section4Quiz.questionPlaceholder')} className="w-full bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F]" />
+
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <input type="text" value={q.optionA} onChange={e => { const u = [...quizList]; u[idx].optionA = e.target.value; setQuizList(u); }} placeholder="Опция А" className="bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F]" />
-                    <input type="text" value={q.optionB} onChange={e => { const u = [...quizList]; u[idx].optionB = e.target.value; setQuizList(u); }} placeholder="Опция Б" className="bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F]" />
-                    <input type="text" value={q.optionC} onChange={e => { const u = [...quizList]; u[idx].optionC = e.target.value; setQuizList(u); }} placeholder="Опция В" className="bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F]" />
+                    <input type="text" value={q.optionA} onChange={e => { const u = [...quizList]; u[idx].optionA = e.target.value; setQuizList(u); }} placeholder={t('basic.createForm.section4Quiz.optionAPlaceholder')} className="bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F]" />
+                    <input type="text" value={q.optionB} onChange={e => { const u = [...quizList]; u[idx].optionB = e.target.value; setQuizList(u); }} placeholder={t('basic.createForm.section4Quiz.optionBPlaceholder')} className="bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F]" />
+                    <input type="text" value={q.optionC} onChange={e => { const u = [...quizList]; u[idx].optionC = e.target.value; setQuizList(u); }} placeholder={t('basic.createForm.section4Quiz.optionCPlaceholder')} className="bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F]" />
                   </div>
 
                   <div className="flex items-center gap-4 pt-2 border-t border-[#958679]/15">
-                    <span className="text-[11px] uppercase font-sans text-[#11100F]/70 font-semibold">Верен отговор:</span>
+                    <span className="text-[11px] uppercase font-sans text-[#11100F]/70 font-semibold">{t('basic.createForm.section4Quiz.correctAnswerLabel')}</span>
                     {(['A', 'B', 'C'] as const).map(letter => (
                       <label key={letter} className="flex items-center gap-1.5 cursor-pointer font-sans text-xs text-[#11100F]">
-                        <input 
-                          type="radio" 
-                          name={`correct-ans-${idx}`} 
-                          checked={q.correct === letter} 
+                        <input
+                          type="radio"
+                          name={`correct-ans-${idx}`}
+                          checked={q.correct === letter}
                           onChange={() => {
                             const u = [...quizList];
                             u[idx].correct = letter;
@@ -470,36 +477,36 @@ export default function CreateCardPage() {
             {/* 6. КАПСУЛА НА ВРЕМЕТО (САМО ВЪПРОСИ) */}
             <div className="space-y-4 bg-[#F7F4EF]/60 p-6 rounded-3xl border border-[#958679]/20 shadow-sm">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">6. Въпроси за Капсулата на Времето</h2>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">{t('basic.createForm.section6Capsule.title')}</h2>
                 <button type="button" onClick={() => setCapsuleQuestions([...capsuleQuestions, ''])} className="text-xs font-sans text-[#11100F] hover:text-[#958679] underline font-semibold">
-                  + Добави въпрос
+                  {t('basic.createForm.section6Capsule.addQuestion')}
                 </button>
               </div>
 
               {capsuleQuestions.map((q, idx) => (
                 <div key={idx} className="space-y-3 bg-white p-4 rounded-2xl border border-[#958679]/20 shadow-sm">
                   <div className="flex justify-between items-center">
-                    <span className="text-[11px] font-sans font-semibold text-[#11100F]">Въпрос #{idx + 1}</span>
+                    <span className="text-[11px] font-sans font-semibold text-[#11100F]">{t('basic.createForm.section6Capsule.questionLabel', { n: idx + 1 })}</span>
                     {capsuleQuestions.length > 1 && (
-                      <button type="button" onClick={() => setCapsuleQuestions(capsuleQuestions.filter((_, i) => i !== idx))} className="text-xs text-red-600 font-semibold">Изтрий</button>
+                      <button type="button" onClick={() => setCapsuleQuestions(capsuleQuestions.filter((_, i) => i !== idx))} className="text-xs text-red-600 font-semibold">{t('basic.createForm.section6Capsule.delete')}</button>
                     )}
                   </div>
-                  <input 
-                    type="text" 
-                    value={q} 
+                  <input
+                    type="text"
+                    value={q}
                     onChange={e => {
                       const updated = [...capsuleQuestions];
                       updated[idx] = e.target.value;
                       setCapsuleQuestions(updated);
                     }}
-                    placeholder="Въведи собствен въпрос тук..." 
+                    placeholder={t('basic.createForm.section6Capsule.placeholder')}
                     className="w-full bg-[#F7F4EF] border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F] focus:outline-none focus:border-[#11100F]"
                   />
                   <div className="flex items-center gap-2 pt-1">
-                    <span className="text-[10px] uppercase font-sans text-[#11100F]/60">Или избери готов:</span>
-                    <select 
+                    <span className="text-[10px] uppercase font-sans text-[#11100F]/60">{t('basic.createForm.section6Capsule.orChoose')}</span>
+                    <select
                       onChange={e => {
-                        if (e.target.value && e.target.value !== "Избери готов въпрос...") {
+                        if (e.target.value && e.target.value !== t('basic.createForm.section6Capsule.selectDefault')) {
                           const updated = [...capsuleQuestions];
                           updated[idx] = e.target.value;
                           setCapsuleQuestions(updated);
@@ -507,7 +514,7 @@ export default function CreateCardPage() {
                       }}
                       className="flex-1 bg-[#F7F4EF] border border-[#958679]/30 p-2 rounded-xl text-xs font-sans text-[#11100F]"
                     >
-                      <option value="">Избери готов въпрос...</option>
+                      <option value="">{t('basic.createForm.section6Capsule.selectDefault')}</option>
                       {CAPSULE_QUESTION_OPTIONS.map((opt, i) => <option key={i} value={opt}>{opt}</option>)}
                     </select>
                   </div>
@@ -518,37 +525,37 @@ export default function CreateCardPage() {
             {/* 7. РЕДАКТОР НА КАРТИЧКА С ДИНАМИЧЕН QR КОД */}
             <div className="space-y-6 pt-6 border-t border-[#958679]/20">
               <div className="flex justify-between items-center">
-                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">7. Редактор на Printable Картичка</h2>
+                <h2 className="text-xs uppercase tracking-[0.2em] font-sans font-semibold text-[#958679]">{t('basic.createForm.section7Card.title')}</h2>
                 <input type="checkbox" checked={includeCard} onChange={e => setIncludeCard(e.target.checked)} className="w-5 h-5 accent-[#11100F]" />
               </div>
 
               {includeCard && (
                 <div className="space-y-6 bg-[#F7F4EF]/60 p-6 sm:p-8 rounded-3xl border border-[#958679]/20 text-[#11100F] shadow-sm">
-                  
+
                   {/* ОРИЕНТАЦИЯ */}
                   <div className="space-y-2">
-                    <label className="block text-[11px] uppercase font-sans text-[#11100F]/70">Формат / Ориентация</label>
+                    <label className="block text-[11px] uppercase font-sans text-[#11100F]/70">{t('basic.createForm.section7Card.orientationLabel')}</label>
                     <div className="flex gap-4">
-                      <button 
-                        type="button" 
-                        onClick={() => setCardOrientation('portrait')} 
+                      <button
+                        type="button"
+                        onClick={() => setCardOrientation('portrait')}
                         className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'portrait' ? 'bg-[#11100F] text-[#FAF6EE]' : 'bg-white text-[#11100F] border border-[#958679]/30'}`}
                       >
-                        Вертикална (Portrait)
+                        {t('basic.createForm.section7Card.portrait')}
                       </button>
-                      <button 
-                        type="button" 
-                        onClick={() => setCardOrientation('landscape')} 
+                      <button
+                        type="button"
+                        onClick={() => setCardOrientation('landscape')}
                         className={`px-4 py-2.5 rounded-xl text-xs font-sans font-semibold transition ${cardOrientation === 'landscape' ? 'bg-[#11100F] text-[#FAF6EE]' : 'bg-white text-[#11100F] border border-[#958679]/30'}`}
                       >
-                        Хоризонтална (Landscape)
+                        {t('basic.createForm.section7Card.landscape')}
                       </button>
                     </div>
                   </div>
 
                   {/* ШАБЛОНИ ИЛИ КАЧВАНЕ */}
                   <div className="space-y-3">
-                    <label className="block text-[11px] uppercase font-sans text-[#11100F]/70">Избери дизайн или плъзни снимка тук (Drag & Drop)</label>
+                    <label className="block text-[11px] uppercase font-sans text-[#11100F]/70">{t('basic.createForm.section7Card.chooseDesignLabel')}</label>
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                       {CARD_TEMPLATES.map(card => (
                         <button key={card.id} type="button" onClick={() => { setSelectedCardImg(card.img); setCustomCardBg(null); }} className={`border-2 p-1 rounded-2xl transition ${selectedCardImg === card.img && !customCardBg ? 'border-[#11100F]' : 'border-transparent'}`}>
@@ -556,8 +563,8 @@ export default function CreateCardPage() {
                         </button>
                       ))}
                     </div>
-                    
-                    <div 
+
+                    <div
                       onDragOver={e => e.preventDefault()}
                       onDrop={e => {
                         e.preventDefault();
@@ -574,44 +581,44 @@ export default function CreateCardPage() {
                     >
                       <input type="file" accept="image/*" onChange={handleCustomCardUpload} id="custom-card-file" className="hidden" />
                       <label htmlFor="custom-card-file" className="cursor-pointer space-y-1 block">
-                        <span className="text-xs uppercase tracking-widest text-[#11100F] font-bold block">📂 Провлачни снимка тук или кликни</span>
-                        <span className="text-[10px] text-[#958679] block">Поддържа PNG, JPG, WEBP</span>
+                        <span className="text-xs uppercase tracking-widest text-[#11100F] font-bold block">{t('basic.createForm.section7Card.dragDropTitle')}</span>
+                        <span className="text-[10px] text-[#958679] block">{t('basic.createForm.section7Card.dragDropHint')}</span>
                       </label>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-1">Шрифт</label>
+                      <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-1">{t('basic.createForm.section7Card.fontLabel')}</label>
                       <select value={selectedFont} onChange={e => setSelectedFont(e.target.value)} className="w-full bg-white border border-[#958679]/30 p-3 rounded-xl text-xs font-sans text-[#11100F] focus:outline-none">
                         {BULGARIAN_FONTS.map((f, i) => <option key={i} value={f.family}>{f.name}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-1">Цвят на текста</label>
+                      <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-1">{t('basic.createForm.section7Card.textColorLabel')}</label>
                       <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-white border border-[#958679]/30 p-1" />
                     </div>
                     <div>
-                      <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-1">Цвят на QR кода</label>
+                      <label className="block text-[11px] uppercase font-sans text-[#11100F]/70 mb-1">{t('basic.createForm.section7Card.qrColorLabel')}</label>
                       <input type="color" value={qrColor} onChange={e => setQrColor(e.target.value)} className="w-full h-10 rounded-xl cursor-pointer bg-white border border-[#958679]/30 p-1" />
                     </div>
                   </div>
 
                   {/* ИНТЕРАКТИВНО ПРЕВЮ С ДРАГ & ДРОП И ДИНАМИЧЕН QR КОД */}
                   <div className="pt-4 text-center space-y-4">
-                    <p className="text-[11px] uppercase font-sans font-semibold text-[#958679]">Хвани и плъзни текста и QR кода свободно (и използвай ↔ ъгълчето за преоразмеряване директно) ↓</p>
-                    <div 
-                      ref={previewRef} 
+                    <p className="text-[11px] uppercase font-sans font-semibold text-[#958679]">{t('basic.createForm.section7Card.previewHint')}</p>
+                    <div
+                      ref={previewRef}
                       className={`relative mx-auto overflow-hidden bg-white rounded-3xl shadow-2xl border border-white/10 ${cardOrientation === 'portrait' ? 'w-full max-w-xs' : 'w-full max-w-md'}`}
                       style={{ aspectRatio: cardOrientation === 'portrait' ? '1/1.4' : '1.4/1' }}
                     >
-                      <img 
-                        src={customCardBg || selectedCardImg} 
-                        alt="Card Preview" 
-                        className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-200" 
+                      <img
+                        src={customCardBg || selectedCardImg}
+                        alt="Card Preview"
+                        className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-200"
                         style={{ transform: `scale(${photoScale})` }}
                       />
-                      
+
                       {/* МЕСТЕЩ СЕ И РЕХАЙЗИРУЕМ ТЕКСТ */}
                       <motion.div
                         drag
@@ -620,10 +627,10 @@ export default function CreateCardPage() {
                         className={`absolute cursor-grab active:cursor-grabbing p-3 select-none group/text ${selectedFont}`}
                         style={{ top: '20%', left: '20%', color: textColor, fontSize: `${textSize}px`, fontWeight: 'bold' }}
                       >
-                        <span>{cardText || 'За получателя'}</span>
-                        <div 
+                        <span>{cardText || t('basic.createForm.section7Card.defaultCardText')}</span>
+                        <div
                           className="absolute -bottom-2 -right-2 w-5 h-5 bg-[#1F1A17] text-[#F7F4EF] rounded-full text-[10px] flex items-center justify-center cursor-se-resize opacity-0 group-hover/text:opacity-100 transition shadow-md"
-                          title="Дръпни за преоразмеряване"
+                          title={t('basic.createForm.section7Card.resizeTitle')}
                           onMouseDown={(e) => {
                             e.stopPropagation();
                             const startY = e.clientY;
@@ -654,9 +661,9 @@ export default function CreateCardPage() {
                         style={{ top: '55%', left: '55%', width: `${qrSize}px` }}
                       >
                         <QRCodeSVG value={activePreviewUrl} size={qrSize} fgColor={qrColor} className="w-full h-auto pointer-events-none" />
-                        <div 
+                        <div
                           className="absolute -bottom-2 -right-2 w-5 h-5 bg-[#1F1A17] text-[#F7F4EF] rounded-full text-[10px] flex items-center justify-center cursor-se-resize opacity-0 group-hover/qr:opacity-100 transition shadow-md"
-                          title="Дръпни за преоразмеряване"
+                          title={t('basic.createForm.section7Card.resizeTitle')}
                           onMouseDown={(e) => {
                             e.stopPropagation();
                             const startX = e.clientX;
@@ -686,7 +693,7 @@ export default function CreateCardPage() {
                         onClick={handleDownloadCardPdf}
                         className="bg-[#FAF6EE] text-[#11100F] hover:bg-white px-8 py-4 rounded-2xl text-xs uppercase tracking-[0.25em] font-sans font-bold shadow-lg transition border border-white/20"
                       >
-                        🖨️ Свали само картичката с QR код като PDF
+                        {t('basic.createForm.section7Card.downloadPdf')}
                       </button>
                     </div>
                   </div>
@@ -697,31 +704,31 @@ export default function CreateCardPage() {
 
             {/* БУТОНИ */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button 
-                type="button" 
-                onClick={() => { setCurrentSimulatorStage(0); setIsSimulating(true); }} 
+              <button
+                type="button"
+                onClick={() => { setCurrentSimulatorStage(0); setIsSimulating(true); }}
                 className="flex-1 bg-[#EFECE6] border border-[#958679]/30 text-[#11100F] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl hover:bg-[#FAF6EE] transition shadow-sm"
               >
-                Симулатор на преживяването 👀
+                {t('basic.createForm.actions.simulate')}
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="flex-1 bg-[#FAF6EE] border border-[#958679]/30 text-[#11100F] py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-lg hover:bg-white transition"
               >
-                Запечатай & Вземи Линк ✨
+                {t('basic.createForm.actions.submit')}
               </button>
             </div>
 
           </form>
         ) : (
           <div className="text-center space-y-6 py-10">
-            <h2 className="text-3xl font-serif text-[#11100F]">Готово е!</h2>
-            <p className="text-xs text-[#958679] uppercase font-sans tracking-widest">Линк за споделяне:</p>
+            <h2 className="text-3xl font-serif text-[#11100F]">{t('basic.createForm.result.title')}</h2>
+            <p className="text-xs text-[#958679] uppercase font-sans tracking-widest">{t('basic.createForm.result.linkLabel')}</p>
             <div className="bg-[#F7F4EF] p-4 rounded-2xl border border-[#958679]/30 select-all font-sans text-xs font-bold text-[#11100F]">
               {createdLink}
             </div>
             <a href={createdLink} target="_blank" rel="noreferrer" className="inline-block bg-[#FAF6EE] text-[#11100F] border border-[#958679]/30 px-8 py-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-2xl shadow-md hover:bg-white transition">
-              Отвори дигиталния линк →
+              {t('basic.createForm.result.openLink')}
             </a>
           </div>
         )}
@@ -735,13 +742,13 @@ export default function CreateCardPage() {
           {/* Горна лента за управление на симулатора */}
           <div className="bg-[#1A1816] border-b border-white/10 px-6 py-4 flex justify-between items-center z-50">
             <span className="text-xs font-sans uppercase tracking-widest text-[#958679]">
-              Симулатор на куеста (Стъпка {currentSimulatorStage + 1} от {simulatorStages.length})
+              {t('basic.createForm.simulator.stepLabel', { current: currentSimulatorStage + 1, total: simulatorStages.length })}
             </span>
-            <button 
-              onClick={() => setIsSimulating(false)} 
+            <button
+              onClick={() => setIsSimulating(false)}
               className="bg-white/10 text-white px-4 py-2 rounded-xl text-xs font-sans font-semibold hover:bg-white/20 transition"
             >
-              Изход от симулатора ✕
+              {t('basic.createForm.simulator.exit')}
             </button>
           </div>
 
@@ -752,20 +759,20 @@ export default function CreateCardPage() {
 
           {/* Долна лента за навигация */}
           <div className="bg-[#1A1816] border-t border-white/10 px-6 py-4 flex justify-between items-center z-50">
-            <button 
-              disabled={currentSimulatorStage === 0} 
-              onClick={() => setCurrentSimulatorStage(prev => prev - 1)} 
+            <button
+              disabled={currentSimulatorStage === 0}
+              onClick={() => setCurrentSimulatorStage(prev => prev - 1)}
               className="text-xs font-sans text-white/60 disabled:opacity-30 hover:text-white"
             >
-              ← Предишна стъпка
+              {t('basic.createForm.simulator.prevStep')}
             </button>
-            <span className="text-xs font-sans text-white/40">Навигирай и тествай стейджовете</span>
-            <button 
-              disabled={currentSimulatorStage === simulatorStages.length - 1} 
-              onClick={() => setCurrentSimulatorStage(prev => prev + 1)} 
+            <span className="text-xs font-sans text-white/40">{t('basic.createForm.simulator.hint')}</span>
+            <button
+              disabled={currentSimulatorStage === simulatorStages.length - 1}
+              onClick={() => setCurrentSimulatorStage(prev => prev + 1)}
               className="text-xs font-sans text-white bg-white/10 px-5 py-2 rounded-xl hover:bg-white/20 disabled:opacity-30"
             >
-              Следваща стъпка →
+              {t('basic.createForm.simulator.nextStep')}
             </button>
           </div>
         </div>

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playSoundEffect } from './utils/speech';
 import { SuspectRecordStage } from './SuspectRecordStage';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface EvidenceVaultProps {
   photos: { fileUrl: string }[];
@@ -24,51 +25,53 @@ export function EvidenceVaultStage({
   evidenceClues, 
   evidenceAnswers, 
   evidenceItems, 
-  suspectProfile, 
-  recipient = 'Заподозрян',
+  suspectProfile,
+  recipient,
   age = '30',
   secretPassword = 'кафе',
   charges,
-  isMuted = false, 
-  onComplete 
+  isMuted = false,
+  onComplete
 }: EvidenceVaultProps) {
-  const profile = suspectProfile || { 
-    alias: 'Шеф на купона', 
-    mainCrime: charges?.[0] || 'Превишена скорост на празнуване', 
-    distinguishingMark: charges?.[1] || 'Заразно добро настроение', 
-    lastSeen: 'На дансинга в петък вечер', 
-    specialSkill: charges?.[2] || 'Неоторизирано ядене на торта' 
+  const { t } = useLanguage();
+  const resolvedRecipient = recipient || t('detectiveMystery.evidenceVaultStage.defaultRecipient');
+  const profile = suspectProfile || {
+    alias: t('detectiveMystery.evidenceVaultStage.defaultAlias'),
+    mainCrime: charges?.[0] || t('detectiveMystery.evidenceVaultStage.defaultMainCrime'),
+    distinguishingMark: charges?.[1] || t('detectiveMystery.evidenceVaultStage.defaultDistinguishingMark'),
+    lastSeen: t('detectiveMystery.evidenceVaultStage.defaultLastSeen'),
+    specialSkill: charges?.[2] || t('detectiveMystery.evidenceVaultStage.defaultSpecialSkill')
   };
 
   const evPhotos = photos.length ? photos : [
-    { fileUrl: '/images/cards/card-1.png' }, 
-    { fileUrl: '/images/cards/card-2.png' }, 
+    { fileUrl: '/images/cards/card-1.png' },
+    { fileUrl: '/images/cards/card-2.png' },
     { fileUrl: '/images/cards/card-3.png' }
   ];
   const numItems = evPhotos.length;
 
   const defaultAnswers = [
-    profile.alias || 'Шеф на купона',
-    profile.mainCrime || 'Превишена скорост на празнуване',
-    profile.distinguishingMark || 'Заразно добро настроение',
-    profile.lastSeen || 'На дансинга в петък вечер',
-    profile.specialSkill || 'Неоторизирано ядене на торта'
+    profile.alias,
+    profile.mainCrime,
+    profile.distinguishingMark,
+    profile.lastSeen,
+    profile.specialSkill
   ];
 
   const answers = evidenceAnswers?.length ? evidenceAnswers : (evidenceItems?.length ? evidenceItems.map(item => item.answer) : defaultAnswers.slice(0, numItems));
 
   const facts = answers.map((ans, idx) => ({
     id: idx,
-    label: `Доказателство №${idx + 1}`,
+    label: t('detectiveMystery.evidenceVaultStage.evidenceLabel', { number: idx + 1 }),
     value: ans
   }));
 
   const defaultClues = [
-    'Кой е псевдонимът на заподозрения?',
-    'Какво е основното престъпление?',
-    'Кой е отличителният белег?',
-    'Къде е забележан за последно?',
-    'Какво е специалното умение?'
+    t('detectiveMystery.evidenceVaultStage.defaultClue1'),
+    t('detectiveMystery.evidenceVaultStage.defaultClue2'),
+    t('detectiveMystery.evidenceVaultStage.defaultClue3'),
+    t('detectiveMystery.evidenceVaultStage.defaultClue4'),
+    t('detectiveMystery.evidenceVaultStage.defaultClue5'),
   ];
 
   const clues = evidenceClues?.length ? evidenceClues : defaultClues.slice(0, numItems);
@@ -271,19 +274,19 @@ export function EvidenceVaultStage({
       >
         <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-700 rounded-full shadow flex items-center justify-center text-white text-[8px]">📌</div>
         <div className="flex items-center justify-between mb-0.5">
-          <span className="text-[9px] text-red-700 font-black uppercase tracking-wider">[ ДЕТЕКТИВСКО ТАБЛО ]</span>
-          <button 
+          <span className="text-[9px] text-red-700 font-black uppercase tracking-wider">{t('detectiveMystery.evidenceVaultStage.boardTitleBadge')}</span>
+          <button
             onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setIsDossierOpen(true); }}
             className="bg-[#2B2723] hover:bg-black text-amber-200 px-2 py-0.5 rounded text-[9px] font-black uppercase border border-amber-500/40 shadow cursor-pointer transition flex items-center gap-1"
           >
-            <span>📁 ПРЕГЛЕД НА ДОСИЕТО</span>
+            <span>{t('detectiveMystery.evidenceVaultStage.dossierButton')}</span>
           </button>
         </div>
-        <h2 className="text-sm sm:text-lg font-serif font-bold text-black uppercase tracking-wide">Разследване на уликите</h2>
+        <h2 className="text-sm sm:text-lg font-serif font-bold text-black uppercase tracking-wide">{t('detectiveMystery.evidenceVaultStage.boardHeading')}</h2>
         <p className="text-[10px] sm:text-xs text-[#5c3317] font-semibold truncate">
-          {selectedFactId !== null 
-            ? "📌 Уликата е избрана! Кликнете на съответната Polaroid снимка." 
-            : "Стъпка 1: Изберете жълта бележка ➔ Стъпка 2: Кликнете на снимка."}
+          {selectedFactId !== null
+            ? t('detectiveMystery.evidenceVaultStage.instructionSelected')
+            : t('detectiveMystery.evidenceVaultStage.instructionDefault')}
         </p>
       </motion.div>
 
@@ -326,8 +329,8 @@ export function EvidenceVaultStage({
                   📌
                 </div>
                 <div className="text-[10px] font-black uppercase text-red-800 mb-1.5 flex items-center justify-between">
-                  <span>Улика #{fact.id + 1}</span>
-                  {used && <span className="text-green-700 font-bold">[СВЪРЗАНО ✓]</span>}
+                  <span>{t('detectiveMystery.evidenceVaultStage.evidenceNumberBadge', { number: fact.id + 1 })}</span>
+                  {used && <span className="text-green-700 font-bold">{t('detectiveMystery.evidenceVaultStage.connectedBadge')}</span>}
                 </div>
                 <div className="text-xs sm:text-sm font-bold bg-white/60 p-2.5 rounded border border-amber-300/60 shadow-inner">
                   „{fact.value}“
@@ -381,18 +384,18 @@ export function EvidenceVaultStage({
                       <span className="text-xl mb-1 animate-pulse">🔒</span>
                       {selectedFactId !== null ? (
                         <span className="text-[9px] text-amber-300 font-bold animate-bounce bg-black/80 px-2 py-0.5 rounded border border-amber-500">
-                          👉 Кликнете тук за свързване!
+                          {t('detectiveMystery.evidenceVaultStage.connectHint')}
                         </span>
                       ) : (
                         <span className="text-[9px] text-neutral-300">
-                          Изберете улика от таблото
+                          {t('detectiveMystery.evidenceVaultStage.selectClueHint')}
                         </span>
                       )}
                     </div>
                   ) : (
                     <div className="absolute inset-0 bg-green-950/20 backdrop-blur-[1px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="bg-green-700 text-white font-black px-2.5 py-1 rounded-lg text-[10px] uppercase shadow-lg border border-green-400">
-                        [ УВЕЛИЧИ 🔍 ]
+                        {t('detectiveMystery.evidenceVaultStage.enlargeButton')}
                       </div>
                     </div>
                   )}
@@ -403,7 +406,7 @@ export function EvidenceVaultStage({
                   </div>
                   {isErr && (
                     <p className="text-[9px] text-red-700 font-black uppercase bg-red-200 py-0.5 rounded border border-red-400">
-                      ❌ Опитай пак!
+                      {t('detectiveMystery.evidenceVaultStage.tryAgain')}
                     </p>
                   )}
                   {isUnl && connectedFact && (
@@ -423,29 +426,29 @@ export function EvidenceVaultStage({
           <div className="bg-[#3b220f] border border-amber-700/70 px-3 py-1.5 rounded-lg shadow flex items-center justify-center space-x-1.5">
             <span className="text-amber-400 text-xs">⚠️</span>
             <p className="text-[10px] sm:text-xs text-amber-200 font-bold uppercase tracking-wider">
-              Свържете всички бележки с правилните снимки!
+              {t('detectiveMystery.evidenceVaultStage.allConnectedWarning')}
             </p>
           </div>
         ) : (
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="bg-green-950/90 border border-green-500 px-3 py-1.5 rounded-lg shadow"
           >
-            <p className="text-[10px] sm:text-xs font-black text-green-200">Корковото табло е напълно разсекретено! Готови сте за разпит.</p>
+            <p className="text-[10px] sm:text-xs font-black text-green-200">{t('detectiveMystery.evidenceVaultStage.allConnectedSuccess')}</p>
           </motion.div>
         )}
-        <motion.button 
-          whileHover={{ scale: 1.01 }} 
-          whileTap={{ scale: 0.99 }} 
-          onClick={onComplete} 
+        <motion.button
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
+          onClick={onComplete}
           className={`w-full py-2.5 sm:py-3.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.15em] font-black shadow-xl cursor-pointer transition-all ${
-            allUnlocked 
-              ? 'bg-gradient-to-r from-red-700 via-red-600 to-amber-700 hover:from-red-600 hover:to-amber-600 text-white shadow-[0_0_25px_rgba(220,38,38,0.6)] border-2 border-red-400' 
+            allUnlocked
+              ? 'bg-gradient-to-r from-red-700 via-red-600 to-amber-700 hover:from-red-600 hover:to-amber-600 text-white shadow-[0_0_25px_rgba(220,38,38,0.6)] border-2 border-red-400'
               : 'bg-[#3b220f] hover:bg-[#4a2e18] text-amber-200/70 border border-amber-900'
           }`}
         >
-          <span>[ ПРЕМИН КЪМ РАЗПИТА НА СВИДЕТЕЛЯ → ]</span>
+          <span>{t('detectiveMystery.evidenceVaultStage.toInterrogationButton')}</span>
         </motion.button>
       </div>
 
@@ -467,12 +470,12 @@ export function EvidenceVaultStage({
             >
               <img src={selectedImg} alt="Enlarged Evidence" className="w-full h-auto max-h-[70vh] object-contain rounded-lg shadow-lg border border-neutral-400" />
               <div className="flex justify-between items-center mt-4">
-                <span className="text-xs text-black font-black uppercase tracking-widest">[ РАЗСЕКРЕТЕН ФЕДЕРАЛЕН КАДЪР ]</span>
-                <button 
+                <span className="text-xs text-black font-black uppercase tracking-widest">{t('detectiveMystery.evidenceVaultStage.declassifiedPhoto')}</span>
+                <button
                   onClick={() => setSelectedImg(null)}
                   className="bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase hover:bg-neutral-800 cursor-pointer"
                 >
-                  [ ЗАТВОРИ ✕ ]
+                  {t('detectiveMystery.evidenceVaultStage.closeButton')}
                 </button>
               </div>
             </motion.div>
@@ -490,8 +493,8 @@ export function EvidenceVaultStage({
             className="absolute inset-x-1 sm:inset-x-12 top-2 bottom-2 z-60 flex flex-col items-center justify-center pointer-events-none overflow-y-auto p-1 sm:p-4"
           >
             <div className="relative w-full max-w-2xl sm:max-w-3xl pointer-events-auto my-auto">
-              <SuspectRecordStage 
-                recipient={recipient || 'Заподозрян'}
+              <SuspectRecordStage
+                recipient={resolvedRecipient}
                 age={age || '30'}
                 suspectProfile={suspectProfile}
                 secretPassword={secretPassword}

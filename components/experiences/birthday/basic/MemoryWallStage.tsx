@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export interface MemoryPhotoItem {
   id: string;
@@ -17,30 +18,6 @@ interface MemoryWallStageProps {
   onComplete?: () => void;
 }
 
-const DEFAULT_MEMORIES: MemoryPhotoItem[] = [
-  {
-    id: '1',
-    url: '/images/assets/envelope_paper.jpeg',
-    type: 'image',
-    questionOrCaption: 'Къде беше направена тази незабравима снимка?',
-    correctAnswer: 'море'
-  },
-  {
-    id: '2',
-    url: '/videos/birthday/basic/envelope-open-desktop.mp4', 
-    type: 'video',
-    questionOrCaption: 'Какво си казвахме в този точно момент?',
-    correctAnswer: 'щастие'
-  },
-  {
-    id: '3',
-    url: '/images/assets/envelope_paper.jpeg',
-    type: 'image',
-    questionOrCaption: 'Коя песен слушахме непрекъснато тогава?',
-    correctAnswer: 'любима'
-  }
-];
-
 // Оптимизирано разстояние, за да се виждат по-големи съседните кадри отстрани
 const getXOffset = (idx: number, activeIdx: number) => {
   const offset = idx - activeIdx;
@@ -51,43 +28,69 @@ const getXOffset = (idx: number, activeIdx: number) => {
   return `${sign * val}%`;
 };
 
-export function MemoryWallStage({ 
-  recipient = "ВИКТОРИЯ", 
-  memories = DEFAULT_MEMORIES,
-  onComplete 
+export function MemoryWallStage({
+  recipient,
+  memories,
+  onComplete
 }: MemoryWallStageProps) {
+  const { t } = useLanguage();
+  const displayRecipient = recipient || t('basic.memoryWallStage.defaultRecipient');
+  const DEFAULT_MEMORIES: MemoryPhotoItem[] = [
+    {
+      id: '1',
+      url: '/images/assets/envelope_paper.jpeg',
+      type: 'image',
+      questionOrCaption: t('basic.memoryWallStage.defaultMemories.caption1'),
+      correctAnswer: 'море'
+    },
+    {
+      id: '2',
+      url: '/videos/birthday/basic/envelope-open-desktop.mp4',
+      type: 'video',
+      questionOrCaption: t('basic.memoryWallStage.defaultMemories.caption2'),
+      correctAnswer: 'щастие'
+    },
+    {
+      id: '3',
+      url: '/images/assets/envelope_paper.jpeg',
+      type: 'image',
+      questionOrCaption: t('basic.memoryWallStage.defaultMemories.caption3'),
+      correctAnswer: 'любима'
+    }
+  ];
+  const activeMemories = memories || DEFAULT_MEMORIES;
   const [activeIdx, setActiveIdx] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [attempts, setAttempts] = useState(0);
   const [unlockedFrames, setUnlockedFrames] = useState<number[]>([]);
   const [feedbackMessage, setFeedbackMessage] = useState('');
 
-  const currentMemory = memories[activeIdx];
+  const currentMemory = activeMemories[activeIdx];
   const isCurrentUnlocked = unlockedFrames.includes(activeIdx);
 
   const allFrameIndices = Array.from(
-    { length: memories.length + 4 }, 
+    { length: activeMemories.length + 4 },
     (_, i) => i - 2
   );
 
   const handleAnswerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentMemory) return;
-    
+
     const isMatch = userAnswer.trim().toLowerCase() === currentMemory.correctAnswer.trim().toLowerCase();
 
     if (isMatch) {
       setUnlockedFrames(prev => [...prev, activeIdx]);
-      setFeedbackMessage('✦ Позна! Прекрасен кадър! ✦');
+      setFeedbackMessage(t('basic.memoryWallStage.correctFeedback'));
     } else {
       const nextAttempts = attempts + 1;
       setAttempts(nextAttempts);
 
       if (nextAttempts >= 3) {
         setUnlockedFrames(prev => [...prev, activeIdx]);
-        setFeedbackMessage('Ето ти кадъра, заслужаваш го! ❤️');
+        setFeedbackMessage(t('basic.memoryWallStage.giveUpFeedback'));
       } else {
-        setFeedbackMessage(`Не съвсем... Опит ${nextAttempts} от 3.`);
+        setFeedbackMessage(t('basic.memoryWallStage.wrongFeedback', { n: nextAttempts }));
       }
     }
   };
@@ -96,7 +99,7 @@ export function MemoryWallStage({
     setUserAnswer('');
     setAttempts(0);
     setFeedbackMessage('');
-    if (activeIdx < memories.length - 1) {
+    if (activeIdx < activeMemories.length - 1) {
       setActiveIdx(prev => prev + 1);
     } else if (onComplete) {
       onComplete();
@@ -113,7 +116,7 @@ export function MemoryWallStage({
   };
 
   const jumpToFrame = (idx: number) => {
-    if (idx >= 0 && idx < memories.length && isCurrentUnlocked && idx !== activeIdx) {
+    if (idx >= 0 && idx < activeMemories.length && isCurrentUnlocked && idx !== activeIdx) {
       setUserAnswer('');
       setAttempts(0);
       setFeedbackMessage('');
@@ -152,8 +155,8 @@ export function MemoryWallStage({
         {allFrameIndices.map((frameIdx) => {
           const isActive = frameIdx === activeIdx;
           const isUnlocked = unlockedFrames.includes(frameIdx);
-          const isEmpty = frameIdx < 0 || frameIdx >= memories.length;
-          const memory = !isEmpty ? memories[frameIdx] : null;
+          const isEmpty = frameIdx < 0 || frameIdx >= activeMemories.length;
+          const memory = !isEmpty ? activeMemories[frameIdx] : null;
 
           return (
             <motion.div
@@ -206,7 +209,7 @@ export function MemoryWallStage({
                       >
                         <div className="w-full max-w-xl space-y-3 sm:space-y-5">
                           <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.5em] text-[#DBCEB3] font-bold">
-                            ✦ Кадър {frameIdx + 1} ✦
+                            {t('basic.memoryWallStage.frameLabel', { n: frameIdx + 1 })}
                           </span>
                           
                           <p className="font-serif italic text-xs sm:text-2xl text-[#FEFEFD] leading-relaxed drop-shadow-md px-1">
@@ -218,14 +221,14 @@ export function MemoryWallStage({
                               type="text"
                               value={userAnswer}
                               onChange={(e) => setUserAnswer(e.target.value)}
-                              placeholder="Въведи отговора тук..."
+                              placeholder={t('basic.memoryWallStage.answerPlaceholder')}
                               className="flex-1 bg-black/60 backdrop-blur-md text-[#FEFEFD] placeholder-[#FEFEFD]/60 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl text-xs sm:text-sm tracking-wide text-center sm:text-left border border-white/20 focus:outline-none focus:border-[#DBCEB3]"
                             />
                             <button
                               type="submit"
                               className="bg-[#DBCEB3] text-[#141210] px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl text-[9px] sm:text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#FEFEFD] transition duration-300 whitespace-nowrap"
                             >
-                              Завърти ➔
+                              {t('basic.memoryWallStage.submit')}
                             </button>
                           </form>
                           
@@ -271,7 +274,7 @@ export function MemoryWallStage({
           className={`group flex items-center space-x-2 sm:space-x-3 text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-bold transition-all ${activeIdx === 0 ? 'opacity-30 cursor-not-allowed text-[#958679]' : 'text-[#635E57] hover:text-[#1F1A17]'}`}
         >
           <span className="w-6 sm:w-10 h-[2px] bg-current transition-all group-hover:w-10 sm:group-hover:w-16"></span>
-          <span>Предишен</span>
+          <span>{t('basic.memoryWallStage.prev')}</span>
         </button>
 
         {isCurrentUnlocked ? (
@@ -279,11 +282,11 @@ export function MemoryWallStage({
             onClick={handleNextMemory}
             className="bg-[#1F1A17] text-[#FEFEFD] px-7 sm:px-9 py-2.5 sm:py-3 rounded-full text-[9px] sm:text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-[#635E57] transition-all duration-300 flex items-center space-x-2"
           >
-            <span>{activeIdx < memories.length - 1 ? 'Следващ' : 'Към Финала'}</span>
+            <span>{activeIdx < activeMemories.length - 1 ? t('basic.memoryWallStage.next') : t('basic.memoryWallStage.toFinal')}</span>
             <span className="text-[14px]">➔</span>
           </button>
         ) : (
-           <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.4em] text-[#958679] opacity-70 italic font-medium">Очаква се отговор</span>
+           <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.4em] text-[#958679] opacity-70 italic font-medium">{t('basic.memoryWallStage.waitingForAnswer')}</span>
         )}
       </div>
 

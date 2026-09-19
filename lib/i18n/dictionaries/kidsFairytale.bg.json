@@ -1,0 +1,68 @@
+{
+  "createForm": {
+    "backLink": "Избери стил",
+    "sandboxBadge": "Sandbox рут",
+    "title": "Kids Fairytale: Създай Магията",
+    "labels": {
+      "name": "Име:",
+      "age": "Възраст:",
+      "sender": "Подарител:",
+      "message": "Послание:"
+    },
+    "submitButton": "Генерирай приказката",
+    "successMessage": "Приказката е успешно създадена!",
+    "linkLabel": "Линк:",
+    "openLink": "Отвори приказката 🚀",
+    "newButton": "Нова"
+  },
+  "sandboxPage": {
+    "defaultChildName": "Габи",
+    "defaultSenderName": "Мама и Тато",
+    "defaultPersonalMessage": "Ти правиш всеки наш ден изпълнен с усмивки и вълшебство. Никога не спирай да мечтаеш!",
+    "defaultPersonalMessageFallback": "Ти правиш света по-красив само защото си в него!",
+    "defaultFavoriteAnimal": "единорог"
+  },
+  "experience": {
+    "muteTooltip": "Спри звука",
+    "unmuteTooltip": "Включи звука",
+    "defaultChildName": "Габи",
+    "defaultSenderWish": "Ти правиш света по-красив само защото си в него! Бъди все така щастлива и усмихната."
+  },
+  "intro": {
+    "title": "Вълшебната приказка за {childName} започва...",
+    "bookTitle": "Вълшебна Книга",
+    "bookPrompt": "Докосни книгата, за да я отвориш ✨"
+  },
+  "stage1": {
+    "holdKeyPrompt": "✨ Натисни и задръж върху вълшебния ключ..."
+  },
+  "stage2": {
+    "balloonsTransition": "🎈 Балоните литват към залата..."
+  },
+  "stage3": {
+    "tapScreen": "✨ Докосни екрана ({step}/{total})",
+    "recordingPrompt": "🎙️ Намисли си желание и го кажи на глас!",
+    "recordingStatus": "Записваме желанието ти...",
+    "blowPrompt": "🎂 Духни силно в микрофона или докосни екрана.",
+    "wishSavedStatus": "Желанието е запазено!",
+    "transcribedQuoted": "\"{text}\"",
+    "candleOutMessage": "✨ Свещичката загасна! Сбъдва се..."
+  },
+  "garlands": {
+    "tracePrompt": "✨ Прокарай пръстче по гирляндите ({percent}%)"
+  },
+  "balloons": {
+    "fillPrompt": "🎈 Нарисувай кръг около всеки балон, за да го напълниш! ({filled}/{total})"
+  },
+  "ribbon": {
+    "pullPrompt": "✨ Дръпни панделката, за да я развържеш!"
+  },
+  "scratch": {
+    "scratchPrompt": "✨ Изтъркай фолиото! ({percent}%)"
+  },
+  "parchmentCard": {
+    "birthdayGreeting": "Честит рожден ден, {childName}!",
+    "recordedWishLabel": "🎙️ Записано желание: “{text}”",
+    "certificateButton": "📜 Грамота"
+  }
+}

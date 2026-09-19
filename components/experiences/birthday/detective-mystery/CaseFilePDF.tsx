@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface CaseFilePdfProps {
   recipient?: string;
@@ -21,42 +22,48 @@ interface CaseFilePdfProps {
 }
 
 export function CaseFilePDF({
-  recipient = 'Заподозрян',
+  recipient,
   age = '30',
-  sender = 'Инспектор',
-  suspectProfile = {
-    alias: 'Шеф на купона',
-    mainCrime: 'Превишена скорост на празнуване',
-    distinguishingMark: 'Заразно добро настроение',
-    lastSeen: 'На дансинга в петък вечер',
-    specialSkill: 'Неоторизирано ядене на торта'
-  },
-  redactedWish = 'Честит рожден ден! Бъди все така неуловим.',
+  sender,
+  suspectProfile,
+  redactedWish,
   evidenceItems = [],
   evidenceClues = [],
   evidenceAnswers = [],
   photos = []
 }: CaseFilePdfProps) {
+  const { t } = useLanguage();
+
+  const resolvedRecipient = recipient || t('detectiveMystery.caseFilePDF.defaultRecipient');
+  const resolvedSender = sender || t('detectiveMystery.caseFilePDF.defaultSender');
+  const resolvedRedactedWish = redactedWish || t('detectiveMystery.caseFilePDF.defaultRedactedWish');
+  const resolvedProfile = {
+    alias: suspectProfile?.alias || t('detectiveMystery.caseFilePDF.defaultAlias'),
+    mainCrime: suspectProfile?.mainCrime || t('detectiveMystery.caseFilePDF.defaultMainCrime'),
+    distinguishingMark: suspectProfile?.distinguishingMark || t('detectiveMystery.caseFilePDF.defaultDistinguishingMark'),
+    lastSeen: suspectProfile?.lastSeen || t('detectiveMystery.caseFilePDF.defaultLastSeen'),
+    specialSkill: suspectProfile?.specialSkill || t('detectiveMystery.caseFilePDF.defaultSpecialSkill'),
+  };
 
   const normalizedPhotos: string[] = (photos || []).map(p => typeof p === 'string' ? p : p.fileUrl).filter(Boolean);
-  
+
   const defaultClues = [
-    '1. Най-голямото ти престъпление (изцепка) през годината?',
-    '2. Кой приятел ти помогна най-много през последните 12 месеца?',
-    '3. Най-ценният трофей / спомен, който отнасяш със себе си?',
-    '4. Каква е голямата цел за следващата година на свобода?',
-    '5. Коя държава/град подготвяш за следващия си голям обир?',
-    '6. Какъв специален план имаш за следващия рожден ден?',
-    '7. Какво е твоето лично послание към теб самия / инспекторите?'
+    t('detectiveMystery.caseFilePDF.clue1'),
+    t('detectiveMystery.caseFilePDF.clue2'),
+    t('detectiveMystery.caseFilePDF.clue3'),
+    t('detectiveMystery.caseFilePDF.clue4'),
+    t('detectiveMystery.caseFilePDF.clue5'),
+    t('detectiveMystery.caseFilePDF.clue6'),
+    t('detectiveMystery.caseFilePDF.clue7'),
   ];
   const defaultAnswers = [
-    suspectProfile.mainCrime || 'Превишена скорост на празнуване',
-    suspectProfile.distinguishingMark || 'Заразно добро настроение',
-    suspectProfile.lastSeen || 'На дансинга в петък вечер',
-    suspectProfile.specialSkill || 'Неоторизирано ядене на торта',
-    'Пълно съдействие на купона',
-    'Завладяване на нови дансинги',
-    redactedWish
+    resolvedProfile.mainCrime,
+    resolvedProfile.distinguishingMark,
+    resolvedProfile.lastSeen,
+    resolvedProfile.specialSkill,
+    t('detectiveMystery.caseFilePDF.extraAnswer1'),
+    t('detectiveMystery.caseFilePDF.extraAnswer2'),
+    resolvedRedactedWish
   ];
 
   const items = evidenceItems && evidenceItems.length > 0
@@ -64,7 +71,7 @@ export function CaseFilePDF({
     : defaultClues.map((clue, idx) => ({
         fileUrl: normalizedPhotos[idx] || `/images/cards/card-${(idx % 3) + 1}.png`,
         clue: evidenceClues[idx] || clue,
-        answer: evidenceAnswers[idx] || defaultAnswers[idx] || 'Фактическа улика'
+        answer: evidenceAnswers[idx] || defaultAnswers[idx] || t('detectiveMystery.caseFilePDF.defaultEvidenceFallback')
       }));
 
   const photoSources = normalizedPhotos.length > 0 
@@ -142,47 +149,47 @@ export function CaseFilePDF({
             </div>
             <div className="border-b border-[#2b241d]/30 pb-2 flex justify-between items-center">
               <div>
-                <span className="text-[9px] font-mono uppercase tracking-widest text-[#615446] block font-bold">СУБЕКТ (FULL NAME)</span>
-                <div className="text-xl font-mono font-black uppercase text-[#1a1714]">{recipient.toUpperCase()}</div>
+                <span className="text-[9px] font-mono uppercase tracking-widest text-[#615446] block font-bold">{t('detectiveMystery.caseFilePDF.subjectLabel')}</span>
+                <div className="text-xl font-mono font-black uppercase text-[#1a1714]">{resolvedRecipient.toUpperCase()}</div>
               </div>
               <div className="text-right">
-                <span className="text-[9px] font-mono uppercase tracking-widest text-[#615446] block font-bold">ВЪЗРАСТ (AGE)</span>
-                <div className="text-xl font-mono font-black text-[#1a1714]">{age} ГОДИНИ</div>
+                <span className="text-[9px] font-mono uppercase tracking-widest text-[#615446] block font-bold">{t('detectiveMystery.caseFilePDF.ageLabel')}</span>
+                <div className="text-xl font-mono font-black text-[#1a1714]">{t('detectiveMystery.caseFilePDF.ageYears', { age })}</div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 font-mono text-xs">
               <div className="bg-[#FAF6EE] border border-[#2b241d]/40 p-2.5 rounded">
-                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">ПСЕВДОНИМ (ALIAS):</span>
-                <span className="font-black text-red-900">{suspectProfile.alias || 'Шеф на купона'}</span>
+                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">{t('detectiveMystery.caseFilePDF.aliasLabel')}</span>
+                <span className="font-black text-red-900">{resolvedProfile.alias}</span>
               </div>
               <div className="bg-[#FAF6EE] border border-[#2b241d]/40 p-2.5 rounded">
-                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">ГЛАВНО ПРЕСТЪПЛЕНИЕ:</span>
-                <span className="font-bold text-[#1a1714]">{suspectProfile.mainCrime || 'Превишена скорост на празнуване'}</span>
+                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">{t('detectiveMystery.caseFilePDF.mainCrimeLabel')}</span>
+                <span className="font-bold text-[#1a1714]">{resolvedProfile.mainCrime}</span>
               </div>
               <div className="bg-[#FAF6EE] border border-[#2b241d]/40 p-2.5 rounded">
-                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">ОТЛИЧИТЕЛЕН БЕЛЕГ:</span>
-                <span className="font-bold text-[#1a1714]">{suspectProfile.distinguishingMark || 'Заразно добро настроение'}</span>
+                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">{t('detectiveMystery.caseFilePDF.distinguishingMarkLabel')}</span>
+                <span className="font-bold text-[#1a1714]">{resolvedProfile.distinguishingMark}</span>
               </div>
               <div className="bg-[#FAF6EE] border border-[#2b241d]/40 p-2.5 rounded">
-                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">ПОСЛЕДНО ЗАБЕЛЯЗАН:</span>
-                <span className="font-bold text-[#1a1714]">{suspectProfile.lastSeen || 'На дансинга в петък вечер'}</span>
+                <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">{t('detectiveMystery.caseFilePDF.lastSeenLabel')}</span>
+                <span className="font-bold text-[#1a1714]">{resolvedProfile.lastSeen}</span>
               </div>
             </div>
 
             <div className="bg-[#FAF6EE] border border-[#2b241d]/40 p-2.5 rounded font-mono text-xs">
-              <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">СПЕЦИАЛНО УМЕНИЕ:</span>
-              <span className="font-black text-[#1a1714]">{suspectProfile.specialSkill || 'Неоторизирано ядене на торта'}</span>
+              <span className="text-[9px] text-[#615446] font-bold uppercase tracking-wider block">{t('detectiveMystery.caseFilePDF.specialSkillLabel')}</span>
+              <span className="font-black text-[#1a1714]">{resolvedProfile.specialSkill}</span>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4 font-mono text-xs">
             <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-3 shadow-sm">
-              <span className="text-[9px] text-[#615446] font-bold uppercase tracking-widest block">ИНСПЕКТОР НА ДЕЛОТО:</span>
-              <div className="font-black uppercase text-[#1a1714] text-sm mt-0.5">{sender}</div>
+              <span className="text-[9px] text-[#615446] font-bold uppercase tracking-widest block">{t('detectiveMystery.caseFilePDF.inspectorLabel')}</span>
+              <div className="font-black uppercase text-[#1a1714] text-sm mt-0.5">{resolvedSender}</div>
             </div>
             <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-3 shadow-sm">
-              <span className="text-[9px] text-[#615446] font-bold uppercase tracking-widest block">ДАТА НА ОТКРИВАНЕ:</span>
+              <span className="text-[9px] text-[#615446] font-bold uppercase tracking-widest block">{t('detectiveMystery.caseFilePDF.dateOpenedLabel')}</span>
               <div className="font-bold uppercase text-[#1a1714] text-sm mt-0.5">2026.03.09</div>
             </div>
           </div>
@@ -192,17 +199,17 @@ export function CaseFilePDF({
               <span>🫲</span>
             </div>
             <div className="space-y-1 font-mono text-xs">
-              <div className="font-bold uppercase tracking-wider text-red-800">[ БИОМЕТРИЧЕН ПРЕДУПРЕДИТЕЛЕН ЗНАК ]</div>
+              <div className="font-bold uppercase tracking-wider text-red-800">{t('detectiveMystery.caseFilePDF.biometricWarningTitle')}</div>
               <p className="text-[#3b3026] leading-relaxed">
-                Субектът демонстрира изключително високо ниво на харизма, неоторизирано ядене на торта и неизбежно добро настроение. Всякакви опити за изолация са неуспешни.
+                {t('detectiveMystery.caseFilePDF.biometricWarningText')}
               </p>
             </div>
           </div>
 
-          {redactedWish && (
+          {resolvedRedactedWish && (
             <div className="bg-red-950/5 border-l-4 border-red-700 p-3.5 font-mono text-xs text-[#2b241d]">
-              <span className="font-bold uppercase tracking-wider text-red-800 block mb-1">СЕКРЕТНО ПОСЛАНИЕ НА ИНСПЕКТОРА:</span>
-              <p className="italic font-serif text-sm">"{redactedWish}"</p>
+              <span className="font-bold uppercase tracking-wider text-red-800 block mb-1">{t('detectiveMystery.caseFilePDF.secretMessageLabel')}</span>
+              <p className="italic font-serif text-sm">"{resolvedRedactedWish}"</p>
             </div>
           )}
         </div>
@@ -236,8 +243,8 @@ export function CaseFilePDF({
         <div className="space-y-4 relative z-10 my-auto py-2">
           <div className="bg-[#FAF6EE] border-2 border-[#2b241d] p-4 shadow-sm space-y-3">
             <h3 className="text-xs font-mono font-black uppercase tracking-widest text-red-800 border-b border-[#2b241d]/30 pb-1.5 flex justify-between items-center">
-              <span>📋 ОФИЦИАЛЕН ПРОТОКОЛ НА УЛИКИТЕ И ОТГОВОРИТЕ</span>
-              <span>СУБЕКТ: {recipient.toUpperCase()}</span>
+              <span>{t('detectiveMystery.caseFilePDF.evidenceLogTitle')}</span>
+              <span>{t('detectiveMystery.caseFilePDF.subjectBadge', { recipient: resolvedRecipient.toUpperCase() })}</span>
             </h3>
 
             <div className="space-y-2.5 max-h-[160px] overflow-hidden">
@@ -256,16 +263,16 @@ export function CaseFilePDF({
 
           <div className="space-y-2">
             <span className="text-[10px] font-mono uppercase tracking-widest text-[#615446] block font-bold">
-              📸 ПОЛАРОИДНИ РАЗСЕКРЕТЕНИ ДОКАЗАТЕЛСТВА (POLICE PHOTO EVIDENCE)
+              {t('detectiveMystery.caseFilePDF.photoEvidenceLabel')}
             </span>
 
             <div className="grid grid-cols-3 gap-3">
               {photoSources.slice(0, 3).map((photoUrl, idx) => {
                 const rotations = [-2, 3, -1];
                 const itemMatch = items[idx];
-                const caption = itemMatch?.answer || `Доказателство #${idx + 1}`;
+                const caption = itemMatch?.answer || t('detectiveMystery.caseFilePDF.evidenceCaptionFallback', { number: idx + 1 });
                 return (
-                  <div 
+                  <div
                     key={idx}
                     className="bg-[#FAF6EE] p-2.5 pt-2.5 pb-3 shadow-md border-2 border-[#2b241d] flex flex-col items-center"
                     style={{ transform: `rotate(${rotations[idx % rotations.length]}deg)` }}
@@ -274,7 +281,7 @@ export function CaseFilePDF({
                       <img src={photoUrl} alt={`Evidence photo #${idx + 1}`} className="w-full h-full object-cover" />
                     </div>
                     <div className="text-center font-mono w-full">
-                      <span className="text-[8px] font-bold uppercase tracking-widest text-red-800 block">ФОТО ДОКАЗАТЕЛСТВО #{idx + 1}</span>
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-red-800 block">{t('detectiveMystery.caseFilePDF.photoEvidenceBadge', { number: idx + 1 })}</span>
                       <p className="text-[9px] font-bold text-[#1a1714] truncate mt-0.5">"{caption}"</p>
                     </div>
                   </div>

@@ -7,6 +7,7 @@ import { Stage1Scene } from './Stage1Scene';
 import { Stage2Scene } from './Stage2Scene';
 import { Stage3Scene } from './Stage3Scene';
 import { Stage4Scene } from './Stage4Scene';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface KidsFairytaleExperienceProps {
   data?: {
@@ -33,6 +34,7 @@ function captureVideoFrame(video: HTMLVideoElement | null): string | null {
 }
 
 export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) {
+  const { t } = useLanguage();
   const [currentStage, setCurrentStage] = useState<'intro' | 'stage1' | 'stage2' | 'stage3' | 'stage4'>('intro');
   const [deviceType, setDeviceType] = useState<'desktop' | 'phone'>('desktop');
   const [recordedAudioBlob, setRecordedAudioBlob] = useState<Blob | null>(null);
@@ -54,8 +56,8 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
 
   const clearTransitionFrame = () => setTransitionFrame(null);
 
-  const childName = data?.childName || 'Габи';
-  const senderWish = data?.senderWish || data?.personalMessage || 'Ти правиш света по-красив само защото си в него! Бъди все така щастлива и усмихната.';
+  const childName = data?.childName || t('kidsFairytale.experience.defaultChildName');
+  const senderWish = data?.senderWish || data?.personalMessage || t('kidsFairytale.experience.defaultSenderWish');
 
   useEffect(() => {
     const checkDevice = () => {
@@ -113,7 +115,7 @@ export function KidsFairytaleExperience({ data }: KidsFairytaleExperienceProps) 
         <button
           onClick={toggleMute}
           className="absolute top-4 right-4 z-50 w-12 h-12 bg-white/30 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center text-white hover:bg-white/50 transition cursor-pointer"
-          title={isMuted ? 'Включи звука' : 'Спри звука'}
+          title={isMuted ? t('kidsFairytale.experience.unmuteTooltip') : t('kidsFairytale.experience.muteTooltip')}
         >
           <span className="text-xl">{isMuted ? '🔇' : '🔊'}</span>
         </button>

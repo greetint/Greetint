@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface GarlandsProps { deviceType: 'desktop' | 'phone'; isMuted: boolean; onComplete: () => void; }
 
@@ -68,6 +69,7 @@ function smoothPath(pts: { x: number; y: number }[]) {
 }
 
 export function GarlandsSubScene({ deviceType, isMuted, onComplete }: GarlandsProps) {
+  const { t } = useLanguage();
   const [prog, setProg] = useState(0);
   const [lit, setLit] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -192,7 +194,7 @@ export function GarlandsSubScene({ deviceType, isMuted, onComplete }: GarlandsPr
         </svg>
       </div>
       <div className="absolute top-8 left-0 right-0 text-center z-30 pointer-events-none">
-        <p className="font-serif italic text-xl md:text-3xl text-amber-200 drop-shadow">✨ Прокарай пръстче по гирляндите ({Math.round(prog)}%)</p>
+        <p className="font-serif italic text-xl md:text-3xl text-amber-200 drop-shadow">{t('kidsFairytale.garlands.tracePrompt', { percent: Math.round(prog) })}</p>
       </div>
     </>
   );

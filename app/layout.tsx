@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { MediaProvider } from "@/components/MediaContext";
+import { LanguageProvider } from "@/lib/i18n/LanguageContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export const metadata: Metadata = {
   title: "Greetint",
@@ -11,7 +13,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
-        <MediaProvider>{children}</MediaProvider>
+        <LanguageProvider>
+          <MediaProvider>{children}</MediaProvider>
+          <LanguageSwitcher />
+        </LanguageProvider>
       </body>
     </html>
   );

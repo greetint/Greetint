@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DualVideoPlayer } from './DualVideoPlayer';
 import { VideoPreloader } from './VideoPreloader';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface Stage3SceneProps {
   deviceType: 'desktop' | 'phone';
@@ -13,6 +14,7 @@ interface Stage3SceneProps {
 }
 
 export function Stage3Scene({ deviceType, isMuted, onComplete, onVideoRef, onPlaying }: Stage3SceneProps) {
+  const { t } = useLanguage();
   const [step, setStep] = useState<number>(1);
   const [wishState, setWishState] = useState<'recording' | 'readyToBlow' | 'blowing' | 'done'>('recording');
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
@@ -196,13 +198,13 @@ export function Stage3Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
 
       <div className="absolute bottom-16 left-0 right-0 text-center z-20 pointer-events-none px-4">
         {step < totalSteps ? (
-          <p className="font-serif italic text-lg md:text-2xl text-amber-200 drop-shadow animate-pulse">✨ Докосни екрана ({step}/{totalSteps})</p>
+          <p className="font-serif italic text-lg md:text-2xl text-amber-200 drop-shadow animate-pulse">{t('kidsFairytale.stage3.tapScreen', { step, total: totalSteps })}</p>
         ) : (
           <div className="space-y-3 bg-black/50 backdrop-blur-md p-6 rounded-3xl max-w-lg mx-auto border border-amber-500/50 shadow-2xl pointer-events-auto">
             {wishState === 'recording' && (
               <>
-                <p className="font-serif italic text-xl md:text-2xl text-amber-200">🎙️ Намисли си желание и го кажи на глас!</p>
-                <p className="text-xs uppercase tracking-[0.2em] text-amber-400 animate-pulse">Записваме желанието ти...</p>
+                <p className="font-serif italic text-xl md:text-2xl text-amber-200">{t('kidsFairytale.stage3.recordingPrompt')}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-400 animate-pulse">{t('kidsFairytale.stage3.recordingStatus')}</p>
               </>
             )}
             {wishState === 'readyToBlow' && (
@@ -213,13 +215,13 @@ export function Stage3Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
                     className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_10px_#fbbf24] transition-transform duration-75"
                     style={{ opacity: micListening ? 1 : 0.35 }}
                   />
-                  <p className="font-serif italic text-xl md:text-2xl text-amber-200">🎂 Духни силно в микрофона или докосни екрана.</p>
+                  <p className="font-serif italic text-xl md:text-2xl text-amber-200">{t('kidsFairytale.stage3.blowPrompt')}</p>
                 </div>
-                <p className="text-xs uppercase tracking-[0.2em] text-amber-400">{transcribedText ? `"${transcribedText}"` : 'Желанието е запазено!'}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-400">{transcribedText ? t('kidsFairytale.stage3.transcribedQuoted', { text: transcribedText }) : t('kidsFairytale.stage3.wishSavedStatus')}</p>
               </>
             )}
             {wishState === 'done' && (
-              <p className="font-serif italic text-2xl text-amber-200 animate-pulse">✨ Свещичката загасна! Сбъдва се...</p>
+              <p className="font-serif italic text-2xl text-amber-200 animate-pulse">{t('kidsFairytale.stage3.candleOutMessage')}</p>
             )}
           </div>
         )}

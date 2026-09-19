@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface QuestionItem {
   question: string;
@@ -17,31 +18,32 @@ interface LieDetectorProps {
 }
 
 export function LieDetectorStage({ recipient, questions, isMuted = false, onComplete }: LieDetectorProps) {
+  const { t } = useLanguage();
   const defaultQuestions: QuestionItem[] = [
     {
-      question: `Въпрос 1: Колко силен е купонът тази вечер за субект ${recipient}?`,
+      question: t('detectiveMystery.lieDetectorStage.q1Question', { recipient }),
       options: [
-        "А) Обикновен семеен събор",
-        "Б) Максимално федерално ниво на шума",
-        "В) Легендарен рожден ден без право на алиби"
+        t('detectiveMystery.lieDetectorStage.q1OptionA'),
+        t('detectiveMystery.lieDetectorStage.q1OptionB'),
+        t('detectiveMystery.lieDetectorStage.q1OptionC'),
       ],
       correctAnswer: 2
     },
     {
-      question: "Въпрос 2: Кой носи основната вина за прекаленото забавление?",
+      question: t('detectiveMystery.lieDetectorStage.q2Question'),
       options: [
-        "А) Рожденикът с неограничена харизма",
-        "Б) Инспекторът по купона",
-        "В) Всички присъстващи съучастници"
+        t('detectiveMystery.lieDetectorStage.q2OptionA'),
+        t('detectiveMystery.lieDetectorStage.q2OptionB'),
+        t('detectiveMystery.lieDetectorStage.q2OptionC'),
       ],
       correctAnswer: 0
     },
     {
-      question: "Въпрос 3: Каква е присъдата за следващите 12 месеца?",
+      question: t('detectiveMystery.lieDetectorStage.q3Question'),
       options: [
-        "А) Строг арест на щастие и успехи",
-        "Б) Неограничени пътувания и приключения",
-        "В) Пълно помилване с много подаръци и торта"
+        t('detectiveMystery.lieDetectorStage.q3OptionA'),
+        t('detectiveMystery.lieDetectorStage.q3OptionB'),
+        t('detectiveMystery.lieDetectorStage.q3OptionC'),
       ],
       correctAnswer: 2
     }
@@ -230,10 +232,10 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
         <div className="flex items-center justify-between w-full max-w-4xl text-xs font-mono uppercase tracking-[0.25em]">
           <div className="flex items-center gap-2 text-green-400 font-bold">
             <span className={`w-3 h-3 rounded-full ${answerStatus === 'lie' ? 'bg-red-500 animate-ping' : 'bg-green-500 animate-pulse'}`} />
-            <span>POLYGRAPH EKG // ТЕСТ НА ЛЪЖАТА</span>
+            <span>{t('detectiveMystery.lieDetectorStage.headerTitle')}</span>
           </div>
           <div className="text-neutral-400 text-[10px]">
-            ВЪПРОС {currentQIndex + 1} / {testQuestions.length}
+            {t('detectiveMystery.lieDetectorStage.questionCounter', { current: currentQIndex + 1, total: testQuestions.length })}
           </div>
         </div>
 
@@ -262,8 +264,8 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
           <div className="space-y-6">
             
             <div className="flex justify-between items-center text-xs text-neutral-400 border-b border-neutral-800 pb-3">
-              <span className="text-green-400 font-bold uppercase tracking-widest">[ СУБЕКТ: {recipient.toUpperCase()} ]</span>
-              <span className="text-neutral-500">ПОЛИГРАФ v2.6</span>
+              <span className="text-green-400 font-bold uppercase tracking-widest">{t('detectiveMystery.lieDetectorStage.subjectLabel', { recipient: recipient.toUpperCase() })}</span>
+              <span className="text-neutral-500">{t('detectiveMystery.lieDetectorStage.polygraphVersion')}</span>
             </div>
 
             <div className="min-h-[80px] flex items-center justify-center">
@@ -299,8 +301,8 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
                   >
                     <span>{opt}</span>
                     <span className="text-xs font-bold">
-                      {selectedOption !== null && idx === currentQ.correctAnswer && "✓ ВЕРЕН"}
-                      {isSelected && idx !== currentQ.correctAnswer && "✗ ГРЕШЕН"}
+                      {selectedOption !== null && idx === currentQ.correctAnswer && t('detectiveMystery.lieDetectorStage.correctBadge')}
+                      {isSelected && idx !== currentQ.correctAnswer && t('detectiveMystery.lieDetectorStage.wrongBadge')}
                       {selectedOption === null && <span className="opacity-0 group-hover:opacity-100 text-green-400">►</span>}
                     </span>
                   </motion.button>
@@ -317,7 +319,7 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
                   className="pt-2"
                 >
                   <div className="border-4 border-green-500 text-green-400 py-2.5 px-4 rounded-xl font-black uppercase text-sm tracking-[0.3em] bg-green-950/40 shadow-[0_0_30px_rgba(34,197,94,0.4)]">
-                    TRUTH // ИСТИНА
+                    {t('detectiveMystery.lieDetectorStage.truthLabel')}
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -325,7 +327,7 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
                     onClick={handleNextQuestion}
                     className="mt-4 w-full bg-green-600 hover:bg-green-500 text-black py-3.5 rounded-xl text-xs uppercase tracking-[0.25em] font-extrabold shadow-lg transition cursor-pointer"
                   >
-                    [ СЛЕДВАЩ ВЪПРОС → ]
+                    {t('detectiveMystery.lieDetectorStage.nextQuestionButton')}
                   </motion.button>
                 </motion.div>
               )}
@@ -338,10 +340,10 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
                   className="pt-2 space-y-3"
                 >
                   <div className="border-4 border-red-600 text-red-500 py-2.5 px-4 rounded-xl font-black uppercase text-sm tracking-[0.3em] bg-red-950/50 shadow-[0_0_30px_rgba(239,68,68,0.5)]">
-                    DECEPTION DETECTED // ЛЪЖА
+                    {t('detectiveMystery.lieDetectorStage.deceptionLabel')}
                   </div>
                   <p className="text-[11px] text-red-400 font-mono">
-                    Полиграфът засече отклонение в сърдечния ритъм! Опитайте отново или продължете напред.
+                    {t('detectiveMystery.lieDetectorStage.deceptionMessage')}
                   </p>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -349,7 +351,7 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
                     onClick={handleNextQuestion}
                     className="w-full bg-red-700 hover:bg-red-600 text-white py-3.5 rounded-xl text-xs uppercase tracking-[0.25em] font-extrabold shadow-lg transition cursor-pointer"
                   >
-                    [ ПРОДЪЛЖИ ВЪПРЕКИ ТОВА → ]
+                    {t('detectiveMystery.lieDetectorStage.continueAnywayButton')}
                   </motion.button>
                 </motion.div>
               )}
@@ -362,20 +364,20 @@ export function LieDetectorStage({ recipient, questions, isMuted = false, onComp
               ✓
             </div>
             <div className="space-y-2">
-              <span className="text-[10px] uppercase tracking-[0.3em] text-green-500 font-bold block">ТЕСТЪТ Е УСПЕШНО ПРЕМИНАТ</span>
-              <h2 className="text-2xl font-serif font-bold text-white uppercase">Полиграфът потвърждава</h2>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-green-500 font-bold block">{t('detectiveMystery.lieDetectorStage.testPassedLabel')}</span>
+              <h2 className="text-2xl font-serif font-bold text-white uppercase">{t('detectiveMystery.lieDetectorStage.polygraphConfirmsTitle')}</h2>
               <p className="text-xs text-neutral-400 leading-relaxed">
-                Субектът <strong className="text-white">{recipient}</strong> показа 100% искреност и максимално ниво на празнуване!
+                {t('detectiveMystery.lieDetectorStage.subjectPrefix')} <strong className="text-white">{recipient}</strong> {t('detectiveMystery.lieDetectorStage.subjectSuffix')}
               </p>
             </div>
             <div className="pt-4">
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={onComplete}
                 className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-green-700 hover:from-green-500 hover:to-emerald-500 text-black py-4 rounded-2xl text-xs uppercase tracking-[0.25em] font-black shadow-xl transition border-2 border-green-400/60 cursor-pointer"
               >
-                [ ПРЕДИМИ КЪМ ДИГИТАЛНАТА ЛУПА → ]
+                {t('detectiveMystery.lieDetectorStage.toMagnifyingGlassButton')}
               </motion.button>
             </div>
           </div>

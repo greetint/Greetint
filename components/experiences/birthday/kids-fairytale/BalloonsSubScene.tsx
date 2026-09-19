@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { motion, animate, useMotionValue, useSpring, useTransform, useAnimationFrame } from 'framer-motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface BalloonsProps { isMuted: boolean; onComplete: () => void; }
 
@@ -118,6 +119,7 @@ function BalloonItem({ index, pos, fill, onMove, onRelease }: BalloonItemProps) 
 }
 
 export function BalloonsSubScene({ isMuted, onComplete }: BalloonsProps) {
+  const { t } = useLanguage();
   const [balls, setBalls] = useState([0, 0, 0, 0, 0]);
   const [angles, setAngles] = useState([0, 0, 0, 0, 0]);
   const [last, setLast] = useState<{ x: number; y: number } | null>(null);
@@ -158,7 +160,7 @@ export function BalloonsSubScene({ isMuted, onComplete }: BalloonsProps) {
     <div className="absolute inset-0 z-20 pointer-events-auto select-none">
       <div className="absolute top-8 left-0 right-0 text-center pointer-events-none z-30">
         <p className="font-serif italic text-xl md:text-3xl text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-          🎈 Нарисувай кръг около всеки балон, за да го напълниш! ({balls.filter(v => v === 100).length}/5)
+          {t('kidsFairytale.balloons.fillPrompt', { filled: balls.filter(v => v === 100).length, total: 5 })}
         </p>
       </div>
 

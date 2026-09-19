@@ -1,0 +1,218 @@
+{
+  "createForm": {
+    "logoAlt": "Greetint Logo",
+    "backToStyles": "← Choose style",
+    "title": "Direct The Experience",
+    "subtitle": "Interactive quest creation studio (Luxe Minimal / Basic)",
+    "printTitle": "Interactive Card - Greetint",
+    "cardTemplates": {
+      "blank": "Plain white (Blank)"
+    },
+    "fonts": {
+      "classic": "Cormorant Garamond (Classic)",
+      "modern": "Montserrat (Modern)",
+      "handwritten": "Caveat (Handwritten)"
+    },
+    "capsuleQuestionOptions": {
+      "q1": "Where do you see yourself in 5 years?",
+      "q2": "What's your craziest dream?",
+      "q3": "What's your favorite memory from this year?",
+      "q4": "If you could win a world championship in something, what would it be?",
+      "custom": "Write your own question..."
+    },
+    "section1": {
+      "title": "1. Who is this surprise for?",
+      "recipientLabel": "Recipient's name",
+      "recipientPlaceholder": "e.g. Victoria",
+      "dateLabel": "Event date",
+      "senderLabel": "Sender's name",
+      "senderPlaceholder": "e.g. from Alex"
+    },
+    "section2": {
+      "title": "2. Main Wish (When blowing out the candle) *",
+      "description": "The emotional highlight the recipient will see when they blow out the candle.",
+      "placeholder": "Write your heartfelt wish here..."
+    },
+    "section3": {
+      "title": "3. Profile & Hidden Messages",
+      "addMessage": "+ Add message",
+      "statusPlaceholder": "Fun tagline / status (e.g. The person with 3 coffees...)",
+      "messagePlaceholder": "Hidden message / joke #{n} (up to 10)",
+      "delete": "Delete"
+    },
+    "section4Photos": {
+      "title": "4. Memories & Photos (Up to 5)",
+      "chooseFiles": "Choose files",
+      "dropZone": "Drag and drop your photos here (Drag & Drop)",
+      "memoryAlt": "Memory",
+      "questionPlaceholder": "Question about this photo...",
+      "answerPlaceholder": "Expected answer...",
+      "remove": "Remove"
+    },
+    "section4Quiz": {
+      "title": "4. Fun Questions / Quiz (Up to 10)",
+      "addQuestion": "+ Add question",
+      "questionLabel": "Question #{n}",
+      "delete": "Delete",
+      "questionPlaceholder": "Enter a question...",
+      "optionAPlaceholder": "Option A",
+      "optionBPlaceholder": "Option B",
+      "optionCPlaceholder": "Option C",
+      "correctAnswerLabel": "Correct answer:"
+    },
+    "section6Capsule": {
+      "title": "6. Time Capsule Questions",
+      "addQuestion": "+ Add question",
+      "questionLabel": "Question #{n}",
+      "delete": "Delete",
+      "placeholder": "Type your own question here...",
+      "orChoose": "Or pick a ready-made one:",
+      "selectDefault": "Choose a ready-made question..."
+    },
+    "section7Card": {
+      "title": "7. Printable Card Editor",
+      "orientationLabel": "Format / Orientation",
+      "portrait": "Portrait",
+      "landscape": "Landscape",
+      "chooseDesignLabel": "Choose a design or drag a photo here (Drag & Drop)",
+      "dragDropTitle": "📂 Drag a photo here or click",
+      "dragDropHint": "Supports PNG, JPG, WEBP",
+      "fontLabel": "Font",
+      "textColorLabel": "Text color",
+      "qrColorLabel": "QR code color",
+      "previewHint": "Grab and drag the text and QR code freely (use the ↔ corner to resize) ↓",
+      "defaultCardText": "For the recipient",
+      "resizeTitle": "Drag to resize",
+      "downloadPdf": "🖨️ Download just the card with QR code as PDF"
+    },
+    "actions": {
+      "simulate": "Experience simulator 👀",
+      "submit": "Seal & Get Link ✨"
+    },
+    "result": {
+      "title": "All done!",
+      "linkLabel": "Link to share:",
+      "openLink": "Open the digital link →"
+    },
+    "simulator": {
+      "stepLabel": "Quest simulator (Step {current} of {total})",
+      "exit": "Exit simulator ✕",
+      "prevStep": "← Previous step",
+      "hint": "Navigate and test the stages",
+      "nextStep": "Next step →",
+      "defaultRecipient": "Recipient",
+      "secretMessageTitle": "Hidden message #{n}",
+      "defaultCandleWish": "Happy holidays!",
+      "defaultMemoryCaption": "Memory",
+      "defaultMemoryAnswer": "answer"
+    }
+  },
+  "sealStage": {
+    "brandLine": "GREETINT CINEMATOGRAPHY",
+    "letterTitle": "You have an unexpected letter...",
+    "openScreen": "Open Screen 🎬",
+    "holdInstruction": "Press and hold the golden seal",
+    "specialExperience": "SPECIAL EXPERIENCE",
+    "happyBirthday": "Happy Birthday,",
+    "unlockMessage": "We've prepared things for you to unlock...",
+    "startAdventure": "Start The Adventure ➔",
+    "defaultRecipient": "Victoria"
+  },
+  "cakeStage": {
+    "wishPrompt": "Before the birthday 3D magic is revealed, write your most treasured wish...",
+    "wishPlaceholder": "Your wish here...",
+    "lockWish": "Lock In The Wish ➔",
+    "blowInstruction": "🎤 Blow into the microphone or click the cake",
+    "senderWishLabel": "MESSAGE FROM THE GIFT-GIVER",
+    "toCapsule": "To the Future Capsule",
+    "defaultRecipient": "VICTORIA",
+    "defaultSenderWish": "May this year bring you health, inspiration, endless happiness, and many dreams come true!"
+  },
+  "capsuleStage": {
+    "pageIndicator": "PERSONAL JOURNAL // PAGE {current} of {total}",
+    "questionLabel": "Question {n}",
+    "answerPlaceholder": "Write here... (Press Enter)",
+    "charCount": "{count} / {max} characters",
+    "prev": "← Previous",
+    "next": "Next ➔",
+    "finish": "Seal & PDF 📄✨",
+    "noAnswer": "No answer",
+    "defaultQuestions": {
+      "q1": "Main goal for the new year?",
+      "q2": "Dream travel destination?",
+      "q3": "The most valuable lesson from the past year?",
+      "q4": "A new habit you want to start?",
+      "q5": "What makes you laugh from the heart?",
+      "q6": "Your personal promise today?",
+      "q7": "A message to your future self:"
+    }
+  },
+  "memoryWallStage": {
+    "defaultRecipient": "VICTORIA",
+    "defaultMemories": {
+      "caption1": "Where was this unforgettable photo taken?",
+      "caption2": "What were we saying at this exact moment?",
+      "caption3": "Which song did we keep listening to back then?"
+    },
+    "correctFeedback": "✦ Correct! Beautiful shot! ✦",
+    "giveUpFeedback": "Here's the shot, you earned it! ❤️",
+    "wrongFeedback": "Not quite... Attempt {n} of 3.",
+    "frameLabel": "✦ Frame {n} ✦",
+    "answerPlaceholder": "Type your answer here...",
+    "submit": "Reveal ➔",
+    "prev": "Previous",
+    "next": "Next",
+    "toFinal": "To The Finale",
+    "waitingForAnswer": "Waiting for an answer"
+  },
+  "quizStage": {
+    "defaultRecipient": "VICTORIA",
+    "defaultQuizzes": {
+      "q1": {
+        "question": "Where was our craziest trip together?",
+        "optionA": "At the seaside",
+        "optionB": "In the mountains",
+        "optionC": "Abroad"
+      },
+      "q2": {
+        "question": "What's our favorite part of the day?",
+        "optionA": "Morning coffee",
+        "optionB": "Starry night",
+        "optionC": "Afternoon walk"
+      }
+    },
+    "progressLabel": "Question {n} of {total}",
+    "badge": "✦ Interactive quiz ✦",
+    "wrongMessage": "✦ Not quite... Think again and try once more ✦",
+    "nextQuestion": "Next Question ➔",
+    "toMemories": "To The Memories ➔",
+    "hint": "✦ Pick the correct answer to continue ✦"
+  },
+  "scratchStage": {
+    "defaultCards": {
+      "title1": "First secret • Joke",
+      "secret1": "The person who drinks 3 coffees a day and still finds energy for crazy ideas!",
+      "title2": "Second secret • Memory",
+      "secret2": "The craziest moments we deliberately kept, that always steal our smiles!"
+    },
+    "canvasHint": "✦ Scratch to reveal the secret ✦",
+    "titleFallback": "Secret {n} of {total}",
+    "prompt": "Behind the golden foil a secret is hidden...",
+    "nextSecret": "Next Secret ➔",
+    "toQuestions": "To The Questions ➔",
+    "scratchHint": "✦ Swipe with your finger to scratch off the foil ✦"
+  },
+  "timeCapsulePdf": {
+    "defaultRecipient": "Recipient",
+    "defaultSender": "Gift-giver",
+    "title": "Time capsule for {recipient}",
+    "subtitle": "Made with love and hope, to be opened in the future",
+    "startLabel": "Start",
+    "messageLabel": "Message",
+    "candleWishLabel": "Wish made",
+    "scratchSecretLabel": "Scratch Secret",
+    "answersHeading": "Answers from the capsule",
+    "noAnswers": "No answers entered yet",
+    "signature": "With love, {sender}"
+  }
+}

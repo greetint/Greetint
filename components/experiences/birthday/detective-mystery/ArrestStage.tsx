@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playSoundEffect } from './utils/speech';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface ArrestStageProps {
   recipient: string;
@@ -12,6 +13,7 @@ interface ArrestStageProps {
 }
 
 export function ArrestStage({ recipient, age, isMuted = false, onComplete }: ArrestStageProps) {
+  const { t } = useLanguage();
   const [isFlashing, setIsFlashing] = useState(false);
   const voiceAudioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -110,7 +112,7 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
         {/* Middle Text Section (Exact neutral text without extra names) */}
         <div className="bg-neutral-900 border-2 border-neutral-700 p-5 text-left shadow-inner">
           <p className="text-xs sm:text-sm leading-relaxed text-[#F7F4EF] font-mono font-bold tracking-wide">
-            Класифицирано досие. Обектът е под наблюдение. Всички улики са събрани, но делото остава неразкрито. Натиснете червения бутон, за да отворите архива и да започнете разследването.
+            {t('detectiveMystery.arrestStage.classifiedMessage')}
           </p>
         </div>
 
@@ -133,7 +135,7 @@ export function ArrestStage({ recipient, age, isMuted = false, onComplete }: Arr
           onClick={handleUnlock}
           className="w-full max-w-sm mx-auto bg-red-700 hover:bg-red-800 text-white py-2.5 sm:py-3 px-4 uppercase tracking-[0.15em] text-[10px] sm:text-xs font-black shadow-[0_3px_0_#000] transition border-2 border-black cursor-pointer flex items-center justify-center gap-2 relative overflow-hidden group"
         >
-          <span>[ 🔓 РАЗКРИЙ ДОСИЕТО НА {recipient.toUpperCase()} ]</span>
+          <span>{t('detectiveMystery.arrestStage.unlockButton', { recipient: recipient.toUpperCase() })}</span>
         </motion.button>
       </motion.div>
     </div>

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMedia } from '@/components/MediaContext';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface SealStageProps {
   recipient?: string;
@@ -10,7 +11,9 @@ interface SealStageProps {
   onUnlock?: () => void;
 }
 
-export function SealStage({ recipient = "Виктория", onComplete, onUnlock }: SealStageProps) {
+export function SealStage({ recipient, onComplete, onUnlock }: SealStageProps) {
+  const { t } = useLanguage();
+  const displayRecipient = recipient || t('basic.sealStage.defaultRecipient');
   const [hasStarted, setHasStarted] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -158,17 +161,17 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
               className="text-center space-y-6 z-10 max-w-xl px-4"
             >
               <span className="text-xs uppercase tracking-[0.6em] text-[#958679] font-sans font-bold block leading-relaxed">
-                ГРИЙТИНТ КИНЕМАТОГРАФИЯ
+                {t('basic.sealStage.brandLine')}
               </span>
               <h2 className="font-serif italic text-3xl sm:text-6xl text-[#FEFEFD] tracking-wide leading-tight">
-                Имате неочаквано писмо...
+                {t('basic.sealStage.letterTitle')}
               </h2>
               <div className="pt-4">
                 <button
                   onClick={handleStartInteraction}
                   className="bg-[#DBCEB3] text-[#1F1A17] px-10 py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-2xl font-sans hover:bg-[#FEFEFD] transition duration-300"
                 >
-                  Отвори Екрана 🎬
+                  {t('basic.sealStage.openScreen')}
                 </button>
               </div>
             </motion.div>
@@ -332,7 +335,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
             className="relative z-20 text-center pb-12 pt-4 pointer-events-none mt-auto"
           >
             <p className="font-serif italic text-base sm:text-2xl text-[#DBCEB3] tracking-wide drop-shadow-sm">
-              Натисни и задръж златния печат
+              {t('basic.sealStage.holdInstruction')}
             </p>
           </motion.div>
         )}
@@ -371,23 +374,23 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
               >
                 <div className="space-y-2">
                   <span className="text-[10px] sm:text-xs uppercase tracking-[0.5em] text-[#958679] font-sans font-bold block">
-                    СПЕЦИАЛНО ПРЕЖИВЯВАНЕ
+                    {t('basic.sealStage.specialExperience')}
                   </span>
                   <h2 className="font-serif italic text-xl sm:text-4xl text-[#635E57] tracking-wide">
-                    Честит Рожден Ден,
+                    {t('basic.sealStage.happyBirthday')}
                   </h2>
                 </div>
 
                 <div className="py-2">
                   <h1 className="font-serif text-4xl sm:text-8xl text-[#1F1A17] uppercase tracking-wider font-light drop-shadow-sm">
-                    {recipient}
+                    {displayRecipient}
                   </h1>
                   <div className="w-24 sm:w-28 h-[1px] bg-[#958679]/40 mx-auto mt-3" />
                 </div>
 
                 <div className="space-y-4 sm:space-y-6 w-full max-w-md">
                   <p className="font-serif italic text-sm sm:text-xl text-[#635E57] leading-relaxed">
-                    "Подготвили сме ти неща, които да отключиш..."
+                    "{t('basic.sealStage.unlockMessage')}"
                   </p>
 
                   <div>
@@ -395,7 +398,7 @@ export function SealStage({ recipient = "Виктория", onComplete, onUnlock
                       onClick={handleProceedToQuest}
                       className="bg-[#1F1A17] text-[#FEFEFD] px-8 py-3.5 sm:px-10 sm:py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl font-sans hover:bg-[#958679] transition duration-300"
                     >
-                      Започни Приключението ➔
+                      {t('basic.sealStage.startAdventure')}
                     </button>
                   </div>
                 </div>

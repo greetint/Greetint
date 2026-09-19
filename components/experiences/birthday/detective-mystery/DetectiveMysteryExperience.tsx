@@ -7,6 +7,7 @@ import { LieDetectorStage } from './LieDetectorStage';
 import { MagnifyingGlassStage } from './MagnifyingGlassStage';
 import { EvidenceVaultStage } from './EvidenceVaultStage';
 import { PrisonReleaseStage } from './PrisonReleaseStage';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface DetectiveMysteryExperienceProps {
   data: {
@@ -38,28 +39,29 @@ interface DetectiveMysteryExperienceProps {
 }
 
 export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceProps) {
+  const { t } = useLanguage();
   const [currentStageIndex, setCurrentStageIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const recipient = data?.recipient || 'Заподозрян';
+  const recipient = data?.recipient || t('detectiveMystery.experience.defaultRecipient');
   const age = data?.age || '30';
-  const sender = data?.sender || 'Инспектор';
+  const sender = data?.sender || t('detectiveMystery.experience.defaultSender');
   const suspectProfile = data?.suspectProfile || {
-    alias: 'Шеф на купона',
-    mainCrime: data?.charges?.[0] || 'Превишена скорост на празнуване',
-    distinguishingMark: data?.charges?.[1] || 'Заразно добро настроение',
-    lastSeen: 'На дансинга в петък вечер',
-    specialSkill: data?.charges?.[2] || 'Неоторизирано ядене на торта'
+    alias: t('detectiveMystery.experience.defaultAlias'),
+    mainCrime: data?.charges?.[0] || t('detectiveMystery.experience.defaultMainCrime'),
+    distinguishingMark: data?.charges?.[1] || t('detectiveMystery.experience.defaultDistinguishingMark'),
+    lastSeen: t('detectiveMystery.experience.defaultLastSeen'),
+    specialSkill: data?.charges?.[2] || t('detectiveMystery.experience.defaultSpecialSkill')
   };
   const charges = data?.charges || [
     suspectProfile.mainCrime,
     suspectProfile.distinguishingMark,
     suspectProfile.specialSkill
   ];
-  const secretClue = data?.secretClue || 'Къде се крием?';
-  const secretAnswer = data?.secretAnswer || 'кафе';
-  const redactedWish = data?.redactedWish || 'Честит рожден ден! Бъди все така неуловим.';
+  const secretClue = data?.secretClue || t('detectiveMystery.experience.defaultSecretClue');
+  const secretAnswer = data?.secretAnswer || t('detectiveMystery.experience.defaultSecretAnswer');
+  const redactedWish = data?.redactedWish || t('detectiveMystery.experience.defaultRedactedWish');
   const photos = data?.photos || [];
 
   // Background Ambient Detective Audio Loop strictly from /audio/detective/detective-ambient.mp3
@@ -171,7 +173,7 @@ export function DetectiveMysteryExperience({ data }: DetectiveMysteryExperienceP
       <button
         onClick={toggleMute}
         className="absolute top-4 right-4 z-55 w-10 h-10 bg-black/60 backdrop-blur-md text-white rounded-full shadow-lg hover:bg-black/90 transition flex items-center justify-center text-base border border-white/20 cursor-pointer"
-        title={isMuted ? 'Включи музиката' : 'Спри музиката'}
+        title={isMuted ? t('detectiveMystery.experience.muteTooltipOn') : t('detectiveMystery.experience.muteTooltipOff')}
       >
         <span>{isMuted ? '🔇' : '🔊'}</span>
       </button>

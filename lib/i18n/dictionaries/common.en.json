@@ -1,0 +1,148 @@
+{
+  "switcher": {
+    "bg": "BG",
+    "en": "EN"
+  },
+  "landing": {
+    "nav": {
+      "concept": "Concept",
+      "process": "How it works"
+    },
+    "cta": {
+      "createCapsule": "Create Capsule"
+    },
+    "hero": {
+      "badge": "Editorial Digital Capsules & Print Archives",
+      "titleLine1": "Give more than a card.",
+      "titleLine2": "Seal an interactive memory.",
+      "description": "GREETINT turns a birthday into a premium digital experience — a personal quest with hidden secrets, unlockable memories, a candle to blow out, and a final capsule for the future.",
+      "ctaCreate": "Create an Interactive Card",
+      "ctaView": "See the Experience ↓"
+    },
+    "tabs": {
+      "sectionLabel": "The Idea Behind GREETINT",
+      "sectionTitle": "Two Sides of One Memory",
+      "receiver": "For the Birthday Person",
+      "giver": "For the Gift Giver",
+      "receiverLabel": "Interactive Quest",
+      "receiverTitle": "An experience, not just a wish",
+      "receiverText": "The birthday person scans the QR code, breaks the wax seal, scratches off the secret joke, answers a question to unlock the photos, blows out the candle on their screen, and fills in their own 7 answers for the future.",
+      "giverLabel": "Fast and Easy",
+      "giverTitle": "Put together a personalized gift in minutes",
+      "giverText": "Fill in 3 quick personal details, pick from our ready-made playful lines (or write your own), upload your favorite photos, and write your wish. Everything else falls into place automatically."
+    },
+    "footer": {
+      "rights": "© 2026 GREETINT. All rights reserved. Editorial Time Capsules."
+    }
+  },
+  "selectStyle": {
+    "backHome": "← Back to Home",
+    "catalogBadge": "Catalog of Interactive Experiences",
+    "title": "Choose a Birthday Style",
+    "subtitle": "Each style offers a unique visual aesthetic, themed animations, and an engaging quest for the recipient.",
+    "stagesCount": "{count} stages ✨",
+    "comingSoon": "Coming soon",
+    "selectCta": "Choose this style ✨",
+    "lockedCta": "🔒 Locked style"
+  },
+  "styles": {
+    "original-signature": {
+      "badge": "Adults / Universal",
+      "description": "Luxury minimalism, Soft Silk, deep tones, a 3D wax seal, and a gold scratch-off foil."
+    },
+    "detective-mystery": {
+      "badge": "Puzzle Lovers",
+      "description": "Noir atmosphere, TOP SECRET folders and red stamps, with a virtual magnifying glass and decoding."
+    },
+    "escape-room": {
+      "badge": "Room of Riddles",
+      "description": "An interactive adventure with codes, timers, and logic steps."
+    },
+    "editorial-magazine": {
+      "badge": "Fashion & Style - Women",
+      "description": "A magazine cover with elegant typography, swipe browsing, and a rapid-fire interview."
+    },
+    "retro-arcade": {
+      "badge": "Gamers",
+      "description": "8-bit pixel art, arcade machines, a Boss battle with button mashing, and treasure unlocking."
+    },
+    "boarding-pass": {
+      "badge": "Travelers",
+      "description": "Airport aesthetics, tickets, globes, stamps, barcode scanning, and a scratch-off globe."
+    },
+    "kids-fairytale": {
+      "badge": "Kids 3-6 y.o.",
+      "description": "3D Disney Pixar style, a palette of soft, luxurious kids' tones, an animated helper character, and balloon popping."
+    },
+    "secret-diary": {
+      "badge": "Girls 7-12 y.o.",
+      "description": "Secret diaries, pastel colors, stickers, a photo scrapbook quiz, and a Fashion vibe creator."
+    },
+    "agent-heist": {
+      "badge": "Boys 7-12 y.o.",
+      "description": "A spy lab, Minecraft/Roblox vibe, a laser maze, and safe hacking."
+    },
+    "aesthetic-dump": {
+      "badge": "Teens - Girls",
+      "description": "TikTok/Reels scroll, Y2K vintage filters, a vertical-scroll moodboard with hidden tags, and a Which Vibe quiz."
+    },
+    "level-up-cyber": {
+      "badge": "Teens - Boys",
+      "description": "Cyberpunk, a Discord/Twitch interface, dark mode, a speedrun timer with riddles, and a System Hack."
+    }
+  },
+  "lockedStyle": {
+    "backLink": "← Choose another style",
+    "cta": "Go to style selection",
+    "locked": "This style is locked (coming soon).",
+    "aesthetic-dump": {
+      "description": "TikTok/Reels scroll, Y2K filters, and a moodboard."
+    },
+    "agent-heist": {
+      "description": "A spy lab, a laser maze, and a safe."
+    },
+    "boarding-pass": {
+      "description": "Airport aesthetics, tickets, and a scratch-off globe."
+    },
+    "editorial-magazine": {
+      "description": "A magazine cover, swipe browsing, and a rapid-fire interview."
+    },
+    "escape-room": {
+      "description": "An interactive adventure with codes and timers."
+    },
+    "level-up-cyber": {
+      "description": "Cyberpunk, a Discord/Twitch interface, and a System Hack."
+    },
+    "retro-arcade": {
+      "description": "8-bit pixel art, arcade machines, and a Boss battle."
+    },
+    "secret-diary": {
+      "description": "Secret diaries, pastel colors, and a photo scrapbook."
+    },
+    "teen-aesthetic": {
+      "description": "This teen-style form is set up as a standalone template awaiting its next stage of development."
+    }
+  },
+  "cardReceiver": {
+    "initializing": "Initializing...",
+    "muteOn": "Turn on music",
+    "muteOff": "Turn off music",
+    "questLoadError": "Error loading quest data:",
+    "defaults": {
+      "sender": "The Gifter",
+      "detectiveSender": "Inspector",
+      "statusText": "Welcoming 2026 with new dreams!",
+      "secretJoke": "Hidden message...",
+      "mainWish": "May this year bring you health and inspiration!",
+      "recipientFallback": "Suspect",
+      "nameFallback": "Friend",
+      "hiddenMessage": "Hidden Message #{n}",
+      "memoryCaption": "Memory",
+      "memoryAnswer": "answer",
+      "kidsNameFallback": "Gabi",
+      "kidsSenderFallback": "Mom and Dad",
+      "kidsMessageFallback": "You fill every one of our days with smiles and sunshine. Never stop dreaming and enjoying life's little wonders!",
+      "kidsAnimalFallback": "unicorn"
+    }
+  }
+}

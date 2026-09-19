@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export interface ScratchCardItem {
   id: string;
@@ -15,24 +16,25 @@ interface ScratchStageProps {
   onComplete?: () => void;
 }
 
-const DEFAULT_CARDS: ScratchCardItem[] = [
-  {
-    id: '1',
-    title: 'Първа тайна • Шега',
-    secretText: 'Човекът, който пие 3 кафета на ден и пак намира енергия за щури идеи!',
-  },
-  {
-    id: '2',
-    title: 'Втора тайна • Спомен',
-    secretText: 'Умишлено запазените най-луди моменти, които винаги ни крадат усмивките!',
-  },
-];
-
-export function ScratchStage({ 
-  recipient = "Виктория",
-  scratchCards = DEFAULT_CARDS,
-  onComplete 
+export function ScratchStage({
+  recipient,
+  scratchCards,
+  onComplete
 }: ScratchStageProps) {
+  const { t } = useLanguage();
+  const defaultCards: ScratchCardItem[] = [
+    {
+      id: '1',
+      title: t('basic.scratchStage.defaultCards.title1'),
+      secretText: t('basic.scratchStage.defaultCards.secret1'),
+    },
+    {
+      id: '2',
+      title: t('basic.scratchStage.defaultCards.title2'),
+      secretText: t('basic.scratchStage.defaultCards.secret2'),
+    },
+  ];
+  const resolvedCards = scratchCards || defaultCards;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isScratched, setIsScratched] = useState(false);
   const [isCanvasReady, setIsCanvasReady] = useState(false);
@@ -41,7 +43,7 @@ export function ScratchStage({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const lastPosRef = useRef<{ x: number; y: number } | null>(null);
 
-  const currentCard = scratchCards[currentIndex] || scratchCards[0];
+  const currentCard = resolvedCards[currentIndex] || resolvedCards[0];
 
   const MAX_SECRET_LENGTH = 140;
   const formattedSecretText = currentCard.secretText.length > MAX_SECRET_LENGTH 
@@ -71,11 +73,11 @@ export function ScratchStage({
     ctx.fillRect(0, 0, width, height);
 
     ctx.fillStyle = '#322720';
-    ctx.font = 'bold 16px serif'; // Малко по-малък шрифт на скреч полето
+    ctx.font = 'bold 16px serif'; // smaller font for the scratch field
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('✦ Изтрий за да разкриеш тайната ✦', width / 2, height / 2);
-    
+    ctx.fillText(t('basic.scratchStage.canvasHint'), width / 2, height / 2);
+
     setIsScratched(false);
     setIsCanvasReady(true);
   };
@@ -84,7 +86,7 @@ export function ScratchStage({
     initCanvas();
     window.addEventListener('resize', initCanvas);
     return () => window.removeEventListener('resize', initCanvas);
-  }, [currentIndex]);
+  }, [currentIndex, t]);
 
   const checkScratchPercentage = () => {
     const canvas = canvasRef.current;
@@ -137,7 +139,7 @@ export function ScratchStage({
   };
 
   const handleNextCard = () => {
-    if (currentIndex < scratchCards.length - 1) {
+    if (currentIndex < resolvedCards.length - 1) {
       setIsScratched(false);
       setCurrentIndex(prev => prev + 1);
     } else if (onComplete) {
@@ -166,10 +168,10 @@ export function ScratchStage({
       >
         <div className="space-y-2 sm:space-y-3">
           <span className="text-[10px] sm:text-sm uppercase tracking-[0.4em] text-[#958679] font-sans font-bold block">
-            {currentCard.title || `Тайна ${currentIndex + 1} от ${scratchCards.length}`}
+            {currentCard.title || t('basic.scratchStage.titleFallback', { n: currentIndex + 1, total: resolvedCards.length })}
           </span>
           <h2 className="font-serif italic text-xl sm:text-4xl text-[#635E57] tracking-wide px-2">
-            Зад златното фолио е скрита тайната...
+            {t('basic.scratchStage.prompt')}
           </h2>
           <div className="w-20 sm:w-24 h-[1px] bg-[#958679]/50 mx-auto mt-2" />
         </div>
@@ -221,18 +223,18 @@ export function ScratchStage({
                   onClick={handleNextCard}
                   className="bg-[#1F1A17] text-[#FEFEFD] px-8 py-3.5 sm:px-10 sm:py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl font-sans hover:bg-[#635E57] transition duration-300 w-full"
                 >
-                  {currentIndex < scratchCards.length - 1 ? 'Следваща Тайна ➔' : 'Към Въпросите ➔'}
+                  {currentIndex < resolvedCards.length - 1 ? t('basic.scratchStage.nextSecret') : t('basic.scratchStage.toQuestions')}
                 </button>
               </motion.div>
             ) : (
-              <motion.span 
+              <motion.span
                 key="hint"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#635E57] font-sans font-bold italic block"
               >
-                ✦ Плъсни с пръст, за да изтриеш фолиото ✦
+                {t('basic.scratchStage.scratchHint')}
               </motion.span>
             )}
           </AnimatePresence>

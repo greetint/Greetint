@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface PdfProps {
   recipient?: string;
@@ -14,8 +15,8 @@ interface PdfProps {
 }
 
 export function TimeCapsulePdf({
-  recipient = 'Получател',
-  sender = 'Подаряващия',
+  recipient,
+  sender,
   statusText = '',
   mainWish = '',
   wishFromCandle = '',
@@ -23,7 +24,10 @@ export function TimeCapsulePdf({
   capsuleAnswers = [],
   photos = []
 }: PdfProps) {
-  
+  const { t } = useLanguage();
+  const resolvedRecipient = recipient || t('basic.timeCapsulePdf.defaultRecipient');
+  const resolvedSender = sender || t('basic.timeCapsulePdf.defaultSender');
+
   const isImage = (url: string) => {
     if (!url) return false;
     const lower = url.toLowerCase();
@@ -116,10 +120,10 @@ export function TimeCapsulePdf({
           {/* ЗАГЛАВИЕ */}
           <div className="text-center mb-1 flex-shrink-0 border-b border-[#C8B89D]/50 pb-1">
             <h1 style={{ fontFamily: "'Caveat', cursive" }} className="text-5xl font-bold text-[#3A322D] leading-tight">
-              Капсула на времето за {recipient}
+              {t('basic.timeCapsulePdf.title', { recipient: resolvedRecipient })}
             </h1>
             <p style={{ fontFamily: "'Playfair Display', serif" }} className="text-[11px] italic text-[#7A6C5E]">
-              Създадено с любов и надежда, за да се отвори в бъдещето
+              {t('basic.timeCapsulePdf.subtitle')}
             </p>
           </div>
 
@@ -135,13 +139,13 @@ export function TimeCapsulePdf({
                 <div className="w-[65%] flex flex-col gap-1.5">
                   {statusText && (
                     <div>
-                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Начало</span>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">{t('basic.timeCapsulePdf.startLabel')}</span>
                       <p style={{ fontFamily: "'Caveat', cursive" }} className="text-3xl text-[#1F1A17] leading-tight break-all">{statusText}</p>
                     </div>
                   )}
                   {mainWish && (
                     <div>
-                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Послание</span>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">{t('basic.timeCapsulePdf.messageLabel')}</span>
                       <p style={{ fontFamily: "'Caveat', cursive" }} className="text-3xl text-[#1F1A17] leading-tight break-all">{mainWish}</p>
                     </div>
                   )}
@@ -158,13 +162,13 @@ export function TimeCapsulePdf({
                 <div className="w-[65%] flex flex-col gap-1.5 text-right">
                   {wishFromCandle && (
                     <div>
-                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Намислено желание</span>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">{t('basic.timeCapsulePdf.candleWishLabel')}</span>
                       <p style={{ fontFamily: "'Caveat', cursive" }} className="text-3xl text-[#1F1A17] leading-tight break-all">"{wishFromCandle}"</p>
                     </div>
                   )}
                   {secretJoke && (
                     <div>
-                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">Скреч Тайна</span>
+                      <span style={{ fontFamily: "'Playfair Display', serif" }} className="text-[9px] uppercase tracking-widest text-[#958679] font-bold block mb-0.5">{t('basic.timeCapsulePdf.scratchSecretLabel')}</span>
                       <p style={{ fontFamily: "'Caveat', cursive" }} className="text-3xl text-[#1F1A17] leading-tight break-all">{secretJoke}</p>
                     </div>
                   )}
@@ -180,7 +184,7 @@ export function TimeCapsulePdf({
                 </div>
                 <div className="w-[65%] px-1">
                   <h3 style={{ fontFamily: "'Playfair Display', serif" }} className="text-[10px] uppercase tracking-widest text-center text-[#8A7C6E] border-b border-[#C8B89D]/50 pb-0.5 mb-1.5">
-                    Отговори от капсулата
+                    {t('basic.timeCapsulePdf.answersHeading')}
                   </h3>
                   <div className="grid grid-cols-2 gap-x-3 gap-y-1">
                     {capsuleAnswers.length > 0 ? (
@@ -192,7 +196,7 @@ export function TimeCapsulePdf({
                       ))
                     ) : (
                       <div className="col-span-2 text-center">
-                        <p style={{ fontFamily: "'Caveat', cursive" }} className="text-xl text-[#1F1A17]/60 italic">Няма въведени отговори все още</p>
+                        <p style={{ fontFamily: "'Caveat', cursive" }} className="text-xl text-[#1F1A17]/60 italic">{t('basic.timeCapsulePdf.noAnswers')}</p>
                       </div>
                     )}
                   </div>
@@ -205,7 +209,7 @@ export function TimeCapsulePdf({
           {/* ПОДПИС */}
           <div className="flex-shrink-0 pt-2 pb-1 border-t border-[#C8B89D]/50 text-right">
             <p style={{ fontFamily: "'Caveat', cursive" }} className="text-4xl text-[#1F1A17] pr-6 leading-none">
-              С любов, {sender}
+              {t('basic.timeCapsulePdf.signature', { sender: resolvedSender })}
             </p>
           </div>
 

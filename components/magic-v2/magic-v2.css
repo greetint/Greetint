@@ -1,0 +1,120 @@
+/* Isolated stylesheet for the /magic-v2 experience. Not shared with any
+   other route — safe to change freely without affecting the existing app. */
+
+.mv2-root {
+  --mv2-gold: #f7d774;
+  --mv2-gold-deep: #d9a441;
+  --mv2-ink: #2a1b3d;
+  --mv2-twilight-1: #1b1036;
+  --mv2-twilight-2: #3a1c5e;
+  --mv2-twilight-3: #6a3093;
+  --mv2-pink: #ff8fb1;
+  --mv2-lavender: #c9a6ff;
+  font-family: 'Playfair Display', serif;
+}
+
+.mv2-heading {
+  font-family: 'Cinzel Decorative', serif;
+}
+
+.mv2-script {
+  font-family: 'Great Vibes', cursive;
+}
+
+@keyframes mv2-pulse-glow {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.18); }
+}
+
+@keyframes mv2-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.7); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+
+@keyframes mv2-float-up {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  12% { opacity: 1; }
+  100% { transform: translateY(-140px) translateX(var(--mv2-drift, 0px)) scale(0.35); opacity: 0; }
+}
+
+@keyframes mv2-flicker {
+  0%, 100% { transform: scaleY(1) rotate(-1.5deg); opacity: 1; }
+  25% { transform: scaleY(1.1) rotate(1.5deg); opacity: 0.92; }
+  50% { transform: scaleY(0.92) rotate(-2.5deg); opacity: 0.85; }
+  75% { transform: scaleY(1.06) rotate(2deg); opacity: 0.96; }
+}
+
+@keyframes mv2-wobble {
+  0%, 100% { transform: rotate(-2.5deg) translateY(0); }
+  50% { transform: rotate(2.5deg) translateY(-4px); }
+}
+
+@keyframes mv2-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes mv2-orbit {
+  from { transform: rotate(0deg) translateX(var(--mv2-r, 120px)) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(var(--mv2-r, 120px)) rotate(-360deg); }
+}
+
+@keyframes mv2-drift-bg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes mv2-smoke-rise {
+  0% { transform: translateY(0) scale(0.6); opacity: 0.6; }
+  100% { transform: translateY(-60px) scale(1.6); opacity: 0; }
+}
+
+.mv2-bg-nebula {
+  background: linear-gradient(120deg, var(--mv2-twilight-1), var(--mv2-twilight-3), var(--mv2-twilight-2), var(--mv2-ink));
+  background-size: 300% 300%;
+  animation: mv2-drift-bg 22s ease-in-out infinite;
+}
+
+.mv2-star {
+  animation: mv2-twinkle var(--mv2-dur, 3s) ease-in-out infinite;
+  animation-delay: var(--mv2-delay, 0s);
+}
+
+.mv2-sparkle-particle {
+  animation: mv2-float-up var(--mv2-dur, 4s) ease-out infinite;
+  animation-delay: var(--mv2-delay, 0s);
+}
+
+.mv2-flame {
+  animation: mv2-flicker 0.6s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+
+.mv2-wobble {
+  animation: mv2-wobble 3.2s ease-in-out infinite;
+}
+
+.mv2-shimmer-text {
+  background: linear-gradient(90deg, var(--mv2-gold-deep) 0%, var(--mv2-gold) 25%, #fff8dd 50%, var(--mv2-gold) 75%, var(--mv2-gold-deep) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: mv2-shimmer 3.5s linear infinite;
+}
+
+.mv2-glow-ring {
+  animation: mv2-pulse-glow var(--mv2-dur, 2.2s) ease-in-out infinite;
+}
+
+.mv2-smoke {
+  animation: mv2-smoke-rise 1.4s ease-out forwards;
+}
+
+.mv2-no-select {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+}

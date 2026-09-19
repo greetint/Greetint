@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface SuspectRecordProps {
   recipient: string;
@@ -36,8 +37,9 @@ export function SuspectRecordStage({
   isMuted = false, 
   isModal = false,
   onClose,
-  onComplete 
+  onComplete
 }: SuspectRecordProps) {
+  const { t } = useLanguage();
   const [currentPage, setCurrentPage] = useState<1 | 2 | 3>(1);
   const [mouseScreen, setMouseScreen] = useState({ x: -1000, y: -1000 });
   const [activeLaserKey, setActiveLaserKey] = useState<string | null>(null);
@@ -81,55 +83,55 @@ export function SuspectRecordStage({
   };
 
   const profile = suspectProfile || {
-    alias: 'Шеф на купона',
-    mainCrime: charges?.[0] || 'Превишена скорост на празнуване',
-    distinguishingMark: charges?.[1] || 'Заразно добро настроение',
-    lastSeen: 'На дансинга в петък вечер',
-    specialSkill: charges?.[2] || 'Неоторизирано ядене на торта'
+    alias: t('detectiveMystery.suspectRecordStage.defaultAlias'),
+    mainCrime: charges?.[0] || t('detectiveMystery.suspectRecordStage.defaultMainCrime'),
+    distinguishingMark: charges?.[1] || t('detectiveMystery.suspectRecordStage.defaultDistinguishingMark'),
+    lastSeen: t('detectiveMystery.suspectRecordStage.defaultLastSeen'),
+    specialSkill: charges?.[2] || t('detectiveMystery.suspectRecordStage.defaultSpecialSkill')
   };
 
   const defaultAnswers = [
-    profile.alias || 'Шеф на купона',
-    profile.mainCrime || 'Превишена скорост на празнуване',
-    profile.distinguishingMark || 'Заразно добро настроение',
-    profile.lastSeen || 'На дансинга в петък вечер',
-    profile.specialSkill || 'Неоторизирано ядене на торта'
+    profile.alias || t('detectiveMystery.suspectRecordStage.defaultAlias'),
+    profile.mainCrime || t('detectiveMystery.suspectRecordStage.defaultMainCrime'),
+    profile.distinguishingMark || t('detectiveMystery.suspectRecordStage.defaultDistinguishingMark'),
+    profile.lastSeen || t('detectiveMystery.suspectRecordStage.defaultLastSeen'),
+    profile.specialSkill || t('detectiveMystery.suspectRecordStage.defaultSpecialSkill')
   ];
 
   const answers = evidenceAnswers?.length ? evidenceAnswers : (evidenceItems?.length ? evidenceItems.map(item => item.answer) : defaultAnswers);
   const secretPassVal = secretPassword || 'кафе';
 
   const defaultClues = [
-    'Кой е псевдонимът на заподозрения?',
-    'Какво е основното престъпление?',
-    'Кой е отличителният белег?',
-    'Къде е забележан за последно?',
-    'Какво е специалното умение?'
+    t('detectiveMystery.suspectRecordStage.defaultClue1'),
+    t('detectiveMystery.suspectRecordStage.defaultClue2'),
+    t('detectiveMystery.suspectRecordStage.defaultClue3'),
+    t('detectiveMystery.suspectRecordStage.defaultClue4'),
+    t('detectiveMystery.suspectRecordStage.defaultClue5'),
   ];
 
   const cluesList = evidenceItems?.length ? evidenceItems.map(item => item.clue) : (evidenceClues?.length ? evidenceClues : defaultClues);
 
   // Page 1: Identity & Security Data
   const page1Fields = [
-    { key: 'alias', label: '[ КОДОВО ИМЕ / АЛИАС ]', value: profile.alias, note: 'Важна улика за разследването' },
-    { key: 'age', label: '[ ВЪЗРАСТ НА СУБЕКТА ]', value: age, note: 'Ключ за радиочестотния скенер' },
-    { key: 'secretPassword', label: '[ СЕКРЕТНА ПАРОЛА ]', value: secretPassVal, note: 'Ключ за верификационния терминал' },
+    { key: 'alias', label: t('detectiveMystery.suspectRecordStage.aliasFieldLabel'), value: profile.alias, note: t('detectiveMystery.suspectRecordStage.aliasFieldNote') },
+    { key: 'age', label: t('detectiveMystery.suspectRecordStage.ageFieldLabel'), value: age, note: t('detectiveMystery.suspectRecordStage.ageFieldNote') },
+    { key: 'secretPassword', label: t('detectiveMystery.suspectRecordStage.passwordFieldLabel'), value: secretPassVal, note: t('detectiveMystery.suspectRecordStage.passwordFieldNote') },
   ];
 
   // Page 2: Crimes & Profile Data
   const page2Fields = [
-    { key: 'mainCrime', label: '[ ГЛАВНО ПРЕСТЪПЛЕНИЕ ]', value: profile.mainCrime, note: 'Улика за корковото табло' },
-    { key: 'distinguishingMark', label: '[ ОТЛИЧИТЕЛЕН БЕЛЕГ ]', value: profile.distinguishingMark, note: 'Улика за корковото табло' },
-    { key: 'lastSeen', label: '[ ПОСЛЕДНО ЗАБЕЛЯЗАН ]', value: profile.lastSeen, note: 'Улика за корковото табло' },
-    { key: 'specialSkill', label: '[ СПЕЦИАЛНО УМЕНИЕ ]', value: profile.specialSkill, note: 'Улика за корковото табло' },
+    { key: 'mainCrime', label: t('detectiveMystery.suspectRecordStage.mainCrimeFieldLabel'), value: profile.mainCrime, note: t('detectiveMystery.suspectRecordStage.corkboardFieldNote') },
+    { key: 'distinguishingMark', label: t('detectiveMystery.suspectRecordStage.distinguishingMarkFieldLabel'), value: profile.distinguishingMark, note: t('detectiveMystery.suspectRecordStage.corkboardFieldNote') },
+    { key: 'lastSeen', label: t('detectiveMystery.suspectRecordStage.lastSeenFieldLabel'), value: profile.lastSeen, note: t('detectiveMystery.suspectRecordStage.corkboardFieldNote') },
+    { key: 'specialSkill', label: t('detectiveMystery.suspectRecordStage.specialSkillFieldLabel'), value: profile.specialSkill, note: t('detectiveMystery.suspectRecordStage.corkboardFieldNote') },
   ];
 
   // Page 3: Strictly Clues / Evidence for corkboard
   const page3Fields = answers.map((ans, idx) => ({
     key: `ev${idx}`,
-    label: `[ ${cluesList[idx % cluesList.length] || `ВЪПРОС №${idx + 1}`} ]`,
+    label: `[ ${cluesList[idx % cluesList.length] || t('detectiveMystery.suspectRecordStage.evidenceFieldLabelFallback', { number: idx + 1 })} ]`,
     value: ans,
-    note: 'Улика за корковото табло'
+    note: t('detectiveMystery.suspectRecordStage.corkboardFieldNote')
   }));
 
   useEffect(() => {
@@ -259,7 +261,7 @@ export function SuspectRecordStage({
             }}
             className="absolute top-0 right-2 z-30 bg-red-700 hover:bg-red-800 text-white px-2.5 py-1 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-wider shadow-md border border-red-500 cursor-pointer transition"
           >
-            [ ЗАТВОРИ ДОСИЕТО ✕ ]
+            {t('detectiveMystery.suspectRecordStage.closeButton')}
           </button>
         )}
 
@@ -274,7 +276,7 @@ export function SuspectRecordStage({
             <div className="border-b border-black/15 pb-3 pt-0">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <div className="leading-tight">
-                  <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-red-700 font-extrabold block">ЦЕНТРАЛЕН АРХИВ НА РАЗСЛЕДВАНЕТО</span>
+                  <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-red-700 font-extrabold block">{t('detectiveMystery.suspectRecordStage.archiveTitle')}</span>
                   <h2 className="text-lg sm:text-xl font-black uppercase tracking-wide text-black">{recipient}</h2>
                 </div>
 
@@ -284,22 +286,22 @@ export function SuspectRecordStage({
                     onClick={() => { playPaperFlipSound(isMuted); setCurrentPage(1); }}
                     className={`px-0.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[7px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 1 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
-                    <span className="sm:hidden">1. ДАННИ</span>
-                    <span className="hidden sm:inline">1. Идентичност</span>
+                    <span className="sm:hidden">{t('detectiveMystery.suspectRecordStage.tab1Mobile')}</span>
+                    <span className="hidden sm:inline">{t('detectiveMystery.suspectRecordStage.tab1Desktop')}</span>
                   </button>
-                  <button 
+                  <button
                     onClick={() => { playPaperFlipSound(isMuted); setCurrentPage(2); }}
                     className={`px-0.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[7px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 2 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
-                    <span className="sm:hidden">2. ПРЕСТЪПЛЕНИЯ</span>
-                    <span className="hidden sm:inline">2. Престъпления</span>
+                    <span className="sm:hidden">{t('detectiveMystery.suspectRecordStage.tab2Mobile')}</span>
+                    <span className="hidden sm:inline">{t('detectiveMystery.suspectRecordStage.tab2Desktop')}</span>
                   </button>
-                  <button 
+                  <button
                     onClick={() => { playPaperFlipSound(isMuted); setCurrentPage(3); }}
                     className={`px-0.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[7px] sm:text-xs font-black uppercase tracking-tighter sm:tracking-wider transition cursor-pointer text-center truncate ${currentPage === 3 ? 'bg-black text-[#F7F4EF] shadow' : 'text-neutral-800 hover:bg-black/10'}`}
                   >
-                    <span className="sm:hidden">3. УЛИКИ</span>
-                    <span className="hidden sm:inline">3. Улики</span>
+                    <span className="sm:hidden">{t('detectiveMystery.suspectRecordStage.tab3Mobile')}</span>
+                    <span className="hidden sm:inline">{t('detectiveMystery.suspectRecordStage.tab3Desktop')}</span>
                   </button>
                 </div>
               </div>
@@ -318,8 +320,8 @@ export function SuspectRecordStage({
                     className="space-y-2 sm:space-y-3"
                   >
                     <div className="flex items-center justify-between text-[10px] sm:text-xs uppercase font-black text-black/80 px-1 border-b border-black/10 pb-1">
-                      <span>СТРАНИЦА 1: ОСНОВНИ ДАННИ И ИДЕНТИЧНОСТ</span>
-                      <span className="text-red-700 font-bold">[ ИДЕНТИЧНОСТ ]</span>
+                      <span>{t('detectiveMystery.suspectRecordStage.page1Header')}</span>
+                      <span className="text-red-700 font-bold">{t('detectiveMystery.suspectRecordStage.page1Badge')}</span>
                     </div>
                     {renderFields(page1Fields)}
                   </motion.div>
@@ -335,8 +337,8 @@ export function SuspectRecordStage({
                     className="space-y-2 sm:space-y-3"
                   >
                     <div className="flex items-center justify-between text-[10px] sm:text-xs uppercase font-black text-black/80 px-1 border-b border-black/10 pb-1">
-                      <span>СТРАНИЦА 2: ПРЕСТЪПЛЕНИЯ И ОТЛИЧИТЕЛНИ БЕЛЕЗИ</span>
-                      <span className="text-red-700 font-bold">[ ДОСИЕ ]</span>
+                      <span>{t('detectiveMystery.suspectRecordStage.page2Header')}</span>
+                      <span className="text-red-700 font-bold">{t('detectiveMystery.suspectRecordStage.page2Badge')}</span>
                     </div>
                     {renderFields(page2Fields)}
                   </motion.div>
@@ -352,8 +354,8 @@ export function SuspectRecordStage({
                     className="space-y-2 sm:space-y-3"
                   >
                     <div className="flex items-center justify-between text-[10px] sm:text-xs uppercase font-black text-black/80 px-1 border-b border-black/10 pb-1">
-                      <span>СТРАНИЦА 3: СЕКРЕТНИ УЛИКИ</span>
-                      <span className="text-red-700 font-bold">[ ОСНОВНИ УЛИКИ ]</span>
+                      <span>{t('detectiveMystery.suspectRecordStage.page3Header')}</span>
+                      <span className="text-red-700 font-bold">{t('detectiveMystery.suspectRecordStage.page3Badge')}</span>
                     </div>
                     {renderFields(page3Fields)}
                   </motion.div>
@@ -364,30 +366,30 @@ export function SuspectRecordStage({
             {/* Footer & Navigation Button */}
             <div className="border-t border-black/15 pt-3 sm:pt-4 space-y-2.5">
               <div className="bg-red-950/10 border-2 border-red-700/40 p-2.5 sm:p-3 rounded-xl text-[11px] sm:text-xs text-red-950 font-mono font-bold shadow-inner flex items-center justify-between gap-2">
-                <span className="hidden sm:inline text-red-950">⚖️ ПРИСЪДА: НАВЪРШВАНЕ НА {age} ГОДИНИ ПРИ СТРОГО ЗАТВОРНИЧЕСКИ РЕЖИМ НА КУПОН.</span>
-                <span className="sm:hidden text-red-950">⚖️ ПРИСЪДА: {age} ГОДИНИ КУПОН.</span>
-                <span className="text-red-700 uppercase font-black tracking-tight shrink-0">СТРАНИЦА {currentPage} / 3</span>
+                <span className="hidden sm:inline text-red-950">{t('detectiveMystery.suspectRecordStage.verdictFull', { age })}</span>
+                <span className="sm:hidden text-red-950">{t('detectiveMystery.suspectRecordStage.verdictShort', { age })}</span>
+                <span className="text-red-700 uppercase font-black tracking-tight shrink-0">{t('detectiveMystery.suspectRecordStage.pageIndicator', { page: currentPage })}</span>
               </div>
 
               <div className="flex items-center gap-2.5">
                 {currentPage > 1 && (
-                  <button 
+                  <button
                     onClick={() => { playPaperFlipSound(isMuted); setCurrentPage(prev => Math.max(1, prev - 1) as any); }}
                     className="bg-[#D6CCB4] hover:bg-[#c2b59b] text-black px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm uppercase tracking-wider font-black transition cursor-pointer border border-black/20 shadow-sm"
                   >
-                    ← Предишна
+                    {t('detectiveMystery.suspectRecordStage.prevButton')}
                   </button>
                 )}
 
                 {currentPage < 3 ? (
-                  <button 
+                  <button
                     onClick={() => { playPaperFlipSound(isMuted); setCurrentPage(prev => Math.min(3, prev + 1) as any); }}
                     className="flex-1 bg-[#2B2723] hover:bg-black text-[#F7F4EF] py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.12em] font-black transition cursor-pointer border border-neutral-700 shadow"
                   >
-                    Следваща страница →
+                    {t('detectiveMystery.suspectRecordStage.nextButton')}
                   </button>
                 ) : (
-                  <motion.button 
+                  <motion.button
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => {
@@ -397,7 +399,7 @@ export function SuspectRecordStage({
                     }}
                     className="flex-1 bg-red-700 hover:bg-red-800 text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm uppercase tracking-[0.12em] font-black shadow-lg transition cursor-pointer border border-red-500 flex items-center justify-center gap-2 group"
                   >
-                    <span>{isModal ? '[ ЗАТВОРИ ДОСИЕТО ✕ ]' : '[ КЪМ ДЕТЕКТОРА НА ЛЪЖАТА → ]'}</span>
+                    <span>{isModal ? t('detectiveMystery.suspectRecordStage.finishButtonModal') : t('detectiveMystery.suspectRecordStage.finishButton')}</span>
                   </motion.button>
                 )}
               </div>

@@ -4,6 +4,7 @@ import { DualVideoPlayer } from './DualVideoPlayer';
 import { VideoPreloader } from './VideoPreloader';
 import { GarlandsSubScene } from './GarlandsSubScene';
 import { BalloonsSubScene } from './BalloonsSubScene';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface Stage2Props {
   deviceType: 'desktop' | 'phone';
@@ -14,6 +15,7 @@ interface Stage2Props {
 }
 
 export function Stage2Scene({ deviceType, isMuted, onComplete, onVideoRef, onPlaying }: Stage2Props) {
+  const { t } = useLanguage();
   const [sub, setSub] = useState<'garlands' | 'balloons' | 'transition'>('garlands');
 
   const vG = `/videos/birthday/kids-fairytale/stage_2/stage2_part1_${deviceType}.mp4`;
@@ -49,7 +51,7 @@ export function Stage2Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
       {sub === 'transition' && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40">
           <p className="font-serif italic text-2xl md:text-4xl text-amber-200 animate-pulse drop-shadow">
-            🎈 Балоните литват към залата...
+            {t('kidsFairytale.stage2.balloonsTransition')}
           </p>
         </div>
       )}

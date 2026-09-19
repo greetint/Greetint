@@ -1,0 +1,59 @@
+{
+  "page": {
+    "defaults": {
+      "childName": "Emma",
+      "senderName": "Mom & Dad",
+      "personalMessage": "You fill every room with light and laughter. We love you to the moon and back!"
+    }
+  },
+  "lockStage": {
+    "heading": "A Magical World Awaits, {name}",
+    "subtitle": "Press and hold the enchanted lock until the light breaks free.",
+    "unlockAriaLabel": "Press and hold to unlock",
+    "unlockingStatus": "Unlocking the magic..."
+  },
+  "prepStage": {
+    "title": "Prepare the Party Room",
+    "subtitle": "Hang the garlands, then blow up the balloons."
+  },
+  "garlandTrace": {
+    "done": "The garlands are hung! ✨",
+    "instruction": "Drag the golden spark to the next post to hang the garland."
+  },
+  "balloonRow": {
+    "done": "All the balloons are ready! 🎈",
+    "instruction": "Press and hold each balloon to blow it up."
+  },
+  "celebrationStage": {
+    "revealedHeading": "Happy Birthday, {name}!",
+    "blowHeading": "Now blow them out!",
+    "lightHeading": "Light every candle",
+    "candleAriaLabel": "Light candle {n}",
+    "blowInstruction": "Press and hold to blow out the candles",
+    "wishText": "Make a wish..."
+  },
+  "finaleStage": {
+    "promptHeading": "Make a Wish, {name}",
+    "promptInstructionSpeech": "Press the star and say your wish out loud.",
+    "promptInstructionType": "Press the star, then write down your wish.",
+    "recordAriaLabel": "Record your wish",
+    "listeningHeading": "Listening...",
+    "transcribingText": "Weaving your words into magic...",
+    "reviewHeading": "Your Wish",
+    "wishPlaceholder": "I wish for...",
+    "createButton": "Create My Keepsake",
+    "generatingText": "Conjuring your certificate...",
+    "doneHeading": "Your Keepsake is Ready!",
+    "doneText": "The PDF has been saved to your downloads. Happy birthday, {name}!",
+    "downloadAgainButton": "Download Again"
+  },
+  "certificate": {
+    "keepsakeLabel": "A Magical Keepsake",
+    "heading": "Happy Birthday,",
+    "turningToday": "Turning {age} Today",
+    "story": "Once upon a starlit night, in a kingdom woven from moonbeams and laughter, the fairies gathered from every corner of the enchanted forest to celebrate the most important soul in the realm. For today, {name} turns {age} years old — and the whole kingdom sparkles a little brighter because of it. The garlands are hung, the candles are lit, and the magic is only just beginning.",
+    "messageFrom": "A Message From {sender}",
+    "wishLabel": "{name}’s Birthday Wish",
+    "footer": "Certified Magical by the Fairy Council · {date}"
+  }
+}

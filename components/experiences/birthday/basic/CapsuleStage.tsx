@@ -2,29 +2,30 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export interface CapsuleStageProps {
   onGeneratePdf: (answers: { question: string; answer: string }[]) => void;
   customQuestions?: string[];
 }
 
-const DEFAULT_QUESTIONS = [
-  'Главна цел за новата година?',
-  'Мечтано място за пътуване?',
-  'Най-ценният урок от изминалата година?',
-  'Нов навик, който искаш да започнеш?',
-  'Кое те кара да се смееш от сърце?',
-  'Твоето лично обещание днес?',
-  'Послание към бъдещето ти "Аз":'
-];
-
 const MAX_CHARS = 130;
 
-export const CapsuleStage: React.FC<CapsuleStageProps> = ({ 
+export const CapsuleStage: React.FC<CapsuleStageProps> = ({
   onGeneratePdf,
-  customQuestions = DEFAULT_QUESTIONS 
+  customQuestions
 }) => {
-  const questions = customQuestions.length > 0 ? customQuestions : DEFAULT_QUESTIONS;
+  const { t } = useLanguage();
+  const DEFAULT_QUESTIONS = [
+    t('basic.capsuleStage.defaultQuestions.q1'),
+    t('basic.capsuleStage.defaultQuestions.q2'),
+    t('basic.capsuleStage.defaultQuestions.q3'),
+    t('basic.capsuleStage.defaultQuestions.q4'),
+    t('basic.capsuleStage.defaultQuestions.q5'),
+    t('basic.capsuleStage.defaultQuestions.q6'),
+    t('basic.capsuleStage.defaultQuestions.q7'),
+  ];
+  const questions = customQuestions && customQuestions.length > 0 ? customQuestions : DEFAULT_QUESTIONS;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<string[]>(Array(questions.length).fill(''));
   const [direction, setDirection] = useState(1);
@@ -47,7 +48,7 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
     } else {
       const formattedData = questions.map((q, idx) => ({
         question: q,
-        answer: answers[idx].trim() || 'Без отговор'
+        answer: answers[idx].trim() || t('basic.capsuleStage.noAnswer')
       }));
       onGeneratePdf(formattedData);
     }
@@ -103,7 +104,7 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
       {/* ГОРЕН ИНДИКАТОР ЗА СТРАНИЦА */}
       <div className="relative z-10 flex flex-col items-center space-y-1">
         <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.45em] text-[#958679] font-bold">
-          ЛИЧЕН ДНЕВНИК // СТРАНИЦА {currentIndex + 1} от {questions.length}
+          {t('basic.capsuleStage.pageIndicator', { current: currentIndex + 1, total: questions.length })}
         </span>
         <div className="w-32 h-[2px] bg-[#EAE2D6] rounded-full overflow-hidden">
           <motion.div 
@@ -130,7 +131,7 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
             {/* Въпрос с номер */}
             <div className="space-y-1">
               <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] text-[#8A7C6E] font-bold block">
-                Въпрос {currentIndex + 1}
+                {t('basic.capsuleStage.questionLabel', { n: currentIndex + 1 })}
               </span>
               <h2 className="font-serif italic text-xl sm:text-3xl text-[#1F1A17] leading-relaxed drop-shadow-sm px-2">
                 "{currentQuestion}"
@@ -150,7 +151,7 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
                 value={currentAnswer}
                 onChange={(e) => handleChange(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Пиши тук... (Натисни Enter)"
+                placeholder={t('basic.capsuleStage.answerPlaceholder')}
                 autoFocus
                 className="w-full bg-transparent px-4 py-1 text-base sm:text-xl font-serif italic text-[#1F1A17] placeholder-[#958679]/40 focus:outline-none transition-all resize-none relative z-10 leading-[36px]"
               />
@@ -158,7 +159,7 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
               {/* БРОЯЧ НА ЗНАЦИТЕ ИЗЦЯЛО ПОД ЛИНИИТЕ В ЛЯВО */}
               <div className="flex justify-start px-4 pt-1">
                 <span className={`text-[10px] font-mono ${charCount >= MAX_CHARS ? 'text-amber-700 font-bold' : 'text-[#958679]/70'}`}>
-                  {charCount} / {MAX_CHARS} знака
+                  {t('basic.capsuleStage.charCount', { count: charCount, max: MAX_CHARS })}
                 </span>
               </div>
             </div>
@@ -170,7 +171,7 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
                   onClick={handlePrev}
                   className="px-5 py-2.5 rounded-xl text-xs uppercase tracking-[0.2em] font-bold text-[#7A6C5E] hover:text-[#1F1A17] transition"
                 >
-                  ← Предишна
+                  {t('basic.capsuleStage.prev')}
                 </button>
               ) : <div />}
 
@@ -180,7 +181,7 @@ export const CapsuleStage: React.FC<CapsuleStageProps> = ({
                 onClick={handleNext}
                 className="bg-[#1F1A17] text-[#DBCEB3] px-7 py-3 text-xs uppercase tracking-[0.25em] font-bold rounded-xl hover:bg-[#3A332E] transition shadow-md ml-auto"
               >
-                {currentIndex < questions.length - 1 ? 'Следваща ➔' : 'Запечатай & PDF 📄✨'}
+                {currentIndex < questions.length - 1 ? t('basic.capsuleStage.next') : t('basic.capsuleStage.finish')}
               </motion.button>
             </div>
 

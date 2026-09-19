@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface CakeStageProps {
   recipient?: string;
@@ -237,10 +238,13 @@ const PartyOverlay: React.FC = () => {
 };
 
 export function CakeStage({
-  recipient = 'ВИКТОРИЯ',
-  senderWish = 'Нека тази година ти донесе здраве, вдъхновение, безкрайно щастие и много сбъднати мечти!',
+  recipient,
+  senderWish,
   onComplete,
 }: CakeStageProps) {
+  const { t } = useLanguage();
+  const displayRecipient = recipient || t('basic.cakeStage.defaultRecipient');
+  const displaySenderWish = senderWish || t('basic.cakeStage.defaultSenderWish');
   const [stage, setStage] = useState<'wish_entry' | 'cake_reveal' | 'blown_celebrate'>('wish_entry');
   const [userWish, setUserWish] = useState('');
   const [micStatus, setMicStatus] = useState<'idle' | 'active' | 'error'>('idle');
@@ -253,7 +257,7 @@ export function CakeStage({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const uppercaseRecipient = recipient.toUpperCase();
+  const uppercaseRecipient = displayRecipient.toUpperCase();
   const { playImpact, playSpark } = useCinematicAudio();
 
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -384,7 +388,7 @@ export function CakeStage({
               className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-6 px-4 pointer-events-auto max-w-lg mx-auto"
             >
               <h1 className="font-serif italic text-xl sm:text-4xl text-[#1F1A17] leading-relaxed max-w-lg drop-shadow-sm px-2">
-                "Преди да се разкрие празничната 3D магия, напиши своето съкровено желание..."
+                "{t('basic.cakeStage.wishPrompt')}"
               </h1>
 
               <form onSubmit={handleSubmitWish} className="w-full max-w-md space-y-4">
@@ -394,7 +398,7 @@ export function CakeStage({
                   maxLength={80}
                   value={userWish}
                   onChange={(e) => setUserWish(e.target.value)}
-                  placeholder="Твоето желание тук..."
+                  placeholder={t('basic.cakeStage.wishPlaceholder')}
                   className="w-full bg-white/30 backdrop-blur-md text-[#1F1A17] placeholder-[#7A6C5E] px-6 py-4 rounded-full text-sm sm:text-base tracking-wide text-center focus:outline-none focus:border-[#D4AF37] shadow-sm transition-all"
                 />
                 <motion.button
@@ -403,7 +407,7 @@ export function CakeStage({
                   whileTap={{ scale: 0.97 }}
                   className="w-full bg-[#1F1A17] text-[#DBCEB3] py-4 rounded-full font-sans text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#3A332E] transition duration-300"
                 >
-                  Заключи Желанието ➔
+                  {t('basic.cakeStage.lockWish')}
                 </motion.button>
               </form>
             </motion.div>
@@ -422,7 +426,7 @@ export function CakeStage({
                 {uppercaseRecipient}
               </span>
               <p className="text-[9px] sm:text-xs uppercase tracking-[0.3em] text-[#7A6C5E] font-medium bg-white/40 px-4 py-1.5 rounded-full backdrop-blur-md inline-block animate-pulse">
-                🎤 Духни в микрофона или кликни тортата
+                {t('basic.cakeStage.blowInstruction')}
               </p>
             </motion.div>
           )}
@@ -438,10 +442,10 @@ export function CakeStage({
             >
               <div className="space-y-1">
                 <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.4em] text-[#7A6C5E] font-bold block">
-                  ПОСЛАНИЕ ОТ ПОДАРЯВАЩИЯ
+                  {t('basic.cakeStage.senderWishLabel')}
                 </span>
                 <p className="font-serif italic text-sm sm:text-base md:text-lg text-[#1F1A17] leading-relaxed drop-shadow-sm">
-                  "{senderWish}"
+                  "{displaySenderWish}"
                 </p>
               </div>
 
@@ -450,7 +454,7 @@ export function CakeStage({
                   onClick={() => onComplete && onComplete(userWish)}
                   className="text-[#1F1A17] font-sans text-[10px] sm:text-xs uppercase tracking-[0.35em] font-bold hover:text-[#7A6C5E] transition duration-300 py-2 inline-flex items-center space-x-2"
                 >
-                  <span>Към Капсулата на бъдещето</span>
+                  <span>{t('basic.cakeStage.toCapsule')}</span>
                   <span className="text-sm">➔</span>
                 </button>
               </div>

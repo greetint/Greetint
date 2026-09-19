@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export interface QuizItem {
   id: string;
@@ -16,36 +17,46 @@ interface QuizStageProps {
   onComplete?: () => void;
 }
 
-const DEFAULT_QUIZZES: QuizItem[] = [
-  {
-    id: '1',
-    question: "Kade beshe nai-ludoto ni putuvane zaedno?",
-    options: ["Na moreto", "V planinata", "V chuzhbina"],
-    correctAnswer: 0
-  },
-  {
-    id: '2',
-    question: "Koya e lyubimata ni chast ot denya?",
-    options: ["Sutreshnoto kafe", "Zvezdnata nosht", "Sledobednata razhodka"],
-    correctAnswer: 0
-  }
-];
-
 const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
 
-export function QuizStage({ 
-  recipient = "VIKTORIYA", 
-  quizzes = DEFAULT_QUIZZES,
-  onComplete 
+export function QuizStage({
+  recipient,
+  quizzes,
+  onComplete
 }: QuizStageProps) {
+  const { t } = useLanguage();
+  const resolvedRecipient = recipient || t('basic.quizStage.defaultRecipient');
+  const defaultQuizzes: QuizItem[] = [
+    {
+      id: '1',
+      question: t('basic.quizStage.defaultQuizzes.q1.question'),
+      options: [
+        t('basic.quizStage.defaultQuizzes.q1.optionA'),
+        t('basic.quizStage.defaultQuizzes.q1.optionB'),
+        t('basic.quizStage.defaultQuizzes.q1.optionC'),
+      ],
+      correctAnswer: 0
+    },
+    {
+      id: '2',
+      question: t('basic.quizStage.defaultQuizzes.q2.question'),
+      options: [
+        t('basic.quizStage.defaultQuizzes.q2.optionA'),
+        t('basic.quizStage.defaultQuizzes.q2.optionB'),
+        t('basic.quizStage.defaultQuizzes.q2.optionC'),
+      ],
+      correctAnswer: 0
+    }
+  ];
+  const resolvedQuizzes = quizzes || defaultQuizzes;
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showWrongMessage, setShowWrongMessage] = useState(false);
   const [shakeIndex, setShakeIndex] = useState<number | null>(null);
 
-  const currentQuiz = quizzes[currentIdx] || quizzes[0];
-  const totalQuizzes = quizzes.length;
+  const currentQuiz = resolvedQuizzes[currentIdx] || resolvedQuizzes[0];
+  const totalQuizzes = resolvedQuizzes.length;
   const progressPercent = ((currentIdx + 1) / totalQuizzes) * 100;
 
   const handleSelect = (idx: number) => {
@@ -115,8 +126,8 @@ export function QuizStage({
 
       <div className="relative z-20 w-full max-w-xl flex flex-col items-center space-y-2 pt-2">
         <div className="flex justify-between items-center w-full px-2">
-          <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#7A6C5E] font-bold">Vapros {currentIdx + 1} ot {totalQuizzes}</span>
-          <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-[#7A6C5E] font-medium">{recipient}</span>
+          <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] text-[#7A6C5E] font-bold">{t('basic.quizStage.progressLabel', { n: currentIdx + 1, total: totalQuizzes })}</span>
+          <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-[#7A6C5E] font-medium">{resolvedRecipient}</span>
         </div>
         <div className="w-full h-1.5 bg-[#E2DACF] rounded-full overflow-hidden shadow-inner">
           <motion.div className="h-full bg-gradient-to-r from-[#C5A880] to-[#D4AF37]" initial={{ width: 0 }} animate={{ width: progressPercent + "%" }} transition={{ duration: 0.5 }} />
@@ -133,7 +144,7 @@ export function QuizStage({
           className="relative z-20 w-full max-w-xl my-auto bg-white/80 backdrop-blur-xl border border-white/90 rounded-[32px] p-6 sm:p-10 shadow-2xl flex flex-col items-center justify-between text-center space-y-6"
         >
           <div className="space-y-2">
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#958679] font-bold block">✦ Interaktiven test ✦</span>
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#958679] font-bold block">{t('basic.quizStage.badge')}</span>
             <h2 className="font-serif italic text-xl sm:text-3xl text-[#1F1A17] leading-relaxed px-2">"{currentQuiz.question}"</h2>
             <div className="w-20 h-[1px] bg-[#958679]/30 mx-auto mt-2" />
           </div>
@@ -177,7 +188,7 @@ export function QuizStage({
           <AnimatePresence>
             {showWrongMessage && (
               <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-[#A35235] font-sans font-bold italic pt-1">
-                ✦ Ne suvsem... Pomisli otnovo i opitay pak ✦
+                {t('basic.quizStage.wrongMessage')}
               </motion.div>
             )}
           </AnimatePresence>
@@ -187,12 +198,12 @@ export function QuizStage({
               {isCorrect ? (
                 <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.4 }} className="w-full">
                   <button onClick={handleNextQuiz} className="w-full bg-[#1F1A17] text-[#FEFEFD] py-4 text-xs uppercase tracking-[0.3em] font-bold rounded-xl font-sans hover:bg-[#635E57] transition shadow-lg">
-                    {currentIdx < totalQuizzes - 1 ? "Sledvasht Vapros ➔" : "Kum Spomenite ➔"}
+                    {currentIdx < totalQuizzes - 1 ? t('basic.quizStage.nextQuestion') : t('basic.quizStage.toMemories')}
                   </button>
                 </motion.div>
               ) : (
                 <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-[#958679] font-sans font-bold italic block">
-                  ✦ Izberi verniya otgovor za prodalzhenie ✦
+                  {t('basic.quizStage.hint')}
                 </motion.span>
               )}
             </AnimatePresence>

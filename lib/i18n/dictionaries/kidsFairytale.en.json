@@ -1,0 +1,68 @@
+{
+  "createForm": {
+    "backLink": "Choose a style",
+    "sandboxBadge": "Sandbox route",
+    "title": "Kids Fairytale: Create the Magic",
+    "labels": {
+      "name": "Name:",
+      "age": "Age:",
+      "sender": "From:",
+      "message": "Message:"
+    },
+    "submitButton": "Generate the fairytale",
+    "successMessage": "Your fairytale has been created!",
+    "linkLabel": "Link:",
+    "openLink": "Open the fairytale 🚀",
+    "newButton": "New"
+  },
+  "sandboxPage": {
+    "defaultChildName": "Gabi",
+    "defaultSenderName": "Mom and Dad",
+    "defaultPersonalMessage": "You fill every one of our days with smiles and magic. Never stop dreaming!",
+    "defaultPersonalMessageFallback": "You make the world more beautiful just by being in it!",
+    "defaultFavoriteAnimal": "unicorn"
+  },
+  "experience": {
+    "muteTooltip": "Turn off sound",
+    "unmuteTooltip": "Turn on sound",
+    "defaultChildName": "Gabi",
+    "defaultSenderWish": "You make the world more beautiful just by being in it! Keep being happy and smiling."
+  },
+  "intro": {
+    "title": "The magical fairytale for {childName} is about to begin...",
+    "bookTitle": "Magic Book",
+    "bookPrompt": "Touch the book to open it ✨"
+  },
+  "stage1": {
+    "holdKeyPrompt": "✨ Press and hold the magic key..."
+  },
+  "stage2": {
+    "balloonsTransition": "🎈 The balloons float up to the hall..."
+  },
+  "stage3": {
+    "tapScreen": "✨ Tap the screen ({step}/{total})",
+    "recordingPrompt": "🎙️ Think of a wish and say it out loud!",
+    "recordingStatus": "Recording your wish...",
+    "blowPrompt": "🎂 Blow hard into the microphone or tap the screen.",
+    "wishSavedStatus": "Your wish has been saved!",
+    "transcribedQuoted": "\"{text}\"",
+    "candleOutMessage": "✨ The candle went out! Your wish is coming true..."
+  },
+  "garlands": {
+    "tracePrompt": "✨ Trace your finger along the garlands ({percent}%)"
+  },
+  "balloons": {
+    "fillPrompt": "🎈 Draw a circle around each balloon to fill it up! ({filled}/{total})"
+  },
+  "ribbon": {
+    "pullPrompt": "✨ Pull the ribbon to untie it!"
+  },
+  "scratch": {
+    "scratchPrompt": "✨ Scratch off the foil! ({percent}%)"
+  },
+  "parchmentCard": {
+    "birthdayGreeting": "Happy birthday, {childName}!",
+    "recordedWishLabel": "🎙️ Recorded wish: “{text}”",
+    "certificateButton": "📜 Certificate"
+  }
+}

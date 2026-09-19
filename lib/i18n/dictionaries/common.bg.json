@@ -1,0 +1,148 @@
+{
+  "switcher": {
+    "bg": "BG",
+    "en": "EN"
+  },
+  "landing": {
+    "nav": {
+      "concept": "Идеята",
+      "process": "Как работи"
+    },
+    "cta": {
+      "createCapsule": "Създай Капсула"
+    },
+    "hero": {
+      "badge": "Editorial Digital Capsules & Print Archives",
+      "titleLine1": "Подари повече от картичка.",
+      "titleLine2": "Запечатай интерактивен спомен.",
+      "description": "GREETINT превръща рождения ден в премиум дигитално преживяване — персонален куест със скрити тайни, отключване на спомени, духване на свещ и финална капсула за бъдещето.",
+      "ctaCreate": "Създай Интерактивна Картичка",
+      "ctaView": "Виж Преживяването ↓"
+    },
+    "tabs": {
+      "sectionLabel": "Идеята зад GREETINT",
+      "sectionTitle": "Две страни на един спомен",
+      "receiver": "За Рожденика",
+      "giver": "За Подаряващия",
+      "receiverLabel": "Интерактивен Куест",
+      "receiverTitle": "Преживяване, а не обикновено пожелание",
+      "receiverText": "Рожденикът сканира QR кода, разпечатва восъчния печат, изтрива фолиото на тайната шега, отговаря на въпроса за отключване на снимките, духва свещта на екрана си и попълва своите 7 отговора за бъдещето.",
+      "giverLabel": "Бързо и Лесно",
+      "giverTitle": "Сглоби персонализиран подарък за минути",
+      "giverText": "Попълваш 3 бързи закачки, избираш от нашите готови забавни реплики (или пишеш свои), качваш любимите снимки и пишеш пожеланието. Всичко останало се подрежда автоматично."
+    },
+    "footer": {
+      "rights": "© 2026 GREETINT. All rights reserved. Editorial Time Capsules."
+    }
+  },
+  "selectStyle": {
+    "backHome": "← Към началото",
+    "catalogBadge": "Каталог на интерактивните преживявания",
+    "title": "Избери Стил за Рожден Ден",
+    "subtitle": "Всеки стил предлага уникална визуална естетика, тематични анимации и завладяващ куест за получателя.",
+    "stagesCount": "{count} етапа ✨",
+    "comingSoon": "Очаквайте скоро",
+    "selectCta": "Избери този стил ✨",
+    "lockedCta": "🔒 Заключен стил"
+  },
+  "styles": {
+    "original-signature": {
+      "badge": "Възрастни / Универсален",
+      "description": "Луксозен минимализъм, Soft Silk, дълбоки тонове, 3D восъчен печат и златно фолио за изтъркване."
+    },
+    "detective-mystery": {
+      "badge": "Любители на пъзели",
+      "description": "Ноар атмосфера, папки TOP SECRET и червени печати с търсене с виртуална лупа и дешифриране."
+    },
+    "escape-room": {
+      "badge": "Стаята на загадките",
+      "description": "Интерактивно приключение с кодове, таймери и логически стъпки."
+    },
+    "editorial-magazine": {
+      "badge": "Мода и стил - Дами",
+      "description": "Корица на списание с елегантна типография, разлистване (Swipe) и блиц интервю."
+    },
+    "retro-arcade": {
+      "badge": "Геймъри",
+      "description": "8-битов пиксел арт, аркадни машини, Boss battle с помпане на бутон и отключване на съкровище."
+    },
+    "boarding-pass": {
+      "badge": "Пътешественици",
+      "description": "Летищна естетика, билети, глобуси, печати, сканиране на штрихкод и търкащ се глобус."
+    },
+    "kids-fairytale": {
+      "badge": "Деца 3-6 г.",
+      "description": "3D Disney Pixar стил, палитра от меки и луксозни детски тонове с помощ за анимиран герой и пукане на балони."
+    },
+    "secret-diary": {
+      "badge": "Момичета 7-12 г.",
+      "description": "Тайни дневници, пастелни цветове, стикери, photo scrapbook викторина и Fashion vibe creator."
+    },
+    "agent-heist": {
+      "badge": "Момчета 7-12 г.",
+      "description": "Шпионска лаборатория, Minecraft/Roblox вайб, лазерен лабиринт и хакване на сейф."
+    },
+    "aesthetic-dump": {
+      "badge": "Тийнейджъри - Момичета",
+      "description": "TikTok/Reels скрол, Y2K винтидж филтри, Moodboard с вертикален скрол със скрити тагове и Which Vibe куиз."
+    },
+    "level-up-cyber": {
+      "badge": "Тийнейджъри - Момчета",
+      "description": "Cyberpunk, Discord/Twitch интерфейс, Dark mode, Speedrun таймер със загадки и System Hack."
+    }
+  },
+  "lockedStyle": {
+    "backLink": "← Избери друг стил",
+    "cta": "Към избор на стилове",
+    "locked": "Този стил е заключен (Очаквайте скоро).",
+    "aesthetic-dump": {
+      "description": "TikTok/Reels скрол, Y2K филтри и Moodboard."
+    },
+    "agent-heist": {
+      "description": "Шпионска лаборатория, лазерен лабиринт и сейф."
+    },
+    "boarding-pass": {
+      "description": "Летищна естетика, билети и търкащ се глобус."
+    },
+    "editorial-magazine": {
+      "description": "Корица на списание, swipe разлистване и блиц интервю."
+    },
+    "escape-room": {
+      "description": "Интерактивно приключение с кодове и таймери."
+    },
+    "level-up-cyber": {
+      "description": "Cyberpunk, Discord/Twitch интерфейс и System Hack."
+    },
+    "retro-arcade": {
+      "description": "8-битов пиксел арт, аркадни машини и Boss battle."
+    },
+    "secret-diary": {
+      "description": "Тайни дневници, пастелни цветове и photo scrapbook."
+    },
+    "teen-aesthetic": {
+      "description": "Тази форма за тийнейджърски стил е подготвена като независим шаблон и очаква следващия етап на развитие."
+    }
+  },
+  "cardReceiver": {
+    "initializing": "Инициализиране...",
+    "muteOn": "Включи музиката",
+    "muteOff": "Спри музиката",
+    "questLoadError": "Грешка при зареждане на данните за куеста:",
+    "defaults": {
+      "sender": "Подаряващия",
+      "detectiveSender": "Инспектор",
+      "statusText": "Посрещаме 2026 с нови мечти!",
+      "secretJoke": "Скрито послание...",
+      "mainWish": "Нека тази година ти донесе здраве и вдъхновение!",
+      "recipientFallback": "Заподозрян",
+      "nameFallback": "Приятел",
+      "hiddenMessage": "Скрито послание #{n}",
+      "memoryCaption": "Спомен",
+      "memoryAnswer": "отговор",
+      "kidsNameFallback": "Габи",
+      "kidsSenderFallback": "Мама и Тато",
+      "kidsMessageFallback": "Ти правиш всеки наш ден изпълнен с усмивки и слънчева светлина. Никога не спирай да мечтаеш и да се радваш на малките чудеса!",
+      "kidsAnimalFallback": "единорог"
+    }
+  }
+}

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { DualVideoPlayer } from './DualVideoPlayer';
 import { VideoPreloader } from './VideoPreloader';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface Stage1SceneProps {
   deviceType: 'desktop' | 'phone';
@@ -22,6 +23,7 @@ interface BurstParticle {
 }
 
 export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPlaying }: Stage1SceneProps) {
+  const { t } = useLanguage();
   const [phase, setPhase] = useState<'part1' | 'pausedAtKey' | 'part2' | 'unlocked'>('part1');
   const [isKeyActive, setIsKeyActive] = useState(false);
   const [touchPos, setTouchPos] = useState<{ x: number; y: number } | null>(null);
@@ -228,7 +230,7 @@ export function Stage1Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
           {!isBursting && (
             <div className="absolute bottom-16 left-0 right-0 text-center pointer-events-none px-4">
               <p className="font-serif italic text-xl md:text-3xl text-amber-200 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] animate-pulse">
-                ✨ Натисни и задръж върху вълшебния ключ...
+                {t('kidsFairytale.stage1.holdKeyPrompt')}
               </p>
             </div>
           )}

@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { ParchmentCard } from './ParchmentCard';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface ScratchProps {
   deviceType: 'desktop' | 'phone';
@@ -12,6 +13,7 @@ interface ScratchProps {
 }
 
 export function ScratchSubScene({ deviceType, isMuted, childName, senderWish, transcribedWishText, recordedAudioBlob }: ScratchProps) {
+  const { t } = useLanguage();
   const [sub, setSub] = useState<'scroll' | 'scratch' | 'reveal'>('scroll');
   const [prog, setProg] = useState(0);
   const [rev, setRev] = useState(false);
@@ -69,7 +71,7 @@ export function ScratchSubScene({ deviceType, isMuted, childName, senderWish, tr
           )}
           {sub === 'scratch' && (
             <div className="absolute top-8 left-0 right-0 text-center z-50 pointer-events-none">
-              <p className="font-serif italic text-xl text-amber-200 animate-pulse">✨ Изтъркай фолиото! ({Math.round(prog)}%)</p>
+              <p className="font-serif italic text-xl text-amber-200 animate-pulse">{t('kidsFairytale.scratch.scratchPrompt', { percent: Math.round(prog) })}</p>
             </div>
           )}
         </div>

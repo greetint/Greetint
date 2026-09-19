@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { playSoundEffect } from './utils/speech';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SuspectRecordStage } from './SuspectRecordStage';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface MagnifyingGlassProps {
   secretMemory: string;
@@ -28,7 +29,7 @@ export function MagnifyingGlassStage({
   secretMemory,
   secretPassword = 'кафе',
   age = '30',
-  recipient = 'Заподозрян',
+  recipient,
   suspectProfile,
   evidenceAnswers,
   evidenceItems,
@@ -36,6 +37,8 @@ export function MagnifyingGlassStage({
   isMuted = false,
   onComplete
 }: MagnifyingGlassProps) {
+  const { t } = useLanguage();
+  const resolvedRecipient = recipient || t('detectiveMystery.magnifyingGlassStage.defaultRecipient');
   const targetAge = parseInt(age, 10) || 30;
   const [subStage, setSubStage] = useState<1 | 2 | 3>(1);
   const [frequency, setFrequency] = useState<number>(10);
@@ -135,41 +138,41 @@ export function MagnifyingGlassStage({
   };
 
   const profile = suspectProfile || {
-    alias: recipient || 'Заподозрян',
-    mainCrime: charges?.[0] || 'Превишена скорост на празнуване',
-    distinguishingMark: charges?.[1] || 'Заразно добро настроение',
-    lastSeen: 'На дансинга в петък вечер',
-    specialSkill: charges?.[2] || 'Неоторизирано ядене на торта'
+    alias: resolvedRecipient,
+    mainCrime: charges?.[0] || t('detectiveMystery.magnifyingGlassStage.defaultMainCrime'),
+    distinguishingMark: charges?.[1] || t('detectiveMystery.magnifyingGlassStage.defaultDistinguishingMark'),
+    lastSeen: t('detectiveMystery.magnifyingGlassStage.defaultLastSeen'),
+    specialSkill: charges?.[2] || t('detectiveMystery.magnifyingGlassStage.defaultSpecialSkill')
   };
 
   const questions = [
     {
       id: 'mainCrime',
-      title: 'СТЪПКА 1 от 4: ГЛАВНО ПРЕСТЪПЛЕНИЕ',
-      question: 'Какво е официалното обвинение / главно престъпление?',
+      title: t('detectiveMystery.magnifyingGlassStage.q1Title'),
+      question: t('detectiveMystery.magnifyingGlassStage.q1Question'),
       answer: profile.mainCrime,
-      hint: 'Проверете Страница 2 на досието.'
+      hint: t('detectiveMystery.magnifyingGlassStage.hintCheckPage2')
     },
     {
       id: 'distinguishingMark',
-      title: 'СТЪПКА 2 от 4: ОТЛИЧИТЕЛЕН БЕЛЕГ',
-      question: 'Кой е отличителният белег на субекта?',
+      title: t('detectiveMystery.magnifyingGlassStage.q2Title'),
+      question: t('detectiveMystery.magnifyingGlassStage.q2Question'),
       answer: profile.distinguishingMark,
-      hint: 'Проверете Страница 2 на досието.'
+      hint: t('detectiveMystery.magnifyingGlassStage.hintCheckPage2')
     },
     {
       id: 'lastSeen',
-      title: 'СТЪПКА 3 от 4: ПОСЛЕДНО ЗАБЕЛЯЗАН',
-      question: 'Къде е забележан за последно субектът?',
+      title: t('detectiveMystery.magnifyingGlassStage.q3Title'),
+      question: t('detectiveMystery.magnifyingGlassStage.q3Question'),
       answer: profile.lastSeen,
-      hint: 'Проверете Страница 2 на досието.'
+      hint: t('detectiveMystery.magnifyingGlassStage.hintCheckPage2')
     },
     {
       id: 'specialSkill',
-      title: 'СТЪПКА 4 от 4: СПЕЦИАЛНО УМЕНИЕ',
-      question: 'Какво специално умение притежава заподозреният?',
+      title: t('detectiveMystery.magnifyingGlassStage.q4Title'),
+      question: t('detectiveMystery.magnifyingGlassStage.q4Question'),
       answer: profile.specialSkill,
-      hint: 'Проверете Страница 2 на досието.'
+      hint: t('detectiveMystery.magnifyingGlassStage.hintCheckPage2')
     }
   ];
 
@@ -223,25 +226,25 @@ export function MagnifyingGlassStage({
     }
   }, [isMuted]);
 
-  const finalMemory = secretMemory || 'Честит рожден ден! Бъди все така неуловим и успешен.';
+  const finalMemory = secretMemory || t('detectiveMystery.magnifyingGlassStage.defaultMemory');
   const currentQ = questions[questionIndex];
 
   return (
     <div ref={containerRef} onMouseMove={handleMove} onTouchMove={handleMove} onMouseEnter={() => setIsInside(true)} onMouseLeave={() => setIsInside(false)} className="relative w-full h-full bg-[#0D0B0A] text-[#F7F4EF] font-mono flex flex-col items-center justify-between p-4 sm:p-6 select-none overflow-y-auto sm:overflow-hidden cursor-crosshair">
       <div className="relative z-20 text-center space-y-1 pt-2">
         <div className="flex items-center justify-between max-w-xl mx-auto w-full px-2">
-          <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold">ФЕДЕРАЛЕН АРХИВ // АРХИВЕН СКЕНЕР</span>
-          <button 
+          <span className="text-[10px] uppercase tracking-[0.3em] text-red-500 font-bold">{t('detectiveMystery.magnifyingGlassStage.archiveLabel')}</span>
+          <button
             onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setIsDossierOpen(true); }}
             className="bg-[#2B2723] hover:bg-black text-amber-200 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider border border-amber-500/40 shadow cursor-pointer transition flex items-center gap-1.5"
           >
-            <span>📁 ПРЕГЛЕД НА ДОСИЕТО</span>
+            <span>{t('detectiveMystery.magnifyingGlassStage.dossierButton')}</span>
           </button>
         </div>
         <h2 className="text-xl font-serif font-bold text-white uppercase">
-          {subStage === 1 && 'Етап 1: Радиостанция'}
-          {subStage === 2 && `Етап 2: Разследване (Стъпка ${questionIndex + 1}/4)`}
-          {subStage === 3 && 'Етап 3: Химическа Лупа'}
+          {subStage === 1 && t('detectiveMystery.magnifyingGlassStage.stage1Title')}
+          {subStage === 2 && t('detectiveMystery.magnifyingGlassStage.stage2Title', { step: questionIndex + 1 })}
+          {subStage === 3 && t('detectiveMystery.magnifyingGlassStage.stage3Title')}
         </h2>
         <div className="flex justify-center gap-2 pt-1">
           <span className={`w-2.5 h-2.5 rounded-full ${subStage >= 1 ? 'bg-green-500' : 'bg-neutral-700'}`} />
@@ -254,8 +257,8 @@ export function MagnifyingGlassStage({
         {subStage === 1 && (
           <div className="bg-[#161412] p-6 rounded-3xl border-2 border-amber-500/40 shadow-2xl space-y-6 text-center">
             <div className="space-y-2">
-              <span className="text-xs text-amber-300 font-bold uppercase">📡 Радиочестотен Тунер</span>
-              <p className="text-xs text-[#958679]">Настройте честотата до възрастта: <span className="text-amber-400 font-bold">{targetAge} MHz</span></p>
+              <span className="text-xs text-amber-300 font-bold uppercase">{t('detectiveMystery.magnifyingGlassStage.radioTunerLabel')}</span>
+              <p className="text-xs text-[#958679]">{t('detectiveMystery.magnifyingGlassStage.tuneInstruction', { age: targetAge })}</p>
             </div>
             <div className="space-y-4 py-2">
               <div className="text-3xl font-mono font-black text-amber-400">{frequency} MHz</div>
@@ -263,11 +266,11 @@ export function MagnifyingGlassStage({
             </div>
             {isLocked ? (
               <div className="space-y-3">
-                <div className="text-green-400 text-xs font-bold uppercase bg-green-950/60 py-2 rounded-xl border border-green-500/40">✔ ЗАКЛЮЧЕНО! СИГНАЛ УЛОВЕН</div>
-                <button onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setSubStage(2); }} className="w-full bg-green-600 hover:bg-green-500 text-black py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">[ КЪМ РАЗСЛЕДВАНЕТО НА ДОСИЕТО → ]</button>
+                <div className="text-green-400 text-xs font-bold uppercase bg-green-950/60 py-2 rounded-xl border border-green-500/40">{t('detectiveMystery.magnifyingGlassStage.lockedMessage')}</div>
+                <button onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); setSubStage(2); }} className="w-full bg-green-600 hover:bg-green-500 text-black py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">{t('detectiveMystery.magnifyingGlassStage.toInvestigationButton')}</button>
               </div>
             ) : (
-              <div className="text-xs text-neutral-400 italic">Цел: {targetAge} MHz (Шум в ефира до улавяне)</div>
+              <div className="text-xs text-neutral-400 italic">{t('detectiveMystery.magnifyingGlassStage.targetFrequency', { age: targetAge })}</div>
             )}
           </div>
         )}
@@ -277,25 +280,25 @@ export function MagnifyingGlassStage({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-red-400 font-bold uppercase">{currentQ.title}</span>
-                <span className="text-[10px] text-amber-400 font-mono">Въпрос {questionIndex + 1} от 4</span>
+                <span className="text-[10px] text-amber-400 font-mono">{t('detectiveMystery.magnifyingGlassStage.questionCounter', { current: questionIndex + 1 })}</span>
               </div>
               <p className="text-xs text-white font-medium">{currentQ.question}</p>
             </div>
-            
-            <input 
-              type="text" 
-              value={questionInput} 
-              onChange={(e) => setQuestionInput(e.target.value)} 
-              placeholder="Въведете отговор от досието..." 
-              className="w-full bg-black/80 border border-white/20 rounded-xl p-4 text-xs text-white text-center tracking-widest uppercase focus:outline-none focus:border-red-600 font-mono" 
+
+            <input
+              type="text"
+              value={questionInput}
+              onChange={(e) => setQuestionInput(e.target.value)}
+              placeholder={t('detectiveMystery.magnifyingGlassStage.answerPlaceholder')}
+              className="w-full bg-black/80 border border-white/20 rounded-xl p-4 text-xs text-white text-center tracking-widest uppercase focus:outline-none focus:border-red-600 font-mono"
               autoFocus
             />
 
-            {hasError && <p className="text-[11px] text-red-500 font-bold">[ ❌ НЕВЯРЕН ОТГОВОР. ПРОВЕРЕТЕ СТРАНИЦА 2 НА ДОСИЕТО! ]</p>}
-            
+            {hasError && <p className="text-[11px] text-red-500 font-bold">{t('detectiveMystery.magnifyingGlassStage.wrongAnswerMessage')}</p>}
+
             <div className="space-y-2">
               <button type="submit" className="w-full bg-red-700 hover:bg-red-600 text-white py-3.5 rounded-xl text-xs uppercase tracking-widest font-black cursor-pointer shadow">
-                [ ПОТВЪРДИ ОТГОВОР 🔓 ]
+                {t('detectiveMystery.magnifyingGlassStage.confirmAnswerButton')}
               </button>
               <p className="text-[10px] text-neutral-400 italic">{currentQ.hint}</p>
             </div>
@@ -305,8 +308,8 @@ export function MagnifyingGlassStage({
         {subStage === 3 && (
           <div className="flex flex-col items-center justify-center space-y-8 my-auto text-center py-6">
             <div className="space-y-2">
-              <span className="text-xs text-amber-400 font-bold uppercase tracking-widest">🔍 Химическа Лупа</span>
-              <p className="text-xs text-[#958679]">Минете с лупата над посланието за разкриване.</p>
+              <span className="text-xs text-amber-400 font-bold uppercase tracking-widest">{t('detectiveMystery.magnifyingGlassStage.magnifierTitle')}</span>
+              <p className="text-xs text-[#958679]">{t('detectiveMystery.magnifyingGlassStage.magnifierInstruction')}</p>
             </div>
             
             <div ref={msgRef} className="py-8 px-4 max-w-lg mx-auto select-none">
@@ -319,7 +322,7 @@ export function MagnifyingGlassStage({
               onClick={() => { playSoundEffect('/audio/detective/lock-click.mp3', isMuted, 0.85); onComplete(); }} 
               className="max-w-xs w-full bg-amber-600 hover:bg-amber-500 text-black py-4 rounded-2xl text-xs uppercase tracking-widest font-black cursor-pointer border-2 border-amber-400 shadow-xl transition"
             >
-              [ КЪМ КОРКОВОТО ТАБЛО → ]
+              {t('detectiveMystery.magnifyingGlassStage.toCorkboardButton')}
             </button>
           </div>
         )}
@@ -344,7 +347,7 @@ export function MagnifyingGlassStage({
         </div>
       )}
 
-      <div className="relative z-20 pb-2 text-[10px] text-neutral-500 uppercase tracking-widest">ФЕДЕРАЛЕН АРХИВ // АРХИВЕН СКЕНЕР</div>
+      <div className="relative z-20 pb-2 text-[10px] text-neutral-500 uppercase tracking-widest">{t('detectiveMystery.magnifyingGlassStage.archiveLabel')}</div>
 
       <AnimatePresence>
         {isDossierOpen && (
@@ -356,8 +359,8 @@ export function MagnifyingGlassStage({
             className="absolute inset-x-1 sm:inset-x-12 top-2 bottom-2 z-60 flex flex-col items-center justify-center pointer-events-none overflow-y-auto p-1 sm:p-4"
           >
             <div className="relative w-full max-w-2xl sm:max-w-3xl pointer-events-auto my-auto">
-              <SuspectRecordStage 
-                recipient={recipient || 'Заподозрян'}
+              <SuspectRecordStage
+                recipient={resolvedRecipient}
                 age={age || '30'}
                 suspectProfile={suspectProfile}
                 secretPassword={secretPassword}
