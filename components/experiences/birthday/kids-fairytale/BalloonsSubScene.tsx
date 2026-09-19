@@ -15,14 +15,24 @@ interface BalloonItemProps {
 }
 
 function BalloonItem({ index, pos, fill, onMove, onRelease }: BalloonItemProps) {
-  // Each balloon bobs/sways at its own frequency and phase so the row never
-  // looks synchronized.
-  const freqY = 0.7 + index * 0.13;
-  const phaseY = index * 1.3;
-  const ampY = 8 + (index % 3) * 3;
-  const freqX = 0.45 + index * 0.1;
-  const phaseX = index * 0.9;
-  const ampX = 5 + (index % 2) * 3;
+  // Each balloon's drift is a sum of two incommensurate sine waves (a
+  // "gust" and a slower "settle") instead of one clean periodic sine, so
+  // it reads as wind-blown rather than a metronome loop, and each balloon
+  // desyncs from the others via its own frequency/phase.
+  const freqY1 = 0.55 + index * 0.11;
+  const freqY2 = freqY1 * 1.83;
+  const phaseY1 = index * 1.3;
+  const phaseY2 = index * 2.1 + 0.6;
+  const ampY1 = 7 + (index % 3) * 2.5;
+  const ampY2 = 2.5 + (index % 2) * 1.5;
+
+  const freqX1 = 0.35 + index * 0.09;
+  const freqX2 = freqX1 * 1.6;
+  const phaseX1 = index * 0.9;
+  const phaseX2 = index * 1.7 + 1.1;
+  const ampX1 = 4 + (index % 2) * 2.5;
+  const ampX2 = 1.5 + (index % 3) * 1.2;
+  const ampX = ampX1 + ampX2;
 
   const floatX = useMotionValue(0);
   const floatY = useMotionValue(0);
@@ -37,8 +47,8 @@ function BalloonItem({ index, pos, fill, onMove, onRelease }: BalloonItemProps) 
 
   useAnimationFrame((t) => {
     const s = t / 1000;
-    floatY.set(Math.sin(s * freqY + phaseY) * ampY);
-    floatX.set(Math.sin(s * freqX + phaseX) * ampX);
+    floatY.set(Math.sin(s * freqY1 + phaseY1) * ampY1 + Math.sin(s * freqY2 + phaseY2) * ampY2);
+    floatX.set(Math.sin(s * freqX1 + phaseX1) * ampX1 + Math.sin(s * freqX2 + phaseX2) * ampX2);
   });
 
   const handleRelease = () => {
@@ -63,6 +73,24 @@ function BalloonItem({ index, pos, fill, onMove, onRelease }: BalloonItemProps) 
         <div
           className="absolute inset-0 rounded-full bg-gradient-to-t from-amber-500 via-yellow-400 to-amber-200 opacity-90 transition-all duration-300 pointer-events-none"
           style={{ clipPath: `inset(${100 - fill}% 0 0 0)` }}
+        />
+        {/* Rim shading + specular highlight for a rounded, glossy, 3D feel. */}
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none"
+          style={{
+            boxShadow: 'inset -10px -14px 22px rgba(120,53,15,0.4), inset 10px 12px 18px rgba(255,255,255,0.35)',
+          }}
+        />
+        <div
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            top: '12%',
+            left: '18%',
+            width: '38%',
+            height: '26%',
+            background: 'radial-gradient(ellipse, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.15) 60%, transparent 80%)',
+            filter: 'blur(1px)',
+          }}
         />
         <div
           className="absolute inset-0 rounded-full border-2 border-white/60 animate-pulse pointer-events-none"

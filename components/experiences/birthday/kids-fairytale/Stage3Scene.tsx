@@ -17,11 +17,14 @@ export function Stage3Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
   const [wishState, setWishState] = useState<'recording' | 'readyToBlow' | 'blowing' | 'done'>('recording');
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [transcribedText, setTranscribedText] = useState<string>('');
+  const [micListening, setMicListening] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const blowMeterRef = useRef<HTMLDivElement | null>(null);
+  const blowHandledRef = useRef(false);
 
   const totalSteps = 6;
 
@@ -87,14 +90,88 @@ export function Stage3Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
     }, 6000);
   };
 
+  // Shared by both the real microphone blow and the tap fallback, guarded so
+  // a blow and a tap racing each other can't both fire.
+  const extinguishCandle = () => {
+    if (blowHandledRef.current) return;
+    blowHandledRef.current = true;
+    setWishState('done');
+    if (videoRef.current) videoRef.current.play().catch(() => {});
+  };
+
   const handleInteraction = () => {
     if (step < totalSteps) {
       setStep(prev => prev + 1);
     } else if (step === totalSteps && wishState === 'readyToBlow') {
-      setWishState('done');
-      if (videoRef.current) videoRef.current.play().catch(() => {});
+      extinguishCandle();
     }
   };
+
+  // Only listens for a real "blow" once the wish is fully recorded — never
+  // while `wishState === 'recording'`, so speaking the wish can't be
+  // mistaken for blowing out the candle.
+  useEffect(() => {
+    if (step !== totalSteps || wishState !== 'readyToBlow') return;
+    blowHandledRef.current = false;
+    let cancelled = false;
+    let stream: MediaStream | null = null;
+    let audioCtx: AudioContext | null = null;
+    let rafId: number | null = null;
+
+    const BLOW_THRESHOLD = 52; // 0-255 scale on averaged frequency data
+    const SUSTAIN_FRAMES_NEEDED = 6; // ~100ms at 60fps, filters out brief taps/pops
+    let sustainedFrames = 0;
+
+    (async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (cancelled) { stream.getTracks().forEach(t => t.stop()); return; }
+
+        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        audioCtx = new AudioCtx();
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+        source.connect(analyser);
+        const data = new Uint8Array(analyser.frequencyBinCount);
+
+        setMicListening(true);
+
+        const tick = () => {
+          analyser.getByteFrequencyData(data);
+          let sum = 0;
+          for (let i = 0; i < data.length; i++) sum += data[i];
+          const avg = sum / data.length;
+
+          if (blowMeterRef.current) {
+            blowMeterRef.current.style.transform = `scale(${1 + Math.min(avg / 255, 1) * 0.6})`;
+          }
+
+          if (avg > BLOW_THRESHOLD) {
+            sustainedFrames++;
+            if (sustainedFrames >= SUSTAIN_FRAMES_NEEDED) {
+              extinguishCandle();
+              return;
+            }
+          } else {
+            sustainedFrames = 0;
+          }
+          rafId = requestAnimationFrame(tick);
+        };
+        tick();
+      } catch (err) {
+        console.warn('Blow mic unavailable, tap fallback only:', err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      setMicListening(false);
+      if (rafId) cancelAnimationFrame(rafId);
+      if (audioCtx) audioCtx.close().catch(() => {});
+      if (stream) stream.getTracks().forEach(t => t.stop());
+    };
+  }, [step, wishState]);
 
   const handleVideoEnded = () => {
     if (step === totalSteps && wishState === 'done') {
@@ -130,7 +207,14 @@ export function Stage3Scene({ deviceType, isMuted, onComplete, onVideoRef, onPla
             )}
             {wishState === 'readyToBlow' && (
               <>
-                <p className="font-serif italic text-xl md:text-2xl text-amber-200">🎂 Духни свещичката или докосни екрана.</p>
+                <div className="flex items-center justify-center gap-2">
+                  <div
+                    ref={blowMeterRef}
+                    className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_10px_#fbbf24] transition-transform duration-75"
+                    style={{ opacity: micListening ? 1 : 0.35 }}
+                  />
+                  <p className="font-serif italic text-xl md:text-2xl text-amber-200">🎂 Духни силно в микрофона или докосни екрана.</p>
+                </div>
                 <p className="text-xs uppercase tracking-[0.2em] text-amber-400">{transcribedText ? `"${transcribedText}"` : 'Желанието е запазено!'}</p>
               </>
             )}

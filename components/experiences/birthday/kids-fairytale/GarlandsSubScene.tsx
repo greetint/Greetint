@@ -38,11 +38,14 @@ function catenaryPoints(x1: number, x2: number, y: number, sag: number, samples:
   }
   const a = (lo + hi) / 2;
   const midX = (x1 + x2) / 2;
+  // `heightAboveVertex` is 0 at the center and grows toward the anchors — the
+  // vertex (lowest point, max sag) sits `sag` below the anchor line, so we
+  // hang the curve from the anchors rather than from the vertex.
   const pts: { x: number; y: number }[] = [];
   for (let i = 0; i <= samples; i++) {
     const x = x1 + (x2 - x1) * (i / samples);
-    const dip = a * (Math.cosh((x - midX) / a) - 1);
-    pts.push({ x, y: y + dip });
+    const heightAboveVertex = a * (Math.cosh((x - midX) / a) - 1);
+    pts.push({ x, y: y + sag - heightAboveVertex });
   }
   return pts;
 }
