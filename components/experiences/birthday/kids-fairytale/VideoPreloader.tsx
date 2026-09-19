@@ -16,7 +16,6 @@ export function VideoPreloader({ src }: VideoPreloaderProps) {
       preload="auto"
       muted
       playsInline
-      // @ts-ignore
       webkit-playsinline="true"
       aria-hidden="true"
       tabIndex={-1}

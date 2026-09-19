@@ -85,7 +85,7 @@ export function DualVideoPlayer({ src, onEnded, onPlaying, onActiveVideoRef, cla
       />
       <video
         ref={videoBRef}
-        src={sourceB}
+        {...(sourceB ? { src: sourceB } : {})}
         preload="auto"
         autoPlay={false}
         muted={muted}
