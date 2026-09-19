@@ -23,10 +23,24 @@ export function DualVideoPlayer({ src, onEnded, className = '', autoPlay = true,
     if (activeBuffer === 'A') {
       if (src !== sourceA) {
         setSourceB(src);
+        const t = setTimeout(() => {
+          if (videoBRef.current && sourceB) {
+            setActiveBuffer('B');
+            videoBRef.current.play().catch(() => {});
+          }
+        }, 1500);
+        return () => clearTimeout(t);
       }
     } else {
       if (src !== sourceB) {
         setSourceA(src);
+        const t = setTimeout(() => {
+          if (videoARef.current && sourceA) {
+            setActiveBuffer('A');
+            videoARef.current.play().catch(() => {});
+          }
+        }, 1500);
+        return () => clearTimeout(t);
       }
     }
   }, [src]);
@@ -63,6 +77,7 @@ export function DualVideoPlayer({ src, onEnded, className = '', autoPlay = true,
         loop={loop}
         onEnded={activeBuffer === 'A' ? onEnded : undefined}
         onLoadedData={handleLoadedDataA}
+        onError={(e) => console.error("Video A Error:", e.currentTarget.error, e.currentTarget.src)}
         className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-300 ${
           activeBuffer === 'A' ? 'z-10 opacity-100' : 'z-0 opacity-0 pointer-events-none'
         }`}
@@ -79,6 +94,7 @@ export function DualVideoPlayer({ src, onEnded, className = '', autoPlay = true,
         loop={loop}
         onEnded={activeBuffer === 'B' ? onEnded : undefined}
         onLoadedData={handleLoadedDataB}
+        onError={(e) => console.error("Video B Error:", e.currentTarget.error, e.currentTarget.src)}
         className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-300 ${
           activeBuffer === 'B' ? 'z-10 opacity-100' : 'z-0 opacity-0 pointer-events-none'
         }`}
